@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="d-flex">
+
+  <!-- Sidebar -->
+  <div class="bg-light p-3" style="width: 250px; min-height: 100vh;">
+    <h5 class="fw-bold">Admin Panel</h5>
+    <ul class="nav flex-column mt-4">
+      <li class="nav-item"><a class="nav-link active" href="#users-section">Users</a></li>
+      <li class="nav-item"><a class="nav-link" href="#blogs-section">Blogs</a></li>
+      <li class="nav-item"><a class="nav-link" href="#forum-section">Forum</a></li>
+      <li class="nav-item"><a class="nav-link text-danger" href="#">Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-grow-1 p-4">
+
+    <!-- Users Section -->
+    <section id="users-section" class="mb-5">
+      <h4>Users Management</h4>
+      <table class="table table-bordered mt-3">
+        <thead class="table-light">
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>john_doe</td>
+            <td>john@example.com</td>
+            <td>Active</td>
+            <td>
+              <button class="btn btn-warning btn-sm">Lock</button>
+              <button class="btn btn-secondary btn-sm">Edit</button>
+              <button class="btn btn-danger btn-sm">Delete</button>
+            </td>
+          </tr>
+          <tr>
+            <td>jane_smith</td>
+            <td>jane@example.com</td>
+            <td>Locked</td>
+            <td>
+              <button class="btn btn-success btn-sm">Unlock</button>
+              <button class="btn btn-secondary btn-sm">Edit</button>
+              <button class="btn btn-danger btn-sm">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Blogs Section -->
+    <section id="blogs-section" class="mb-5">
+      <h4>Blogs Management</h4>
+      <button class="btn btn-primary mb-3">Add Blog</button>
+      <table class="table table-bordered">
+        <thead class="table-light">
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Cindy Ngamba</td>
+            <td>Nike</td>
+            <td>Boxing</td>
+            <td>
+              <button class="btn btn-secondary btn-sm">Edit</button>
+              <button class="btn btn-danger btn-sm">Delete</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Marcus Rashford</td>
+            <td>Nike</td>
+            <td>Football</td>
+            <td>
+              <button class="btn btn-secondary btn-sm">Edit</button>
+              <button class="btn btn-danger btn-sm">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Forum Section -->
+    <section id="forum-section">
+      <h4>Forum Management</h4>
+      <table class="table table-bordered mt-3">
+        <thead class="table-light">
+          <tr>
+            <th>Thread Title</th>
+            <th>Author</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Discussion about soccer</td>
+            <td>user123</td>
+            <td>
+              <button class="btn btn-warning btn-sm">Archive Thread</button>
+              <button class="btn btn-danger btn-sm">Delete Post</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Yoga tips for beginners</td>
+            <td>user456</td>
+            <td>
+              <button class="btn btn-warning btn-sm">Archive Thread</button>
+              <button class="btn btn-danger btn-sm">Delete Post</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

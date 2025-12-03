@@ -1,0 +1,28 @@
+/* PRL_styleguide.css */
+:root {
+  --neutralblackb-500: rgba(92, 95, 106, 1);
+  --neutralblackb-300: rgba(135, 138, 146, 1);
+  --neutralblackb-900: rgba(14, 20, 34, 1);
+  --neutralwhitew-900: rgba(255, 255, 255, 1);
+  --neutralblackb-600: rgba(71, 75, 87, 1);
+  --neutralwhitew-100: rgba(246, 246, 246, 1);
+  --neutralblackb-100: rgba(230, 231, 232, 1);
+  --body-regular-font-family: "Inter", Helvetica;
+  --body-regular-font-weight: 400;
+  --body-regular-font-size: 14px;
+  --body-regular-letter-spacing: 0px;
+  --body-regular-line-height: 175%;
+  --body-regular-font-style: normal;
+  --body-medium-font-family: "Inter", Helvetica;
+  --body-medium-font-weight: 500;
+  --body-medium-font-size: 14px;
+  --body-medium-letter-spacing: 0px;
+  --body-medium-line-height: 175%;
+  --body-medium-font-style: normal;
+  --heading-h3-nomal-bold-font-family: "Inter", Helvetica;
+  --heading-h3-nomal-bold-font-weight: 700;
+  --heading-h3-nomal-bold-font-size: 24px;
+  --heading-h3-nomal-bold-letter-spacing: 0px;
+  --heading-h3-nomal-bold-line-height: normal;
+  --heading-h3-nomal-bold-font-style: normal;
+}

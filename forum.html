@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Forum</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/globals.css" />
+    <link rel="stylesheet" href="css/styleguide.css" />
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <style>
+      .create-card { border-radius: 12px; padding: 18px; border: 1px solid var(--neutralblackb-100); background: var(--neutralwhitew-900); }
+      .thread-row { margin-top: 18px; }
+      .thread-card .card-body { display:flex; flex-direction:column; }
+      .small-muted { color: var(--neutralblackb-600); font-size:0.95rem; }
+      .create-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+      @media (max-width:768px) {
+        .create-actions { flex-direction:column-reverse; }
+      }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
+
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="navMenu" class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto ms-4 gap-3">
+                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+
+                <li class="nav-item "><a class="nav-link" href="#">Shop</a></li>
+
+                <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+                <li class="nav-item"><a class="nav-link active" href="forum.html">Forum</a></li>
+                <li class="nav-item"><a class="nav-link" href="sitemap.html">Site Map</a></li>
+            </ul>
+
+            <form class="d-flex me-3">
+                <input class="form-control" type="search" placeholder="Search products">
+            </form>
+
+            <i class="fa-solid fa-bag-shopping fs-5 me-3"></i>
+            <i class="fa-regular fa-user fs-5"></i>
+        </div>
+    </div>
+</nav>
+
+<nav class="bg-light py-2 border-bottom">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="#">Ecommerce</a></li>
+            <li class="breadcrumb-item active">Forum</li>
+        </ol>
+    </div>
+</nav>
+
+<div class="container my-5">
+
+  <div class="container my-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="create-card">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0">Start a discussion</h5>
+            <div class="small-muted">Share tips on footwear, apparel, sizing & training</div>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label small text-muted">Title</label>
+            <input id="threadTitle" class="form-control" maxlength="120" placeholder="e.g. Best cleats for firm ground">
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label small text-muted">Message</label>
+            <textarea id="threadBody" class="form-control" rows="5" placeholder="Write your question or advice..."></textarea>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label small text-muted">Tags (comma separated)</label>
+            <input id="threadTags" class="form-control" placeholder="e.g. running, cleats, sizing">
+          </div>
+
+          <div class="create-actions">
+            <button id="clearBtn" class="btn btn-outline-dark">Clear</button>
+            <button id="postBtn" class="btn btn-primary">Post Thread</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 thread-row" id="threadsGrid">
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-light pt-5 mt-5">
+  <div class="container">
+
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <div class="p-2 border rounded"><i class="fa-solid fa-store fs-3"></i></div>
+          <span class="fw-bold fs-5">Ecommerce</span>
+        </div>
+        <p class="text-muted small">DevCut is a YouTube channel for practical project-based learning.</p>
+        <div class="d-flex gap-2 mt-2">
+            <i class="fab fa-github fs-5"></i>
+            <i class="fab fa-instagram fs-5"></i>
+            <i class="fab fa-youtube fs-5"></i>
+        </div>
+      </div>
+
+      <div class="col-md-2 mb-4">
+        <h6 class="text-muted">SHOP</h6>
+        <ul class="list-unstyled mt-2">
+          <li><a href="#" class="text-decoration-none text-dark">My Account</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Checkout</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Cart</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-2 mb-4">
+        <h6 class="text-muted">COMPANY</h6>
+        <ul class="list-unstyled mt-2">
+          <li><a href="#" class="text-decoration-none text-dark">About us</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Contact</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Careers</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-2 mb-4">
+        <h6 class="text-muted">SUPPORT</h6>
+        <ul class="list-unstyled mt-2">
+          <li><a href="#" class="text-decoration-none text-dark">FAQ</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Terms of use</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-3 mb-4">
+          <h6 class="text-muted">ACCEPTED PAYMENTS</h6>
+          <div class="d-flex gap-2 mt-2">
+              <i class="fa-brands fa-cc-visa fs-3"></i>
+              <i class="fa-brands fa-cc-mastercard fs-3"></i>
+              <i class="fa-brands fa-cc-amex fs-3"></i>
+              <i class="fa-brands fa-cc-paypal fs-3"></i>
+          </div>
+      </div>
+
+    </div>
+
+    <hr class="mt-4">
+
+    <div class="text-center pb-3 small text-muted">
+      © 2025 DevCut. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+
+(function(){
+  const STORAGE_KEY = 'ecom_forum_threads_v1';
+  const grid = document.getElementById('threadsGrid');
+  const postBtn = document.getElementById('postBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  // sample threads (sports apparel & footwear)
+  const SAMPLE = [
+    {
+      id: 1,
+      title: "Which football boots (cleats) are best for firm natural grass?",
+      author: "Community",
+      meta: "By SportStore • Football",
+      tags: ["football","cleats","boots","FG"],
+      excerpt: "I'm switching from turf to 11-a-side on firm natural grass pitches and need new boots. I prefer lightweight models with good traction and a snug fit.",
+      body: "I'm switching from turf to 11-a-side on firm natural grass pitches and need new boots. I prefer lightweight models with good traction and a snug fit. Any recommendations for studs pattern and brands (under $200) that perform well on firmer surfaces? Also, how does upper material affect wet-weather performance?",
+      image: "img/1.png",
+      created: "Dec 01, 2025, 09:15"
+    },
+    {
+      id: 2,
+      title: "Best long-run shoes for high-mileage training (neutral runner)?",
+      author: "Community",
+      meta: "By SportStore • Running",
+      tags: ["running","shoes","training"],
+      excerpt: "Training for a marathon — weekly mileage around 60–80 km. Looking for long-run shoes with responsive cushioning and durability.",
+      body: "Training for a marathon (60–80 km/week). Need shoes offering cushioning and durability without being sluggish. Prefer neutral cushioning and something that lasts beyond 800 km if possible. What worked for you?",
+      image: "img/2.png",
+      created: "Nov 28, 2025, 18:02"
+    }
+  ];
+
+  // load or seed
+  let store = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  if (!store || store.length === 0) {
+    store = SAMPLE;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+  }
+  let threads = store.slice();
+
+  // render function: uses the same col/card structure as blogs.html
+  function render(){
+    grid.innerHTML = '';
+    if (!threads.length) {
+      grid.innerHTML = '<div class="col-12"><div class="card p-4">No threads yet. Be the first to post!</div></div>';
+      return;
+    }
+
+    threads.forEach(t => {
+      const col = document.createElement('div');
+      col.className = 'col-md-4';
+
+      const card = document.createElement('div');
+      card.className = 'card blog-card shadow-sm flex-fill h-100';
+
+      const img = document.createElement('img');
+      img.className = 'card-img-top';
+      img.src = t.image || 'img/placeholder.png';
+      img.alt = t.title;
+
+      const body = document.createElement('div');
+      body.className = 'card-body';
+
+      const h5 = document.createElement('h5');
+      h5.className = 'card-title';
+      h5.textContent = t.title;
+
+      const meta = document.createElement('p');
+      meta.className = 'text-muted small mb-1';
+      meta.textContent = t.meta || 'By SportStore';
+
+      const tagDiv = document.createElement('div');
+      tagDiv.className = 'mb-3';
+      if (t.tags && t.tags.length) {
+        t.tags.forEach(tag => {
+          const s = document.createElement('span');
+          s.className = 'badge bg-secondary';
+          s.textContent = tag;
+          tagDiv.appendChild(s);
+        });
+      }
+
+      const p = document.createElement('p');
+      p.className = 'card-text';
+      p.textContent = t.excerpt || (t.body.length > 140 ? t.body.slice(0,140)+'…' : t.body);
+
+      const ctr = document.createElement('div');
+      ctr.className = 'text-center';
+      const read = document.createElement('a');
+      read.className = 'btn btn-outline-dark btn-sm';
+      read.href = '#';
+      read.textContent = 'Read more';
+      read.addEventListener('click', (e) => { e.preventDefault(); showDetail(t); });
+
+      ctr.appendChild(read);
+
+      body.appendChild(h5);
+      body.appendChild(meta);
+      body.appendChild(tagDiv);
+      body.appendChild(p);
+      body.appendChild(ctr);
+
+      card.appendChild(img);
+      card.appendChild(body);
+      col.appendChild(card);
+      grid.appendChild(col);
+    });
+  }
+
+  // show detail modal (simple)
+  function showDetail(t){
+    const id = 'forumDetailModal';
+    const old = document.getElementById(id);
+    if (old) old.remove();
+
+    const modal = document.createElement('div');
+    modal.id = id;
+    modal.className = 'modal fade';
+    modal.tabIndex = -1;
+    modal.innerHTML = `
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">${escapeHtml(t.title)}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="text-muted small mb-2">Posted · ${t.created}</div>
+            <img src="${t.image || 'img/placeholder.png'}" class="img-fluid mb-3" alt="${escapeHtml(t.title)}" />
+            <p>${escapeHtml(t.body).replace(/\n/g,'<br/>')}</p>
+            <hr/>
+            <div>${(t.tags||[]).map(tag=>`<span class="badge bg-secondary me-1">${tag}</span>`).join('')}</div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    const bs = new bootstrap.Modal(modal);
+    bs.show();
+    modal.addEventListener('hidden.bs.modal', ()=> modal.remove());
+  }
+
+  // create thread logic (inline form)
+  document.getElementById('postBtn').addEventListener('click', () => {
+    const title = document.getElementById('threadTitle').value.trim();
+    const body = document.getElementById('threadBody').value.trim();
+    const tags = document.getElementById('threadTags').value.split(',').map(s => s.trim()).filter(Boolean);
+
+    if (!title || !body) {
+      alert('Please provide a title and message.');
+      return;
+    }
+
+    const newThread = {
+      id: Date.now(),
+      title,
+      body,
+      meta: 'By SportStore • Community',
+      tags,
+      excerpt: body.length > 140 ? body.slice(0,140) + '…' : body,
+      image: 'img/3.png',
+      created: new Date().toLocaleString()
+    };
+
+    threads.unshift(newThread);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
+    // clear form
+    document.getElementById('threadTitle').value = '';
+    document.getElementById('threadBody').value = '';
+    document.getElementById('threadTags').value = '';
+    render();
+    // scroll to top of threads (first card)
+    window.scrollTo({ top: document.getElementById('threadsGrid').offsetTop - 80, behavior: 'smooth' });
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    document.getElementById('threadTitle').value = '';
+    document.getElementById('threadBody').value = '';
+    document.getElementById('threadTags').value = '';
+  });
+
+  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+  // initial render
+  render();
+
+})();
+</script>
+
+</body>
+</html>

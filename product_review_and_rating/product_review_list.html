@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="PRL_globals.css" />
+  <link rel="stylesheet" href="PRL_style.css" />
+  <link rel="stylesheet" href="PRL_styleguide.css" />
+
+  <title>Product Review List</title>
+</head>
+<body>
+  <!-- HEADER (NAVBAR) -->
+<nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="navMenu" class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto ms-4 gap-3">
+        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Shop</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Men</a></li>
+            <li><a class="dropdown-item" href="#">Women</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Forum</a></li>
+      </ul>
+      <form class="d-flex me-3">
+        <input class="form-control" type="search" placeholder="Search products">
+      </form>
+      <i class="fa-solid fa-bag-shopping fs-5 me-3"></i>
+      <i class="fa-regular fa-user fs-5"></i>
+    </div>
+  </div>
+</nav>
+
+  <!-- BREADCRUMB -->
+  <nav class="bg-light py-2 border-bottom">
+    <div class="container">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+        <li class="breadcrumb-item"><a href="#">Men</a></li>
+        <li class="breadcrumb-item active">T-shirts</li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- PRODUCT DETAIL SECTION -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row g-5">
+        <!-- Product Images -->
+        <div class="col-md-5">
+          <div class="card">
+            <img src="img/Nike_Air_Force_High.avif" class="card-img-top" alt="Product Image" style="height: 420px; object-fit: contain;">
+          </div>
+        </div>
+        <!-- Product Info -->
+        <div class="col-md-7">
+          <h2 class="fw-bold mb-3">Nike Air Force 1 High By You</h2>
+          <div class="mb-2">
+            <span class="text-warning">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-regular fa-star"></i>
+            </span>
+            <span class="ms-2 text-muted">(451 reviews)</span>
+          </div>
+          <div class="mb-3">
+            <span class="fs-4 fw-bold text-danger">$199.99</span>
+            <span class="text-muted text-decoration-line-through ms-2">$269.99</span>
+            <span class="badge bg-success ms-2">25% OFF</span>
+          </div>
+          <p class="mb-4">Short product description goes here. Highlight key features and selling points.</p>
+          <form class="row g-3 mb-4">
+            <div class="col-6">
+              <label class="form-label">Color</label>
+              <select class="form-select">
+                <option>Grey</option>
+                <option>Blue</option>
+                <option>Black</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Size</label>
+              <select class="form-select">
+                <option>39</option>
+                <option>40</option>
+                <option>41</option>
+                <option>42</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Quantity</label>
+              <input type="number" class="form-control" value="1" min="1">
+            </div>
+            <div class="col-12">
+              <button type="button" class="btn btn-dark w-100">
+                <i class="fa-solid fa-cart-plus me-2"></i>Add to Cart
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- PRODUCT TABS -->
+<section class="border-top py-4">
+  <div class="container">
+    <ul class="nav nav-tabs mb-3" id="productTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab">Product Details</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Rating & Reviews</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="faqs-tab" data-bs-toggle="tab" data-bs-target="#faqs" type="button" role="tab">FAQs</button>
+      </li>
+    </ul>
+    <div class="tab-content" id="productTabContent">
+      <div class="tab-pane fade" id="details" role="tabpanel">
+        <p>The Nike Air Force 1 High By You gives you the freedom to make a classic unmistakably yours. It keeps the iconic high-top silhouette, tough leather build, and that famous Air cushioning—but lets you customize everything from colors to materials to the strap details. It’s the same legendary AF1 attitude, just with your signature stitched into every step.</p>
+      </div>
+      <div class="tab-pane fade show active" id="reviews" role="tabpanel">
+        <!-- REVIEW SECTION-->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0">All Reviews <span class="text-muted">(451)</span></h4>
+          <div>
+            <button class="btn btn-outline-secondary btn-sm me-2">Filter</button>
+            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm" aria-expanded="false" aria-controls="reviewForm">
+              Write a Review
+            </button>
+          </div>
+        </div>
+
+        <!-- Write a Review Form (collapsible) -->
+        <div class="collapse mb-4" id="reviewForm">
+          <div class="card card-body">
+            <form>
+              <div class="mb-3">
+                <label class="form-label">Review Title</label>
+                <input type="text" class="form-control" placeholder="Enter review title">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" rows="3" placeholder="Write your review"></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Star Rating</label>
+                <select class="form-select">
+                  <option>5 Stars</option>
+                  <option>4 Stars</option>
+                  <option>3 Stars</option>
+                  <option>2 Stars</option>
+                  <option>1 Star</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Your Name</label>
+                <input type="text" class="form-control" placeholder="Enter your name">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Date Added</label>
+                <input type="date" class="form-control">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Image (optional)</label>
+                <input type="file" class="form-control">
+              </div>
+              <button type="button" class="btn btn-dark">Submit Review</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <!-- Review Card Example -->
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="mb-2">
+                  <span class="text-warning">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                  </span>
+                </div>
+                <h6 class="fw-bold mb-1">John Doe <span class="badge bg-success ms-2">Verified</span></h6>
+                <p class="text-muted small mb-1">7/6/2022 at 5:42PM</p>
+                <h6 class="fw-bold mb-1">Great Everyday Shoe</h6>
+                <p class="mb-0">Great product! Really comfortable and fits well.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="mb-2">
+                  <span class="text-warning">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                  </span>
+                </div>
+                <h6 class="fw-bold mb-1">Jane Doe <span class="badge bg-success ms-2">Verified</span></h6>
+                <p class="text-muted small mb-1">5/6/2022 at 4:12PM</p>
+                <h6 class="fw-bold mb-1">Super Comfortable</h6>
+                <p class="mb-0">Ridiculously comfortable—like walking on well-trained marshmallows. Easily my new daily pair.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="mb-2">
+                  <span class="text-warning">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                  </span>
+                </div>
+                <h6 class="fw-bold mb-1">Jean D'Arc <span class="badge bg-success ms-2">Verified</span></h6>
+                <p class="small mb-1">19/1/2023 at 10:31AM</p>
+                <h6 class="fw-bold mb-1">Supportive & Stylish</h6>
+                <p class="mb-0">Great support and looks sharp, just needed a tiny bit of break-in time.</p>
+              </div>
+            </div>
+          </div>
+          <!-- Repeat review cards as needed -->
+        </div>
+        <div class="text-center mt-4">
+          <button class="btn btn-outline-dark">Load More Reviews</button>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="faqs" role="tabpanel">
+        <p>FAQs content goes here.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- RELATED PRODUCTS -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h4 class="mb-4">You Might Also Like</h4>
+    <div class="row g-4">
+      <div class="col-6 col-md-3">
+        <div class="card h-100">
+          <img src="img/Nike_Air_Max_1_Black.avif" class="card-img-top" alt="Related Product">
+          <div class="card-body">
+            <h6 class="card-title">Nike Air Max 1 Black</h6>
+            <div class="mb-2">
+              <span class="text-warning">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-regular fa-star"></i>
+              </span>
+              <span class="ms-1 text-muted small">(123)</span>
+            </div>
+            <div>
+              <span class="fw-bold">$199.99</span>
+              <span class="text-muted text-decoration-line-through ms-2">$269.99</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card h-100">
+          <img src="img/Nike_Dunk_High_By_You.avif" class="card-img-top" alt="Related Product">
+          <div class="card-body">
+            <h6 class="card-title">Nike Dunk High By You</h6>
+            <div class="mb-2">
+              <span class="text-warning">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </span>
+              <span class="ms-1 text-muted small">(316)</span>
+            </div>
+            <div>
+              <span class="fw-bold">$219.99</span>
+              <span class="text-muted text-decoration-line-through ms-2">$299.99</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Add more product cards as needed, all inside this single row -->
+    </div>
+  </div>
+</section>
+
+  <!-- NEWSLETTER -->
+  <section class="py-5">
+    <div class="container">
+      <div class="bg-light p-4 rounded">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h5 class="fw-bold mb-2">Subscribe to our Newsletter</h5>
+            <p class="mb-0 text-muted">Get the latest updates and offers.</p>
+          </div>
+          <div class="col-md-4 mt-3 mt-md-0">
+            <form class="d-flex">
+              <input type="email" class="form-control me-2" placeholder="Enter your email">
+              <button class="btn btn-dark" type="submit">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-light pt-5 mt-5">
+    <div class="container">
+      <div class="row">
+        <!-- Column 1: Logo + Social -->
+        <div class="col-md-3 mb-4">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <div class="p-2 border rounded"><i class="fa-solid fa-store fs-3"></i></div>
+            <span class="fw-bold fs-5">Ecommerce</span>
+          </div>
+          <p class="text-muted small">DevCut is a YouTube channel for practical project-based learning.</p>
+          <div class="d-flex gap-2 mt-2">
+            <i class="fab fa-github fs-5"></i>
+            <i class="fab fa-instagram fs-5"></i>
+            <i class="fab fa-youtube fs-5"></i>
+          </div>
+        </div>
+        <!-- Column 2: Shop -->
+        <div class="col-md-2 mb-4">
+          <h6 class="text-muted">SHOP</h6>
+          <ul class="list-unstyled mt-2">
+            <li><a href="#" class="text-decoration-none text-dark">My Account</a></li>
+            <li><a href="#" class="text-decoration-none text-dark">Checkout</a></li>
+            <li><a href="#" class="text-decoration-none text-dark">Cart</a></li>
+          </ul>
+        </div>
+        <!-- Column 3: Company -->
+        <div class="col-md-2 mb-4">
+          <h6 class="text-muted">COMPANY</h6>
+          <ul class="list-unstyled mt-2">
+            <li><a href="#" class="text-decoration-none text-dark">About us</a></li>
+            <li><a href="#" class="text-decoration-none text-dark">Contact</a></li>
+            <li><a href="#" class="text-decoration-none text-dark">Careers</a></li>
+          </ul>
+        </div>
+        <!-- Column 4: Support -->
+        <div class="col-md-2 mb-4">
+          <h6 class="text-muted">SUPPORT</h6>
+          <ul class="list-unstyled mt-2">
+            <li><a href="#" class="text-decoration-none text-dark">FAQ</a></li>
+            <li><a href="#" class="text-decoration-none text-dark">Terms of use</a></li>
+            <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <!-- Column 5: Payments -->
+        <div class="col-md-3 mb-4">
+          <h6 class="text-muted">ACCEPTED PAYMENTS</h6>
+          <div class="d-flex gap-2 mt-2">
+            <i class="fa-brands fa-cc-visa fs-3"></i>
+            <i class="fa-brands fa-cc-mastercard fs-3"></i>
+            <i class="fa-brands fa-cc-amex fs-3"></i>
+            <i class="fa-brands fa-cc-paypal fs-3"></i>
+          </div>
+        </div>
+      </div>
+      <hr class="mt-4">
+      <div class="text-center pb-3 small text-muted">
+        © 2025 Ecommerce. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+/* Minimal custom styles, only for branding or unique tweaks */
+
+/* Example: Brand color for navbar brand */
+.navbar-brand {
+  letter-spacing: 2px;
+}
+
+/* Example: Custom badge for discount if needed */
+.badge.bg-success {
+  background-color: #27ae60 !important;
+}
+
+/* Example: Card image fit */
+.card-img-top {
+  object-fit: cover;
+  height: 200px;
+}
+
+/* Example: Newsletter section tweaks */
+.newsletter input[type="email"] {
+  min-width: 180px;
+}
+
+/* Example: Footer social icons spacing */
+.footer .fa-brands {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+/* Example: Product title font weight */
+h2.fw-bold, .card-title.fw-bold {
+  font-weight: 700 !important;
+}

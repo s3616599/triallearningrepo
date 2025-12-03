@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/public/css/globals.css" />
+    <link rel="stylesheet" href="/public/css/styleguide.css" />
+    <link rel="stylesheet" href="/public/css/style.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <title>Blogs</title>
+
+    
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
+
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="navMenu" class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto ms-4 gap-3">
+                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Shop</a>
+                </li>
+
+                <li class="nav-item"><a class="nav-link active" href="blogs.html">Blogs</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Forum</a></li>
+                <li class="nav-item"><a class="nav-link" href="sitemap.html">Site Map</a></li>
+            </ul>
+
+            <!-- Search -->
+            <form class="d-flex me-3">
+                <input class="form-control" type="search" placeholder="Search products">
+            </form>
+
+            <i class="fa-solid fa-bag-shopping fs-5 me-3"></i>
+            <i class="fa-regular fa-user fs-5"></i>
+
+        </div>
+    </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<nav class="bg-light py-2 border-bottom">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="#">Ecommerce</a></li>
+            <li class="breadcrumb-item active">Add Blog</li>
+        </ol>
+    </div>
+</nav>
+
+<!-- FORM ADD BLOG -->
+<div class="container my-5">
+    <h2 class="mb-4">Add New Blog</h2>
+    <form>
+
+        <!-- Title -->
+        <div class="mb-3">
+            <label for="blogTitle" class="form-label">Blog Title</label>
+            <input type="text" class="form-control" id="blogTitle" placeholder="Enter blog title">
+        </div>
+
+        <!-- Author -->
+        <div class="mb-3">
+            <label for="blogAuthor" class="form-label">Author</label>
+            <input type="text" class="form-control" id="blogAuthor" placeholder="Author name">
+        </div>
+
+        <!-- Discipline / Category -->
+        <div class="mb-3">
+            <label for="blogCategory" class="form-label">Category / Discipline</label>
+            <input type="text" class="form-control" id="blogCategory" placeholder="Boxing, Football, Yoga, etc.">
+        </div>
+
+        <!-- Image URL -->
+        <div class="mb-3">
+            <label for="blogImage" class="form-label">Image URL</label>
+            <input type="text" class="form-control" id="blogImage" placeholder="Enter image URL">
+        </div>
+
+        <!-- Short Description -->
+        <div class="mb-3">
+            <label for="blogDescription" class="form-label">Short Description</label>
+            <textarea class="form-control" id="blogDescription" rows="2" placeholder="Enter short description"></textarea>
+        </div>
+
+        <!-- Content -->
+        <div class="mb-3">
+            <label for="blogContent" class="form-label">Content</label>
+            <textarea class="form-control" id="blogContent" rows="6" placeholder="Enter full blog content"></textarea>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-3">
+            <a href="blogs.html" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Add Blog</button>
+        </div>
+    </form>
+</div>
+
+
+<!-- FOOTER -->
+<footer class="bg-light pt-5 mt-5">
+  <div class="container">
+
+    <div class="row">
+      <!-- Column 1: Logo + Social -->
+      <div class="col-md-3 mb-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <div class="p-2 border rounded"><i class="fa-solid fa-store fs-3"></i></div>
+          <span class="fw-bold fs-5">Ecommerce</span>
+        </div>
+        <p class="text-muted small">DevCut is a YouTube channel for practical project-based learning.</p>
+        <div class="d-flex gap-2 mt-2">
+            <i class="fab fa-github fs-5"></i>
+            <i class="fab fa-instagram fs-5"></i>
+            <i class="fab fa-youtube fs-5"></i>
+        </div>
+      </div>
+        
+
+      <!-- Column 2: Shop -->
+      <div class="col-md-2 mb-4">
+        <h6 class="text-muted">SHOP</h6>
+        <ul class="list-unstyled mt-2">
+          <li><a href="#" class="text-decoration-none text-dark">My Account</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Checkout</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Cart</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: Company -->
+      <div class="col-md-2 mb-4">
+        <h6 class="text-muted">COMPANY</h6>
+        <ul class="list-unstyled mt-2">
+          <li><a href="#" class="text-decoration-none text-dark">About us</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Contact</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Careers</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 4: Support -->
+      <div class="col-md-2 mb-4">
+        <h6 class="text-muted">SUPPORT</h6>
+        <ul class="list-unstyled mt-2">
+          <li><a href="#" class="text-decoration-none text-dark">FAQ</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Terms of use</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 5: Payments -->
+        <div class="col-md-3 mb-4">
+            <h6 class="text-muted">ACCEPTED PAYMENTS</h6>
+            <div class="d-flex gap-2 mt-2">
+                <i class="fa-brands fa-cc-visa fs-3"></i>
+                <i class="fa-brands fa-cc-mastercard fs-3"></i>
+                <i class="fa-brands fa-cc-amex fs-3"></i>
+                <i class="fa-brands fa-cc-paypal fs-3"></i>
+            </div>
+        </div>
+      
+    </div>
+
+    
+
+    <hr class="mt-4">
+
+    <!-- Copyright -->
+    <div class="text-center pb-3 small text-muted">
+      © 2023 DevCut. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
