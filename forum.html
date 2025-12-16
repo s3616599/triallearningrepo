@@ -6,46 +6,21 @@
     <title>Forum</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="css/globals.css" />
     <link rel="stylesheet" href="css/styleguide.css" />
     <link rel="stylesheet" href="css/style.css">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
     <style>
-      :root {
-        --neutralblackb-100: #e5e7eb;
-        --neutralwhitew-900: #ffffff;
-        --neutralblackb-600: #6b7280;
-      }
-      .create-card { 
-        border-radius: 12px; 
-        padding: 18px; 
-        border: 1px solid var(--neutralblackb-100); 
-        background: var(--neutralwhitew-900); 
-      }
+      .create-card { border-radius: 12px; padding: 18px; border: 1px solid var(--neutralblackb-100); background: var(--neutralwhitew-900); }
       .thread-row { margin-top: 18px; }
       .thread-card .card-body { display:flex; flex-direction:column; }
       .small-muted { color: var(--neutralblackb-600); font-size:0.95rem; }
       .create-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
-      .delete-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        z-index: 10;
-        opacity: 0;
-        transition: opacity 0.2s;
-      }
-      .edit-btn {
-        position: absolute;
-        top: 10px;
-        right: 50px;
-        z-index: 10;
-        opacity: 0;
-        transition: opacity 0.2s;
-      }
-      .card:hover .delete-btn,
-      .card:hover .edit-btn {
-        opacity: 1;
+      @media (max-width:768px) {
+        .create-actions { flex-direction:column-reverse; }
       }
       .comment-section {
         max-height: 400px;
@@ -90,10 +65,6 @@
         font-size: 0.85rem;
         color: #6b7280;
       }
-      @media (max-width:768px) {
-        .create-actions { flex-direction:column-reverse; }
-        .delete-btn, .edit-btn { opacity: 1; }
-      }
     </style>
 </head>
 <body>
@@ -101,20 +72,26 @@
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
     <div class="container">
         <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
+
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div id="navMenu" class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto ms-4 gap-3">
                 <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+
                 <li class="nav-item "><a class="nav-link" href="#">Shop</a></li>
+
                 <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
                 <li class="nav-item"><a class="nav-link active" href="forum.html">Forum</a></li>
                 <li class="nav-item"><a class="nav-link" href="sitemap.html">Site Map</a></li>
             </ul>
+
             <form class="d-flex me-3">
                 <input class="form-control" type="search" placeholder="Search products">
             </form>
+
             <i class="fa-solid fa-bag-shopping fs-5 me-3"></i>
             <i class="fa-regular fa-user fs-5"></i>
         </div>
@@ -178,11 +155,15 @@
 
   <div class="container my-4">
     <div class="row">
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label small text-muted">Search by title</label>
         <input id="searchInput" class="form-control" placeholder="Search threads...">
       </div>
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
+        <label class="form-label small text-muted">Search by content</label>
+        <input id="contentSearch" class="form-control" placeholder="Search in post content...">
+      </div>
+      <div class="col-md-4 mb-3">
         <label class="form-label small text-muted">Sort by</label>
         <select id="sortSelect" class="form-control">
           <option value="newest">Newest First</option>
@@ -199,6 +180,7 @@
 <!-- FOOTER -->
 <footer class="bg-light pt-5 mt-5">
   <div class="container">
+
     <div class="row">
       <div class="col-md-3 mb-4">
         <div class="d-flex align-items-center gap-2 mb-2">
@@ -212,6 +194,7 @@
             <i class="fab fa-youtube fs-5"></i>
         </div>
       </div>
+
       <div class="col-md-2 mb-4">
         <h6 class="text-muted">SHOP</h6>
         <ul class="list-unstyled mt-2">
@@ -220,6 +203,7 @@
           <li><a href="#" class="text-decoration-none text-dark">Cart</a></li>
         </ul>
       </div>
+
       <div class="col-md-2 mb-4">
         <h6 class="text-muted">COMPANY</h6>
         <ul class="list-unstyled mt-2">
@@ -228,6 +212,7 @@
           <li><a href="#" class="text-decoration-none text-dark">Careers</a></li>
         </ul>
       </div>
+
       <div class="col-md-2 mb-4">
         <h6 class="text-muted">SUPPORT</h6>
         <ul class="list-unstyled mt-2">
@@ -236,6 +221,7 @@
           <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
         </ul>
       </div>
+
       <div class="col-md-3 mb-4">
           <h6 class="text-muted">ACCEPTED PAYMENTS</h6>
           <div class="d-flex gap-2 mt-2">
@@ -245,541 +231,443 @@
               <i class="fa-brands fa-cc-paypal fs-3"></i>
           </div>
       </div>
+
     </div>
+
     <hr class="mt-4">
+
     <div class="text-center pb-3 small text-muted">
       © 2025 DevCut. All rights reserved.
     </div>
   </div>
 </footer>
 
+<!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// Global variables
-var STORAGE_KEY = 'ecom_forum_threads_v1';
-var threadsGrid = document.getElementById('threadsGrid');
-var postButton = document.getElementById('postBtn');
-var clearButton = document.getElementById('clearBtn');
-var currentImageData = null;
-var searchText = '';
-var sortOption = 'newest';
 
-// Sample data
-var sampleThreads = [
-  {
-    id: 1,
-    title: "Which football boots (cleats) are best for firm natural grass?",
-    author: "Community",
-    meta: "By SportStore • Football",
-    tags: ["football","cleats","boots","FG"],
-    excerpt: "I'm switching from turf to 11-a-side on firm natural grass pitches and need new boots. I prefer lightweight models with good traction and a snug fit.",
-    body: "I'm switching from turf to 11-a-side on firm natural grass pitches and need new boots. I prefer lightweight models with good traction and a snug fit. Any recommendations for studs pattern and brands (under $200) that perform well on firmer surfaces? Also, how does upper material affect wet-weather performance?",
-    image: "img/1.png",
-    created: "Dec 01, 2025, 09:15",
-    comments: []
-  },
-  {
-    id: 2,
-    title: "Best long-run shoes for high-mileage training (neutral runner)?",
-    author: "Community",
-    meta: "By SportStore • Running",
-    tags: ["running","shoes","training"],
-    excerpt: "Training for a marathon — weekly mileage around 60—80 km. Looking for long-run shoes with responsive cushioning and durability.",
-    body: "Training for a marathon (60—80 km/week). Need shoes offering cushioning and durability without being sluggish. Prefer neutral cushioning and something that lasts beyond 800 km if possible. What worked for you?",
-    image: "img/2.png",
-    created: "Nov 28, 2025, 18:02",
-    comments: []
-  }
-];
+(function(){
+  var STORAGE_KEY = 'ecom_forum_threads_v1';
+  var grid = document.getElementById('threadsGrid');
+  var postBtn = document.getElementById('postBtn');
+  var clearBtn = document.getElementById('clearBtn');
+  var currentEditId = null;
+  var currentImageData = null;
+  var searchText = '';
+  var contentSearchText = '';
+  var sortOption = 'newest';
 
-// Load threads from storage
-var storedData = localStorage.getItem(STORAGE_KEY);
-var allThreads = [];
-if (storedData) {
-  allThreads = JSON.parse(storedData);
-  if (allThreads.length === 0) {
-    allThreads = sampleThreads;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allThreads));
-  }
-} else {
-  allThreads = sampleThreads;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(allThreads));
-}
-
-// Make sure threads have comments
-for (var i = 0; i < allThreads.length; i++) {
-  if (!allThreads[i].comments) {
-    allThreads[i].comments = [];
-  }
-}
-
-// Filter and sort function
-function getThreadsToShow() {
-  var result = [];
-  
-  // Filter by search
-  for (var i = 0; i < allThreads.length; i++) {
-    var thread = allThreads[i];
-    var titleLower = thread.title.toLowerCase();
-    var searchLower = searchText.toLowerCase();
-    if (titleLower.indexOf(searchLower) !== -1) {
-      result.push(thread);
+  // sample threads (sports apparel & footwear)
+  var SAMPLE = [
+    {
+      id: 1,
+      title: "Which football boots (cleats) are best for firm natural grass?",
+      author: "Community",
+      meta: "By SportStore • Football",
+      tags: ["football","cleats","boots","FG"],
+      excerpt: "I'm switching from turf to 11-a-side on firm natural grass pitches and need new boots. I prefer lightweight models with good traction and a snug fit.",
+      body: "I'm switching from turf to 11-a-side on firm natural grass pitches and need new boots. I prefer lightweight models with good traction and a snug fit. Any recommendations for studs pattern and brands (under $200) that perform well on firmer surfaces? Also, how does upper material affect wet-weather performance?",
+      image: "img/1.png",
+      created: "Dec 01, 2025, 09:15",
+      comments: []
+    },
+    {
+      id: 2,
+      title: "Best long-run shoes for high-mileage training (neutral runner)?",
+      author: "Community",
+      meta: "By SportStore • Running",
+      tags: ["running","shoes","training"],
+      excerpt: "Training for a marathon — weekly mileage around 60—80 km. Looking for long-run shoes with responsive cushioning and durability.",
+      body: "Training for a marathon (60—80 km/week). Need shoes offering cushioning and durability without being sluggish. Prefer neutral cushioning and something that lasts beyond 800 km if possible. What worked for you?",
+      image: "img/2.png",
+      created: "Nov 28, 2025, 18:02",
+      comments: []
     }
-  }
-  
-  // Sort
-  if (sortOption === 'oldest') {
-    result.sort(function(a, b) { return a.id - b.id; });
-  } else {
-    result.sort(function(a, b) { return b.id - a.id; });
-  }
-  
-  return result;
-}
+  ];
 
-// Render threads
-function showThreads() {
-  threadsGrid.innerHTML = '';
-  var threadsToShow = getThreadsToShow();
-  
-  if (threadsToShow.length === 0) {
-    threadsGrid.innerHTML = '<div class="col-12"><div class="card p-4">No threads found.</div></div>';
-    return;
+  // load or seed
+  var store = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  if (!store || store.length === 0) {
+    store = SAMPLE;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
   }
-  
-  for (var i = 0; i < threadsToShow.length; i++) {
-    var thread = threadsToShow[i];
+  var threads = store.map(function(t){ return Object.assign({}, t, {comments: t.comments || []}); });
+
+  // Filter and sort function
+  function getThreadsToShow() {
+    var result = [];
     
-    var col = document.createElement('div');
-    col.className = 'col-md-4';
-    
-    var card = document.createElement('div');
-    card.className = 'card blog-card shadow-sm flex-fill h-100';
-    card.style.position = 'relative';
-    
-    var img = document.createElement('img');
-    img.className = 'card-img-top';
-    img.src = thread.image || 'img/placeholder.png';
-    img.alt = thread.title;
-    
-    var body = document.createElement('div');
-    body.className = 'card-body';
-    
-    var title = document.createElement('h5');
-    title.className = 'card-title';
-    title.textContent = thread.title;
-    
-    var meta = document.createElement('p');
-    meta.className = 'text-muted small mb-1';
-    meta.textContent = thread.meta || 'By SportStore';
-    
-    var tagDiv = document.createElement('div');
-    tagDiv.className = 'mb-3';
-    if (thread.tags && thread.tags.length > 0) {
-      for (var j = 0; j < thread.tags.length; j++) {
-        var tagSpan = document.createElement('span');
-        tagSpan.className = 'badge bg-secondary me-1';
-        tagSpan.textContent = thread.tags[j];
-        tagDiv.appendChild(tagSpan);
+    for (var i = 0; i < threads.length; i++) {
+      var thread = threads[i];
+      var titleLower = thread.title.toLowerCase();
+      var bodyLower = thread.body.toLowerCase();
+      var searchLower = searchText.toLowerCase();
+      var contentSearchLower = contentSearchText.toLowerCase();
+      
+      var matchTitle = titleLower.indexOf(searchLower) !== -1;
+      var matchContent = bodyLower.indexOf(contentSearchLower) !== -1;
+      
+      if (matchTitle && matchContent) {
+        result.push(thread);
       }
     }
     
-    var excerpt = document.createElement('p');
-    excerpt.className = 'card-text';
-    if (thread.excerpt) {
-      excerpt.textContent = thread.excerpt;
-    } else if (thread.body.length > 140) {
-      excerpt.textContent = thread.body.slice(0, 140) + '…';
+    if (sortOption === 'oldest') {
+      result.sort(function(a, b) { return a.id - b.id; });
     } else {
-      excerpt.textContent = thread.body;
+      result.sort(function(a, b) { return b.id - a.id; });
     }
     
-    var commentCount = document.createElement('div');
-    commentCount.className = 'comment-count mb-2';
-    var commentsLength = thread.comments ? thread.comments.length : 0;
-    var commentWord = commentsLength === 1 ? 'comment' : 'comments';
-    commentCount.innerHTML = '<i class="fas fa-comment"></i> <span>' + commentsLength + ' ' + commentWord + '</span>';
-    
-    var btnContainer = document.createElement('div');
-    btnContainer.className = 'text-center';
-    var readBtn = document.createElement('a');
-    readBtn.className = 'btn btn-outline-dark btn-sm';
-    readBtn.href = '#';
-    readBtn.textContent = 'Read more';
-    readBtn.onclick = function(t) {
-      return function(e) {
-        e.preventDefault();
-        openThreadModal(t);
-      };
-    }(thread);
-    
-    btnContainer.appendChild(readBtn);
-    body.appendChild(title);
-    body.appendChild(meta);
-    body.appendChild(tagDiv);
-    body.appendChild(excerpt);
-    body.appendChild(commentCount);
-    body.appendChild(btnContainer);
-    card.appendChild(img);
-    card.appendChild(body);
-    col.appendChild(card);
-    threadsGrid.appendChild(col);
+    return result;
   }
-}
 
-// Delete thread
-function removeThread(threadId) {
-  if (confirm('Are you sure you want to delete this thread?')) {
-    var newThreads = [];
-    for (var i = 0; i < allThreads.length; i++) {
-      if (allThreads[i].id !== threadId) {
-        newThreads.push(allThreads[i]);
+  // render function
+  function render(){
+    grid.innerHTML = '';
+    var threadsToShow = getThreadsToShow();
+    
+    if (!threadsToShow.length) {
+      grid.innerHTML = '<div class="col-12"><div class="card p-4">No threads found.</div></div>';
+      return;
+    }
+
+    threadsToShow.forEach(function(t) {
+      var col = document.createElement('div');
+      col.className = 'col-md-4';
+
+      var card = document.createElement('div');
+      card.className = 'card blog-card shadow-sm flex-fill h-100';
+
+      var img = document.createElement('img');
+      img.className = 'card-img-top';
+      img.src = t.image || 'img/placeholder.png';
+      img.alt = t.title;
+
+      var body = document.createElement('div');
+      body.className = 'card-body';
+
+      var h5 = document.createElement('h5');
+      h5.className = 'card-title';
+      h5.textContent = t.title;
+
+      var meta = document.createElement('p');
+      meta.className = 'text-muted small mb-1';
+      meta.textContent = t.meta || 'By SportStore';
+
+      var tagDiv = document.createElement('div');
+      tagDiv.className = 'mb-3';
+      if (t.tags && t.tags.length) {
+        t.tags.forEach(function(tag) {
+          var s = document.createElement('span');
+          s.className = 'badge bg-secondary me-1';
+          s.textContent = tag;
+          tagDiv.appendChild(s);
+        });
       }
-    }
-    allThreads = newThreads;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allThreads));
-    showThreads();
-  }
-}
 
-// Edit thread
-function startEdit(threadId) {
-  var thread = null;
-  for (var i = 0; i < allThreads.length; i++) {
-    if (allThreads[i].id === threadId) {
-      thread = allThreads[i];
-      break;
-    }
-  }
-  if (!thread) return;
-  
-  document.getElementById('threadTitle').value = thread.title;
-  document.getElementById('threadBody').value = thread.body;
-  if (thread.tags && thread.tags.length > 0) {
-    document.getElementById('threadTags').value = thread.tags.join(', ');
-  }
-  
-  if (thread.image && thread.image !== 'img/3.png' && thread.image !== 'img/placeholder.png') {
-    currentImageData = thread.image;
-    document.getElementById('previewImg').src = thread.image;
-    document.getElementById('imagePreview').style.display = 'block';
-  }
-  
-  postButton.textContent = 'Update Thread';
-  postButton.setAttribute('data-edit-id', threadId);
-  
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+      var p = document.createElement('p');
+      p.className = 'card-text';
+      p.textContent = t.excerpt || (t.body.length > 140 ? t.body.slice(0,140)+'…' : t.body);
 
-// Add comment
-function addNewComment(threadId, commentText) {
-  var thread = null;
-  for (var i = 0; i < allThreads.length; i++) {
-    if (allThreads[i].id === threadId) {
-      thread = allThreads[i];
-      break;
-    }
+      var commentCount = document.createElement('div');
+      commentCount.className = 'comment-count mb-2';
+      commentCount.innerHTML = '<i class="fas fa-comment"></i> <span>' + (t.comments||[]).length + ' ' + ((t.comments||[]).length === 1 ? 'comment' : 'comments') + '</span>';
+
+      var ctr = document.createElement('div');
+      ctr.className = 'text-center';
+      var read = document.createElement('a');
+      read.className = 'btn btn-outline-dark btn-sm';
+      read.href = '#';
+      read.textContent = 'Read more';
+      read.addEventListener('click', function(e) { e.preventDefault(); showDetail(t); });
+
+      ctr.appendChild(read);
+
+      body.appendChild(h5);
+      body.appendChild(meta);
+      body.appendChild(tagDiv);
+      body.appendChild(p);
+      body.appendChild(commentCount);
+      body.appendChild(ctr);
+
+      card.appendChild(img);
+      card.appendChild(body);
+      col.appendChild(card);
+      grid.appendChild(col);
+    });
   }
-  if (!thread || !commentText.trim()) return;
-  
-  var newComment = {
-    id: Date.now(),
-    author: 'User',
-    text: commentText.trim(),
-    created: new Date().toLocaleString()
+
+  // show detail modal
+  function showDetail(t){
+    var id = 'forumDetailModal';
+    var old = document.getElementById(id);
+    if (old) old.remove();
+
+    var commentsHtml = '';
+    if (t.comments && t.comments.length > 0) {
+      t.comments.forEach(function(c) {
+        commentsHtml += '<div class="comment-item">';
+        commentsHtml += '<div class="comment-header">';
+        commentsHtml += '<span class="comment-author">' + escapeHtml(c.author) + '</span>';
+        commentsHtml += '<span class="comment-date">' + c.created + '</span>';
+        commentsHtml += '</div>';
+        commentsHtml += '<p class="comment-text">' + escapeHtml(c.text) + '</p>';
+        commentsHtml += '<div class="comment-actions">';
+        commentsHtml += '<button class="btn btn-sm btn-outline-danger" onclick="window.deleteCommentFromModal(' + t.id + ', ' + c.id + ')">';
+        commentsHtml += '<i class="fas fa-trash"></i> Delete';
+        commentsHtml += '</button>';
+        commentsHtml += '</div>';
+        commentsHtml += '</div>';
+      });
+    } else {
+      commentsHtml = '<p class="text-muted small">No comments yet. Be the first to comment!</p>';
+    }
+
+    var modal = document.createElement('div');
+    modal.id = id;
+    modal.className = 'modal fade';
+    modal.tabIndex = -1;
+    modal.innerHTML = `
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">${escapeHtml(t.title)}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="text-muted small mb-2">Posted · ${t.created}</div>
+            <img src="${t.image || 'img/placeholder.png'}" class="img-fluid mb-3" alt="${escapeHtml(t.title)}" />
+            <p>${escapeHtml(t.body).replace(/\n/g,'<br/>')}</p>
+            <hr/>
+            <div class="mb-3">${(t.tags||[]).map(function(tag){ return '<span class="badge bg-secondary me-1">'+tag+'</span>'; }).join('')}</div>
+            
+            <div class="comment-section">
+              <h6 class="mb-3">Comments (${(t.comments || []).length})</h6>
+              <div id="commentsList">${commentsHtml}</div>
+            </div>
+            
+            <div class="mt-3">
+              <label class="form-label small fw-bold">Add a comment</label>
+              <textarea id="commentInput_${t.id}" class="form-control" rows="3" placeholder="Share your thoughts..."></textarea>
+              <button class="btn btn-primary btn-sm mt-2" onclick="window.submitComment(${t.id})">
+                <i class="fas fa-paper-plane me-1"></i>Post Comment
+              </button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" onclick="window.editThread(${t.id}); bootstrap.Modal.getInstance(document.getElementById('${id}')).hide();">
+              <i class="fas fa-edit me-1"></i>Edit Thread
+            </button>
+            <button class="btn btn-danger" onclick="window.deleteThread(${t.id}); bootstrap.Modal.getInstance(document.getElementById('${id}')).hide();">
+              <i class="fas fa-trash me-1"></i>Delete Thread
+            </button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    var bs = new bootstrap.Modal(modal);
+    bs.show();
+    modal.addEventListener('hidden.bs.modal', function(){ modal.remove(); });
+  }
+
+  // delete thread
+  window.deleteThread = function(threadId) {
+    if (confirm('Are you sure you want to delete this thread?')) {
+      threads = threads.filter(function(t){ return t.id !== threadId; });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
+      render();
+    }
   };
-  
-  if (!thread.comments) thread.comments = [];
-  thread.comments.push(newComment);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(allThreads));
-}
 
-// Delete comment
-function removeComment(threadId, commentId) {
-  var thread = null;
-  for (var i = 0; i < allThreads.length; i++) {
-    if (allThreads[i].id === threadId) {
-      thread = allThreads[i];
-      break;
-    }
-  }
-  if (!thread) return;
-  
-  var newComments = [];
-  if (thread.comments) {
-    for (var i = 0; i < thread.comments.length; i++) {
-      if (thread.comments[i].id !== commentId) {
-        newComments.push(thread.comments[i]);
-      }
-    }
-  }
-  thread.comments = newComments;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(allThreads));
-}
+  // edit thread
+  window.editThread = function(threadId) {
+    var thread = threads.find(function(t){ return t.id === threadId; });
+    if (!thread) return;
 
-// Escape HTML
-function escapeHTML(text) {
-  var div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-// Open thread modal
-function openThreadModal(thread) {
-  var modalId = 'forumDetailModal';
-  var oldModal = document.getElementById(modalId);
-  if (oldModal) {
-    oldModal.remove();
-  }
-  
-  var commentsHTML = '';
-  if (thread.comments && thread.comments.length > 0) {
-    for (var i = 0; i < thread.comments.length; i++) {
-      var comment = thread.comments[i];
-      commentsHTML += '<div class="comment-item">';
-      commentsHTML += '<div class="comment-header">';
-      commentsHTML += '<span class="comment-author">' + escapeHTML(comment.author) + '</span>';
-      commentsHTML += '<span class="comment-date">' + comment.created + '</span>';
-      commentsHTML += '</div>';
-      commentsHTML += '<p class="comment-text">' + escapeHTML(comment.text) + '</p>';
-      commentsHTML += '<div class="comment-actions">';
-      commentsHTML += '<button class="btn btn-sm btn-outline-danger" onclick="deleteCommentFromModal(' + thread.id + ', ' + comment.id + ')">';
-      commentsHTML += '<i class="fas fa-trash"></i> Delete';
-      commentsHTML += '</button>';
-      commentsHTML += '</div>';
-      commentsHTML += '</div>';
+    document.getElementById('threadTitle').value = thread.title;
+    document.getElementById('threadBody').value = thread.body;
+    document.getElementById('threadTags').value = (thread.tags || []).join(', ');
+    
+    if (thread.image && thread.image !== 'img/3.png' && thread.image !== 'img/placeholder.png') {
+      currentImageData = thread.image;
+      document.getElementById('previewImg').src = thread.image;
+      document.getElementById('imagePreview').style.display = 'block';
     }
-  } else {
-    commentsHTML = '<p class="text-muted small">No comments yet. Be the first to comment!</p>';
-  }
-  
-  var tagsHTML = '';
-  if (thread.tags && thread.tags.length > 0) {
-    for (var i = 0; i < thread.tags.length; i++) {
-      tagsHTML += '<span class="badge bg-secondary me-1">' + thread.tags[i] + '</span>';
-    }
-  }
-  
-  var bodyText = escapeHTML(thread.body).replace(/\n/g, '<br/>');
-  var commentsCount = thread.comments ? thread.comments.length : 0;
-  
-  var modal = document.createElement('div');
-  modal.id = modalId;
-  modal.className = 'modal fade';
-  modal.tabIndex = -1;
-  modal.innerHTML = '<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">' +
-    '<div class="modal-content">' +
-    '<div class="modal-header">' +
-    '<h5 class="modal-title">' + escapeHTML(thread.title) + '</h5>' +
-    '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>' +
-    '</div>' +
-    '<div class="modal-body">' +
-    '<div class="text-muted small mb-2">Posted · ' + thread.created + '</div>' +
-    '<img src="' + (thread.image || 'img/placeholder.png') + '" class="img-fluid mb-3" alt="' + escapeHTML(thread.title) + '" />' +
-    '<p>' + bodyText + '</p>' +
-    '<hr/>' +
-    '<div class="mb-3">' + tagsHTML + '</div>' +
-    '<div class="comment-section">' +
-    '<h6 class="mb-3">Comments (' + commentsCount + ')</h6>' +
-    '<div id="commentsList">' + commentsHTML + '</div>' +
-    '</div>' +
-    '<div class="mt-3">' +
-    '<label class="form-label small fw-bold">Add a comment</label>' +
-    '<textarea id="commentInput_' + thread.id + '" class="form-control" rows="3" placeholder="Share your thoughts..."></textarea>' +
-    '<button class="btn btn-primary btn-sm mt-2" onclick="postComment(' + thread.id + ')">' +
-    '<i class="fas fa-paper-plane me-1"></i>Post Comment' +
-    '</button>' +
-    '</div>' +
-    '</div>' +
-    '<div class="modal-footer">' +
-    '<button class="btn btn-primary" onclick="startEdit(' + thread.id + '); bootstrap.Modal.getInstance(document.getElementById(\'' + modalId + '\')).hide();">' +
-    '<i class="fas fa-edit me-1"></i>Edit Thread' +
-    '</button>' +
-    '<button class="btn btn-danger" onclick="removeThread(' + thread.id + '); bootstrap.Modal.getInstance(document.getElementById(\'' + modalId + '\')).hide();">' +
-    '<i class="fas fa-trash me-1"></i>Delete Thread' +
-    '</button>' +
-    '<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>' +
-    '</div>' +
-    '</div>' +
-    '</div>';
-  
-  document.body.appendChild(modal);
-  var bsModal = new bootstrap.Modal(modal);
-  bsModal.show();
-  modal.addEventListener('hidden.bs.modal', function() {
-    modal.remove();
-  });
-}
+    
+    postBtn.textContent = 'Update Thread';
+    currentEditId = threadId;
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-// Post comment
-function postComment(threadId) {
-  var input = document.getElementById('commentInput_' + threadId);
-  var text = input.value.trim();
-  
-  if (!text) {
-    alert('Please write a comment.');
-    return;
-  }
-  
-  addNewComment(threadId, text);
-  
-  var modalEl = document.getElementById('forumDetailModal');
-  var modal = bootstrap.Modal.getInstance(modalEl);
-  modal.hide();
-  
-  var thread = null;
-  for (var i = 0; i < allThreads.length; i++) {
-    if (allThreads[i].id === threadId) {
-      thread = allThreads[i];
-      break;
+  // add comment
+  window.submitComment = function(threadId) {
+    var input = document.getElementById('commentInput_' + threadId);
+    var text = input.value.trim();
+    
+    if (!text) {
+      alert('Please write a comment.');
+      return;
     }
-  }
-  
-  setTimeout(function() {
-    openThreadModal(thread);
-  }, 300);
-  
-  showThreads();
-}
 
-// Delete comment from modal
-function deleteCommentFromModal(threadId, commentId) {
-  if (confirm('Delete this comment?')) {
-    removeComment(threadId, commentId);
+    var thread = threads.find(function(t){ return t.id === threadId; });
+    if (!thread) return;
+
+    var newComment = {
+      id: Date.now(),
+      author: 'User',
+      text: text,
+      created: new Date().toLocaleString()
+    };
+
+    if (!thread.comments) thread.comments = [];
+    thread.comments.push(newComment);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
     
     var modalEl = document.getElementById('forumDetailModal');
     var modal = bootstrap.Modal.getInstance(modalEl);
     modal.hide();
     
-    var thread = null;
-    for (var i = 0; i < allThreads.length; i++) {
-      if (allThreads[i].id === threadId) {
-        thread = allThreads[i];
-        break;
+    setTimeout(function(){ showDetail(thread); }, 300);
+    render();
+  };
+
+  // delete comment
+  window.deleteCommentFromModal = function(threadId, commentId) {
+    if (confirm('Delete this comment?')) {
+      var thread = threads.find(function(t){ return t.id === threadId; });
+      if (!thread) return;
+      
+      thread.comments = (thread.comments || []).filter(function(c){ return c.id !== commentId; });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
+      
+      var modalEl = document.getElementById('forumDetailModal');
+      var modal = bootstrap.Modal.getInstance(modalEl);
+      modal.hide();
+      
+      setTimeout(function(){ showDetail(thread); }, 300);
+      render();
+    }
+  };
+
+  // Search inputs
+  document.getElementById('searchInput').addEventListener('input', function(e) {
+    searchText = e.target.value;
+    render();
+  });
+
+  document.getElementById('contentSearch').addEventListener('input', function(e) {
+    contentSearchText = e.target.value;
+    render();
+  });
+
+  // Sort select
+  document.getElementById('sortSelect').addEventListener('change', function(e) {
+    sortOption = e.target.value;
+    render();
+  });
+
+  // Image upload
+  document.getElementById('threadImage').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (file) {
+      var reader = new FileReader();
+      reader.onload = function(event) {
+        currentImageData = event.target.result;
+        document.getElementById('previewImg').src = currentImageData;
+        document.getElementById('imagePreview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  document.getElementById('removeImage').addEventListener('click', function() {
+    currentImageData = null;
+    document.getElementById('threadImage').value = '';
+    document.getElementById('imagePreview').style.display = 'none';
+  });
+
+  // post thread
+  postBtn.addEventListener('click', function() {
+    var title = document.getElementById('threadTitle').value.trim();
+    var body = document.getElementById('threadBody').value.trim();
+    var tags = document.getElementById('threadTags').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+
+    if (!title || !body) {
+      alert('Please provide a title and message.');
+      return;
+    }
+
+    if (currentEditId) {
+      // Update existing thread
+      var threadIndex = threads.findIndex(function(t){ return t.id === currentEditId; });
+      if (threadIndex !== -1) {
+        threads[threadIndex].title = title;
+        threads[threadIndex].body = body;
+        threads[threadIndex].tags = tags;
+        threads[threadIndex].excerpt = body.length > 140 ? body.slice(0,140) + '…' : body;
+        if (currentImageData) {
+          threads[threadIndex].image = currentImageData;
+        }
+        threads[threadIndex].updated = new Date().toLocaleString();
       }
+      
+      postBtn.textContent = 'Post Thread';
+      currentEditId = null;
+    } else {
+      // Create new thread
+      var newThread = {
+        id: Date.now(),
+        title: title,
+        body: body,
+        meta: 'By SportStore • Community',
+        tags: tags,
+        excerpt: body.length > 140 ? body.slice(0,140) + '…' : body,
+        image: currentImageData || 'img/3.png',
+        created: new Date().toLocaleString(),
+        comments: []
+      };
+      threads.unshift(newThread);
     }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
     
-    setTimeout(function() {
-      openThreadModal(thread);
-    }, 300);
+    // clear form
+    document.getElementById('threadTitle').value = '';
+    document.getElementById('threadBody').value = '';
+    document.getElementById('threadTags').value = '';
+    document.getElementById('threadImage').value = '';
+    document.getElementById('imagePreview').style.display = 'none';
+    currentImageData = null;
     
-    showThreads();
-  }
-}
+    render();
+    window.scrollTo({ top: grid.offsetTop - 80, behavior: 'smooth' });
+  });
 
-// Search input
-document.getElementById('searchInput').addEventListener('input', function(e) {
-  searchText = e.target.value;
-  showThreads();
-});
-
-// Sort select
-document.getElementById('sortSelect').addEventListener('change', function(e) {
-  sortOption = e.target.value;
-  showThreads();
-});
-
-// Image upload
-document.getElementById('threadImage').addEventListener('change', function(e) {
-  var file = e.target.files[0];
-  if (file) {
-    var reader = new FileReader();
-    reader.onload = function(event) {
-      currentImageData = event.target.result;
-      document.getElementById('previewImg').src = currentImageData;
-      document.getElementById('imagePreview').style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-// Remove image
-document.getElementById('removeImage').addEventListener('click', function() {
-  currentImageData = null;
-  document.getElementById('threadImage').value = '';
-  document.getElementById('imagePreview').style.display = 'none';
-});
-
-// Post button
-postButton.addEventListener('click', function() {
-  var title = document.getElementById('threadTitle').value.trim();
-  var body = document.getElementById('threadBody').value.trim();
-  var tagsInput = document.getElementById('threadTags').value;
-  var tags = [];
-  if (tagsInput) {
-    var tagsSplit = tagsInput.split(',');
-    for (var i = 0; i < tagsSplit.length; i++) {
-      var tag = tagsSplit[i].trim();
-      if (tag) tags.push(tag);
+  // clear button
+  clearBtn.addEventListener('click', function() {
+    document.getElementById('threadTitle').value = '';
+    document.getElementById('threadBody').value = '';
+    document.getElementById('threadTags').value = '';
+    document.getElementById('threadImage').value = '';
+    document.getElementById('imagePreview').style.display = 'none';
+    currentImageData = null;
+    
+    if (currentEditId) {
+      postBtn.textContent = 'Post Thread';
+      currentEditId = null;
     }
-  }
-  
-  var editId = postButton.getAttribute('data-edit-id');
-  
-  if (!title || !body) {
-    alert('Please provide a title and message.');
-    return;
-  }
-  
-  if (editId) {
-    // Update
-    for (var i = 0; i < allThreads.length; i++) {
-      if (allThreads[i].id === parseInt(editId)) {
-        allThreads[i].updated = new Date().toLocaleString();
-        break;
-      }
-    }
-    
-    postButton.textContent = 'Post Thread';
-    postButton.removeAttribute('data-edit-id');
-  } else {
-    // Create new
-    var newThread = {
-      id: Date.now(),
-      title: title,
-      body: body,
-      meta: 'By SportStore • Community',
-      tags: tags,
-      excerpt: body.length > 140 ? body.slice(0, 140) + '…' : body,
-      image: currentImageData || 'img/3.png',
-      created: new Date().toLocaleString(),
-      comments: []
-    };
-    allThreads.unshift(newThread);
-  }
-  
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(allThreads));
-  
-  // Clear form
-  document.getElementById('threadTitle').value = '';
-  document.getElementById('threadBody').value = '';
-  document.getElementById('threadTags').value = '';
-  document.getElementById('threadImage').value = '';
-  document.getElementById('imagePreview').style.display = 'none';
-  currentImageData = null;
-  
-  showThreads();
-  window.scrollTo({ top: document.getElementById('threadsGrid').offsetTop - 80, behavior: 'smooth' });
-});
+  });
 
-// Clear button
-clearButton.addEventListener('click', function() {
-  document.getElementById('threadTitle').value = '';
-  document.getElementById('threadBody').value = '';
-  document.getElementById('threadTags').value = '';
-  document.getElementById('threadImage').value = '';
-  document.getElementById('imagePreview').style.display = 'none';
-  currentImageData = null;
-  
-  if (postButton.getAttribute('data-edit-id')) {
-    postButton.textContent = 'Post Thread';
-    postButton.removeAttribute('data-edit-id');
-  }
-});
+  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
-// Show threads on load
-showThreads();
+  // initial render
+  render();
+
+})();
 </script>
 
 </body>
