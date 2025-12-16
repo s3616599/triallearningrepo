@@ -11,14 +11,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="PRL_globals.css" />
-  <link rel="stylesheet" href="PRL_style.css" />
-  <link rel="stylesheet" href="PRL_styleguide.css" />
+  <link rel="stylesheet" href="css/globals.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="product_review_and_rating/PRL_styleguide.css" />
 
   <title>Product Review List</title>
 </head>
 <body>
-  <!-- HEADER (NAVBAR) -->
+  <div class="prl-wrapper">
+    <!-- HEADER (NAVBAR) -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
   <div class="container">
     <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
@@ -28,15 +29,10 @@
     <div id="navMenu" class="collapse navbar-collapse">
       <ul class="navbar-nav me-auto ms-4 gap-3">
         <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Shop</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Men</a></li>
-            <li><a class="dropdown-item" href="#">Women</a></li>
-          </ul>
-        </li>
+        <li class="nav-item"><a class="nav-link" href="#">Shop</a></li>
         <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Forum</a></li>
+        <li class="nav-item"><a class="nav-link" href="forum.html">Forum</a></li>
+        <li class="nav-item"><a class="nav-link" href="sitemap.html">Sitemap</a></li>
       </ul>
       <form class="d-flex me-3">
         <input class="form-control" type="search" placeholder="Search products">
@@ -317,27 +313,6 @@
     </div>
   </div>
 </section>
-
-  <!-- NEWSLETTER -->
-  <section class="py-5">
-    <div class="container">
-      <div class="bg-light p-4 rounded">
-        <div class="row align-items-center">
-          <div class="col-md-8">
-            <h5 class="fw-bold mb-2">Subscribe to our Newsletter</h5>
-            <p class="mb-0 text-muted">Get the latest updates and offers.</p>
-          </div>
-          <div class="col-md-4 mt-3 mt-md-0">
-            <form class="d-flex">
-              <input type="email" class="form-control me-2" placeholder="Enter your email">
-              <button class="btn btn-dark" type="submit">Subscribe</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- FOOTER -->
   <footer class="bg-light pt-5 mt-5">
     <div class="container">
@@ -401,5 +376,6 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </div> <!-- End prl-wrapper -->
 </body>
 </html>

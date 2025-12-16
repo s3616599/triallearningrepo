@@ -646,13 +646,9 @@
   font-style: var(--body-medium-font-style);
 }
 
-.blog-img {
-    height: 240px;
-    background-color: var(--neutralwhitew-100);
-    border-radius: 6px;
-}
 
-.hero-img {
+
+.hero-img{
   width: 100%;
   height: 420px;            
   display: block;
@@ -694,4 +690,28 @@
     width: auto !important;
     height: auto !important;
     font-size: 16px;
+}
+
+/* === PRL_style.css merged styles, namespaced under .prl-wrapper === */
+.prl-wrapper .badge.bg-success {
+  background-color: #27ae60 !important;
+}
+
+.prl-wrapper .card-img-top {
+  object-fit: cover;
+  height: 200px;
+}
+
+.prl-wrapper .newsletter input[type="email"] {
+  min-width: 180px;
+}
+
+.prl-wrapper .footer .fa-brands {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+.prl-wrapper h2.fw-bold,
+.prl-wrapper .card-title.fw-bold {
+  font-weight: 700 !important;
 }

@@ -8,20 +8,24 @@ body {
   margin: 0px;
   height: 100%;
 }
+
 button:focus-visible {
   outline: 2px solid #4a90e2 !important;
   outline: -webkit-focus-ring-color auto 5px !important;
 }
+
 a {
   text-decoration: none;
 }
+
 body, h1, h2, h3, h4, h5, h6, p, a, span, input, button {
-  font-family: "Inter", Helvetica, Arial, sans-serif;
+  font-family: "Inter", Helvetica, sans-serif;
   font-weight: 400;
-  line-height: 1.75;
+  line-height: 1.75; 
 }
+
 .btn, .form-control, .card, .navbar, .dropdown-item {
-  font-family: "Inter", Helvetica, Arial, sans-serif;
+  font-family: "Inter", Helvetica, sans-serif;
   font-weight: 500;
   line-height: 1.75;
 }
