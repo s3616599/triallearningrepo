@@ -864,7 +864,6 @@ function openThreadModal(threadId) {
   modalContent += '<div class="mt-3">';
   modalContent += '<label class="form-label small fw-bold">Add a comment</label>';
   modalContent += '<textarea id="commentInput_' + selectedThread.id + '" class="form-control" rows="3" placeholder="Share your thoughts..." maxlength="500"></textarea>';
-  modalContent += '<div class="counter-text" id="commentCounter_' + selectedThread.id + '" style="text-align: right; margin-top: 5px;">0 / 500 characters</div>';
   modalContent += '<button class="btn btn-primary btn-sm mt-2" onclick="postComment(' + selectedThread.id + ')">';
   modalContent += '<i class="fas fa-paper-plane me-1"></i>Post Comment';
   modalContent += '</button>';
@@ -893,26 +892,6 @@ function openThreadModal(threadId) {
   var bsModal = new bootstrap.Modal(modalElement);
   bsModal.show();
   
-  // setup comment counter after modal is shown
-  modalElement.addEventListener('shown.bs.modal', function() {
-    var commentBox = document.getElementById('commentInput_' + selectedThread.id);
-    var commentCounterText = document.getElementById('commentCounter_' + selectedThread.id);
-    
-    if (commentBox) {
-      commentBox.addEventListener('input', function() {
-        var commentLen = this.value.length;
-        commentCounterText.textContent = commentLen + ' / 500 characters';
-        
-        commentCounterText.classList.remove('almost-full', 'too-much');
-        if (commentLen >= 450) {
-          commentCounterText.classList.add('too-much');
-        } else if (commentLen >= 400) {
-          commentCounterText.classList.add('almost-full');
-        }
-      });
-    }
-  });
-  
   // clean up modal when closed
   modalElement.addEventListener('hidden.bs.modal', function() {
     modalElement.remove();
@@ -934,12 +913,6 @@ function postComment(threadId) {
   // make sure they actually wrote something
   if (commentContent === '') {
     alert('Please write a comment before submitting.');
-    return;
-  }
-  
-  // comments should be at least 5 characters
-  if (commentContent.length < 5) {
-    alert('Comment must be at least 5 characters long.');
     return;
   }
   
