@@ -8,16 +8,16 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Custom CSS files -->
+    <!-- My custom CSS files -->
     <link rel="stylesheet" href="css/globals.css" />
     <link rel="stylesheet" href="css/styleguide.css" />
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- Font Awesome for icons -->
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
     <style>
-      /* Card styles for creating new threads */
+      /* Styles for the create thread card */
       .create-card {
         border-radius: 12px;
         padding: 18px;
@@ -29,12 +29,13 @@
         margin-top: 18px;
       }
       
+      /* tried to make the cards look better */
       .thread-card .card-body {
         display: flex;
         flex-direction: column;
       }
       
-      .small-muted {
+      .small-muted{
         color: var(--neutralblackb-600);
         font-size: 0.95rem;
       }
@@ -46,14 +47,14 @@
         margin-top: 12px;
       }
       
-      /* Make buttons stack on mobile */
+      /* buttons should stack on phone screens */
       @media (max-width: 768px) {
         .create-actions {
           flex-direction: column-reverse;
         }
       }
       
-      /* Comment section styles */
+      /* Comment stuff - this took forever to get right */
       .comment-section {
         max-height: 400px;
         overflow-y: auto;
@@ -62,42 +63,42 @@
         margin-top: 1rem;
       }
       
-      .comment-item {
+      .comment-box {
         padding: 0.75rem;
         background: #f9fafb;
         border-radius: 8px;
         margin-bottom: 0.75rem;
       }
       
-      .comment-header {
+      .comment-top {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 0.5rem;
       }
       
-      .comment-author {
+      .comment-author-name {
         font-weight: 600;
         font-size: 0.9rem;
       }
       
-      .comment-date {
+      .comment-time {
         font-size: 0.75rem;
         color: #6b7280;
       }
       
-      .comment-text {
+      .comment-message {
         font-size: 0.9rem;
         margin: 0;
       }
       
-      .comment-actions {
+      .comment-btns {
         margin-top: 0.5rem;
         display: flex;
         gap: 0.5rem;
       }
       
-      .comment-count {
+      .comment-number {
         display: inline-flex;
         align-items: center;
         gap: 0.25rem;
@@ -105,8 +106,8 @@
         color: #6b7280;
       }
       
-      /* Validation error styles */
-      .form-control.is-invalid {
+      /* Error styling - copied from bootstrap docs and modified */
+      .form-control.error-input {
         border-color: #dc3545;
         padding-right: calc(1.5em + 0.75rem);
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
@@ -115,7 +116,7 @@
         background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
       }
       
-      .invalid-feedback {
+      .error-message {
         display: none;
         width: 100%;
         margin-top: 0.25rem;
@@ -123,30 +124,30 @@
         color: #dc3545;
       }
       
-      .invalid-feedback.show {
+      .error-message.show-error {
         display: block;
       }
       
-      /* Character counter styles */
-      .char-counter {
+      /* Character counter stuff */
+      .counter-text {
         font-size: 0.875rem;
         color: #6c757d;
         text-align: right;
         margin-top: 0.25rem;
       }
       
-      .char-counter.warning {
+      .counter-text.almost-full {
         color: #ffc107;
       }
       
-      .char-counter.danger {
+      .counter-text.too-much {
         color: #dc3545;
       }
     </style>
 </head>
 <body>
 
-<!-- Navigation bar -->
+<!-- Top navigation bar -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
     <div class="container">
         <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
@@ -158,7 +159,7 @@
         <div id="navMenu" class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto ms-4 gap-3">
                 <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Shop</a></li>
+                <li class="nav-item "><a class="nav-link" href="#">Shop</a></li>
                 <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
                 <li class="nav-item"><a class="nav-link active" href="forum.html">Forum</a></li>
                 <li class="nav-item"><a class="nav-link" href="sitemap.html">Site Map</a></li>
@@ -174,7 +175,7 @@
     </div>
 </nav>
 
-<!-- Breadcrumb -->
+<!-- Breadcrumb navigation -->
 <nav class="bg-light py-2 border-bottom">
     <div class="container">
         <ol class="breadcrumb mb-0">
@@ -186,7 +187,7 @@
 
 <div class="container my-5">
 
-  <!-- Create new thread form -->
+  <!-- Form to create new thread -->
   <div class="container my-4">
     <div class="row">
       <div class="col-12">
@@ -196,7 +197,7 @@
           </div>
 
           <form id="threadForm">
-            <!-- Title input -->
+            <!-- Title field -->
             <div class="mb-3">
               <label for="threadTitle" class="form-label small text-muted">
                 Title <span class="text-danger">*</span>
@@ -209,11 +210,11 @@
                 placeholder="e.g. Best cleats for firm ground"
                 required
               >
-              <div class="invalid-feedback" id="titleError"></div>
-              <div class="char-counter" id="titleCounter">0 / 120 characters</div>
+              <div class="error-message" id="titleError"></div>
+              <div class="counter-text" id="titleCounter">0 / 120 characters</div>
             </div>
 
-            <!-- Message input -->
+            <!-- Message field -->
             <div class="mb-3">
               <label for="threadBody" class="form-label small text-muted">
                 Message <span class="text-danger">*</span>
@@ -226,11 +227,11 @@
                 placeholder="Write your question or advice..."
                 required
               ></textarea>
-              <div class="invalid-feedback" id="bodyError"></div>
-              <div class="char-counter" id="bodyCounter">0 / 2000 characters</div>
+              <div class="error-message" id="bodyError"></div>
+              <div class="counter-text" id="bodyCounter">0 / 2000 characters</div>
             </div>
 
-            <!-- Tags input -->
+            <!-- Tags field -->
             <div class="mb-3">
               <label for="threadTags" class="form-label small text-muted">
                 Tags (comma separated) <span class="text-muted small">(Optional)</span>
@@ -241,11 +242,11 @@
                 placeholder="e.g. running, cleats, sizing"
                 maxlength="200"
               >
-              <div class="invalid-feedback" id="tagsError"></div>
-              <div class="char-counter" id="tagsCounter">0 / 200 characters</div>
+              <div class="error-message" id="tagsError"></div>
+              <div class="counter-text" id="tagsCounter">0 / 200 characters</div>
             </div>
 
-            <!-- Image input -->
+            <!-- Image upload -->
             <div class="mb-3">
               <label for="threadImage" class="form-label small text-muted">
                 Image <span class="text-muted small">(Optional, max 5MB)</span>
@@ -256,7 +257,7 @@
                 class="form-control" 
                 accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
               >
-              <div class="invalid-feedback" id="imageError"></div>
+              <div class="error-message" id="imageError"></div>
               <div id="imagePreview" style="display: none; margin-top: 10px;">
                 <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px;">
                 <button id="removeImage" type="button" class="btn btn-sm btn-danger" style="margin-top: 10px;">
@@ -265,7 +266,7 @@
               </div>
             </div>
 
-            <!-- Form buttons -->
+            <!-- Buttons -->
             <div class="create-actions">
               <button id="clearBtn" type="button" class="btn btn-outline-dark">Clear</button>
               <button id="postBtn" type="submit" class="btn btn-primary">
@@ -278,7 +279,7 @@
     </div>
   </div>
 
-  <!-- Search and sort controls -->
+  <!-- Search and sort section -->
   <div class="container my-4">
     <div class="row">
       <div class="col-md-4 mb-3">
@@ -299,12 +300,12 @@
     </div>
   </div>
 
-  <!-- Thread list grid -->
+  <!-- Threads will show up here -->
   <div class="row g-4 thread-row" id="threadsGrid">
   </div>
 </div>
 
-<!-- Footer -->
+<!-- Footer section -->
 <footer class="bg-light pt-5 mt-5">
   <div class="container">
     <div class="row">
@@ -367,20 +368,20 @@
   </div>
 </footer>
 
-<!-- Bootstrap JS -->
+<!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// Variables to store data
-var threads = [];
-var currentImageData = null;
-var currentEditId = null;
-var searchText = '';
-var contentSearchText = '';
-var sortOption = 'newest';
+// My variables - keeping track of everything
+var allThreads = [];
+var currentImage = null;
+var editingThreadId = null;
+var searchQuery = '';
+var contentSearchQuery = '';
+var sortBy = 'newest';
 
-// Sample threads to show when first loading the page
-var sampleThreads = [
+// Sample data to show when the page first loads
+var startingThreads = [
   {
     id: 1,
     title: "Which football boots (cleats) are best for firm natural grass?",
@@ -407,134 +408,132 @@ var sampleThreads = [
   }
 ];
 
-// Load threads from localStorage when page loads
-function loadThreads() {
-  var saved = localStorage.getItem('ecom_forum_threads_v1');
-  if (saved) {
-    threads = JSON.parse(saved);
+// Load saved threads from browser storage
+function loadThreadsFromStorage() {
+  var savedData = localStorage.getItem('ecom_forum_threads_v1');
+  if (savedData) {
+    allThreads = JSON.parse(savedData);
   } else {
-    // If no saved threads, use sample threads
-    threads = sampleThreads;
-    saveThreads();
+    // no saved data, use the sample threads
+    allThreads = startingThreads;
+    saveThreadsToStorage();
   }
 }
 
-// Save threads to localStorage
-function saveThreads() {
-  localStorage.setItem('ecom_forum_threads_v1', JSON.stringify(threads));
+// Save threads to browser storage
+function saveThreadsToStorage() {
+  localStorage.setItem('ecom_forum_threads_v1', JSON.stringify(allThreads));
 }
 
-// Check if title is valid
-function checkTitle() {
-  var titleInput = document.getElementById('threadTitle');
-  var titleValue = titleInput.value;
-  var titleLength = titleValue.length;
-  var errorDiv = document.getElementById('titleError');
+// Validate the title field
+function validateTitle() {
+  var titleField = document.getElementById('threadTitle');
+  var titleText = titleField.value;
+  var titleLen = titleText.length;
+  var errorBox = document.getElementById('titleError');
   
-  // Remove previous error
-  titleInput.classList.remove('is-invalid');
-  errorDiv.classList.remove('show');
-  errorDiv.textContent = '';
+  // clear any previous errors
+  titleField.classList.remove('error-input');
+  errorBox.classList.remove('show-error');
+  errorBox.textContent = '';
   
-  // Check if title is too short
-  if (titleLength > 0 && titleLength < 10) {
-    titleInput.classList.add('is-invalid');
-    errorDiv.textContent = 'Title must be at least 10 characters';
-    errorDiv.classList.add('show');
+  // check if title is too short
+  if (titleLen > 0 && titleLen < 10) {
+    titleField.classList.add('error-input');
+    errorBox.textContent = 'Title must be at least 10 characters';
+    errorBox.classList.add('show-error');
     return false;
   }
   
-  // Check if title is only spaces
-  if (titleLength > 0 && titleValue.trim().length === 0) {
-    titleInput.classList.add('is-invalid');
-    errorDiv.textContent = 'Title cannot be empty or only spaces';
-    errorDiv.classList.add('show');
+  // check if it's just spaces lol
+  if (titleLen > 0 && titleText.trim().length === 0) {
+    titleField.classList.add('error-input');
+    errorBox.textContent = 'Title cannot be empty or only spaces';
+    errorBox.classList.add('show-error');
     return false;
   }
   
-  // Check for invalid characters
-  var validPattern = /^[a-zA-Z0-9\s\-\?\!\.\,\'\"]+$/;
-  if (titleLength > 0 && !validPattern.test(titleValue)) {
-    titleInput.classList.add('is-invalid');
-    errorDiv.textContent = 'Title contains invalid characters';
-    errorDiv.classList.add('show');
+  // check for weird characters
+  var allowedChars = /^[a-zA-Z0-9\s\-\?\!\.\,\'\"]+$/;
+  if (titleLen > 0 && !allowedChars.test(titleText)) {
+    titleField.classList.add('error-input');
+    errorBox.textContent = 'Title contains invalid characters';
+    errorBox.classList.add('show-error');
     return false;
   }
   
   return true;
 }
 
-// Check if message is valid
-function checkMessage() {
-  var messageInput = document.getElementById('threadBody');
-  var messageValue = messageInput.value;
-  var messageLength = messageValue.length;
-  var errorDiv = document.getElementById('bodyError');
+// Validate the message field
+function validateMessage() {
+  var messageField = document.getElementById('threadBody');
+  var messageText = messageField.value;
+  var messageLen = messageText.length;
+  var errorBox = document.getElementById('bodyError');
   
-  // Remove previous error
-  messageInput.classList.remove('is-invalid');
-  errorDiv.classList.remove('show');
-  errorDiv.textContent = '';
+  // remove old errors first
+  messageField.classList.remove('error-input');
+  errorBox.classList.remove('show-error');
+  errorBox.textContent = '';
   
-  // Check if message is too short
-  if (messageLength > 0 && messageLength < 20) {
-    messageInput.classList.add('is-invalid');
-    errorDiv.textContent = 'Message must be at least 20 characters';
-    errorDiv.classList.add('show');
+  // needs to be at least 20 characters
+  if (messageLen > 0 && messageLen < 20) {
+    messageField.classList.add('error-input');
+    errorBox.textContent = 'Message must be at least 20 characters';
+    errorBox.classList.add('show-error');
     return false;
   }
   
-  // Check if message is only spaces
-  if (messageLength > 0 && messageValue.trim().length === 0) {
-    messageInput.classList.add('is-invalid');
-    errorDiv.textContent = 'Message cannot be empty or only spaces';
-    errorDiv.classList.add('show');
+  // can't be all spaces
+  if(messageLen > 0 && messageText.trim().length === 0){
+    messageField.classList.add('error-input');
+    errorBox.textContent = 'Message cannot be empty or only spaces';
+    errorBox.classList.add('show-error');
     return false;
   }
   
   return true;
 }
 
-// Check if tags are valid
-function checkTags() {
-  var tagsInput = document.getElementById('threadTags');
-  var tagsValue = tagsInput.value;
-  var tagsLength = tagsValue.length;
-  var errorDiv = document.getElementById('tagsError');
+// Validate tags - this one's optional so it's more lenient
+function validateTags() {
+  var tagsField = document.getElementById('threadTags');
+  var tagsText = tagsField.value;
+  var tagsLen = tagsText.length;
+  var errorBox = document.getElementById('tagsError');
   
-  // Remove previous error
-  tagsInput.classList.remove('is-invalid');
-  errorDiv.classList.remove('show');
-  errorDiv.textContent = '';
+  tagsField.classList.remove('error-input');
+  errorBox.classList.remove('show-error');
+  errorBox.textContent = '';
   
-  // Tags are optional, so only validate if there's input
-  if (tagsLength > 0) {
-    // Split tags by comma
-    var tagArray = tagsValue.split(',');
-    var cleanTags = [];
+  // only validate if user actually typed something
+  if (tagsLen > 0) {
+    // split by commas and count tags
+    var tagList = tagsText.split(',');
+    var cleanedTags = [];
     
-    // Clean up each tag
-    for (var i = 0; i < tagArray.length; i++) {
-      var tag = tagArray[i].trim();
-      if (tag.length > 0) {
-        cleanTags.push(tag);
+    for (var i = 0; i < tagList.length; i++) {
+      var singleTag = tagList[i].trim();
+      if (singleTag.length > 0) {
+        cleanedTags.push(singleTag);
       }
     }
     
-    // Check if too many tags
-    if (cleanTags.length > 10) {
-      tagsInput.classList.add('is-invalid');
-      errorDiv.textContent = 'Maximum 10 tags allowed';
-      errorDiv.classList.add('show');
+    // max 10 tags allowed
+    if (cleanedTags.length > 10) {
+      tagsField.classList.add('error-input');
+      errorBox.textContent = 'Maximum 10 tags allowed';
+      errorBox.classList.add('show-error');
       return false;
     }
     
-    // Check for invalid characters
-    var validPattern = /^[a-zA-Z0-9\s\-\,]+$/;
-    if (!validPattern.test(tagsValue)) {
-      tagsInput.classList.add('is-invalid');
-      errorDiv.textContent = 'Tags can only contain letters, numbers, hyphens, and commas';
-      errorDiv.classList.add('show');
+    // check for invalid characters in tags
+    var validTagChars = /^[a-zA-Z0-9\s\-\,]+$/;
+    if (!validTagChars.test(tagsText)) {
+      tagsField.classList.add('error-input');
+      errorBox.textContent = 'Tags can only contain letters, numbers, hyphens, and commas';
+      errorBox.classList.add('show-error');
       return false;
     }
   }
@@ -542,294 +541,292 @@ function checkTags() {
   return true;
 }
 
-// Check if image is valid
-function checkImage() {
-  var imageInput = document.getElementById('threadImage');
-  var errorDiv = document.getElementById('imageError');
+// Check if uploaded image is valid
+function validateImage() {
+  var imageField = document.getElementById('threadImage');
+  var errorBox = document.getElementById('imageError');
   
-  // Remove previous error
-  imageInput.classList.remove('is-invalid');
-  errorDiv.classList.remove('show');
-  errorDiv.textContent = '';
+  imageField.classList.remove('error-input');
+  errorBox.classList.remove('show-error');
+  errorBox.textContent = '';
   
-  // Image is optional, only validate if file is selected
-  if (imageInput.files.length > 0) {
-    var file = imageInput.files[0];
-    var maxSize = 5 * 1024 * 1024; // 5MB in bytes
+  // only check if user picked a file
+  if (imageField.files.length > 0) {
+    var selectedFile = imageField.files[0];
+    var maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
     
-    // Check file size
-    if (file.size > maxSize) {
-      imageInput.classList.add('is-invalid');
-      errorDiv.textContent = 'Image size must be less than 5MB';
-      errorDiv.classList.add('show');
-      currentImageData = null;
+    // file too big?
+    if (selectedFile.size > maxFileSize) {
+      imageField.classList.add('error-input');
+      errorBox.textContent = 'Image size must be less than 5MB';
+      errorBox.classList.add('show-error');
+      currentImage = null;
       document.getElementById('imagePreview').style.display = 'none';
       return false;
     }
     
-    // Check file type
-    var validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-    var isValidType = false;
-    for (var i = 0; i < validTypes.length; i++) {
-      if (file.type === validTypes[i]) {
-        isValidType = true;
+    // check if it's an image file
+    var okTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    var fileIsOk = false;
+    for (var i = 0; i < okTypes.length; i++) {
+      if (selectedFile.type === okTypes[i]) {
+        fileIsOk = true;
         break;
       }
     }
     
-    if (!isValidType) {
-      imageInput.classList.add('is-invalid');
-      errorDiv.textContent = 'Only JPEG, PNG, GIF, and WebP images are allowed';
-      errorDiv.classList.add('show');
-      currentImageData = null;
+    if (!fileIsOk) {
+      imageField.classList.add('error-input');
+      errorBox.textContent = 'Only JPEG, PNG, GIF, and WebP images are allowed';
+      errorBox.classList.add('show-error');
+      currentImage = null;
       document.getElementById('imagePreview').style.display = 'none';
       return false;
     }
     
-    // If valid, show preview
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      currentImageData = e.target.result;
-      document.getElementById('previewImg').src = currentImageData;
+    // if everything's good, show preview
+    var fileReader = new FileReader();
+    fileReader.onload = function(event) {
+      currentImage = event.target.result;
+      document.getElementById('previewImg').src = currentImage;
       document.getElementById('imagePreview').style.display = 'block';
     };
-    reader.readAsDataURL(file);
+    fileReader.readAsDataURL(selectedFile);
   }
   
   return true;
 }
 
-// Update character counter for title
-function updateTitleCounter() {
-  var titleInput = document.getElementById('threadTitle');
-  var counter = document.getElementById('titleCounter');
-  var length = titleInput.value.length;
+// Update the character counter for title
+function updateTitleCount() {
+  var titleField = document.getElementById('threadTitle');
+  var counterDisplay = document.getElementById('titleCounter');
+  var currentLength = titleField.value.length;
   
-  counter.textContent = length + ' / 120 characters';
+  counterDisplay.textContent = currentLength + ' / 120 characters';
   
-  // Change color based on length
-  counter.classList.remove('warning', 'danger');
-  if (length >= 108) {
-    counter.classList.add('danger');
-  } else if (length >= 90) {
-    counter.classList.add('warning');
+  // change color when getting close to limit
+  counterDisplay.classList.remove('almost-full', 'too-much');
+  if (currentLength >= 108) {
+    counterDisplay.classList.add('too-much');
+  } else if (currentLength >= 90) {
+    counterDisplay.classList.add('almost-full');
   }
 }
 
 // Update character counter for message
-function updateBodyCounter() {
-  var bodyInput = document.getElementById('threadBody');
-  var counter = document.getElementById('bodyCounter');
-  var length = bodyInput.value.length;
+function updateMessageCount() {
+  var messageField = document.getElementById('threadBody');
+  var counterDisplay = document.getElementById('bodyCounter');
+  var currentLength = messageField.value.length;
   
-  counter.textContent = length + ' / 2000 characters';
+  counterDisplay.textContent = currentLength + ' / 2000 characters';
   
-  // Change color based on length
-  counter.classList.remove('warning', 'danger');
-  if (length >= 1800) {
-    counter.classList.add('danger');
-  } else if (length >= 1500) {
-    counter.classList.add('warning');
+  counterDisplay.classList.remove('almost-full', 'too-much');
+  if (currentLength >= 1800) {
+    counterDisplay.classList.add('too-much');
+  } else if (currentLength >= 1500) {
+    counterDisplay.classList.add('almost-full');
   }
 }
 
 // Update character counter for tags
-function updateTagsCounter() {
-  var tagsInput = document.getElementById('threadTags');
-  var counter = document.getElementById('tagsCounter');
-  var length = tagsInput.value.length;
+function updateTagsCount() {
+  var tagsField = document.getElementById('threadTags');
+  var counterDisplay = document.getElementById('tagsCounter');
+  var currentLength = tagsField.value.length;
   
-  counter.textContent = length + ' / 200 characters';
+  counterDisplay.textContent = currentLength + ' / 200 characters';
   
-  // Change color based on length
-  counter.classList.remove('warning', 'danger');
-  if (length >= 180) {
-    counter.classList.add('danger');
-  } else if (length >= 150) {
-    counter.classList.add('warning');
+  counterDisplay.classList.remove('almost-full', 'too-much');
+  if (currentLength >= 180) {
+    counterDisplay.classList.add('too-much');
+  } else if(currentLength >= 150){
+    counterDisplay.classList.add('almost-full');
   }
 }
 
-// Check if submit button should be enabled
-function updateSubmitButton() {
-  var titleInput = document.getElementById('threadTitle');
-  var bodyInput = document.getElementById('threadBody');
-  var postBtn = document.getElementById('postBtn');
+// Check if we should enable or disable the post button
+function checkPostButton() {
+  var titleField = document.getElementById('threadTitle');
+  var messageField = document.getElementById('threadBody');
+  var postButton = document.getElementById('postBtn');
   
-  var titleValue = titleInput.value.trim();
-  var bodyValue = bodyInput.value.trim();
+  var titleValue = titleField.value.trim();
+  var messageValue = messageField.value.trim();
   
-  // Check if title and body meet minimum requirements
-  var titleOk = titleValue.length >= 10 && titleValue.length <= 120;
-  var bodyOk = bodyValue.length >= 20 && bodyValue.length <= 2000;
+  // both fields need to meet minimum length
+  var titleIsGood = titleValue.length >= 10 && titleValue.length <= 120;
+  var messageIsGood = messageValue.length >= 20 && messageValue.length <= 2000;
   
-  // Check if there are any error messages showing
-  var hasErrors = document.querySelectorAll('.is-invalid').length > 0;
+  // check if there are any error messages showing
+  var errorsExist = document.querySelectorAll('.error-input').length > 0;
   
-  // Enable button only if everything is valid
-  if (titleOk && bodyOk && !hasErrors) {
-    postBtn.disabled = false;
+  // only enable button if everything looks good
+  if (titleIsGood && messageIsGood && !errorsExist) {
+    postButton.disabled = false;
   } else {
-    postBtn.disabled = true;
+    postButton.disabled = true;
   }
 }
 
-// Display all threads on the page
-function displayThreads() {
-  var grid = document.getElementById('threadsGrid');
-  grid.innerHTML = '';
+// Show all the threads on the page
+function showAllThreads() {
+  var gridContainer = document.getElementById('threadsGrid');
+  gridContainer.innerHTML = '';
   
-  // Filter threads by search text
-  var filteredThreads = [];
-  for (var i = 0; i < threads.length; i++) {
-    var thread = threads[i];
-    var titleMatch = thread.title.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
-    var bodyMatch = thread.body.toLowerCase().indexOf(contentSearchText.toLowerCase()) !== -1;
+  // filter threads based on search
+  var threadsToShow = [];
+  for (var i = 0; i < allThreads.length; i++) {
+    var thread = allThreads[i];
+    var titleMatches = thread.title.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1;
+    var bodyMatches = thread.body.toLowerCase().indexOf(contentSearchQuery.toLowerCase()) !== -1;
     
-    if (titleMatch && bodyMatch) {
-      filteredThreads.push(thread);
+    if (titleMatches && bodyMatches) {
+      threadsToShow.push(thread);
     }
   }
   
-  // Sort threads
-  if (sortOption === 'oldest') {
-    filteredThreads.sort(function(a, b) {
+  // sort the threads
+  if (sortBy === 'oldest') {
+    threadsToShow.sort(function(a, b) {
       return a.id - b.id;
     });
   } else {
-    filteredThreads.sort(function(a, b) {
+    // newest first (default)
+    threadsToShow.sort(function(a, b) {
       return b.id - a.id;
     });
   }
   
-  // Show message if no threads found
-  if (filteredThreads.length === 0) {
-    grid.innerHTML = '<div class="col-12"><div class="card p-4">No threads found.</div></div>';
+  // no threads found message
+  if (threadsToShow.length === 0) {
+    gridContainer.innerHTML = '<div class="col-12"><div class="card p-4">No threads found.</div></div>';
     return;
   }
   
-  // Create HTML for each thread
-  for (var i = 0; i < filteredThreads.length; i++) {
-    var thread = filteredThreads[i];
+  // create cards for each thread
+  for (var i = 0; i < threadsToShow.length; i++) {
+    var currentThread = threadsToShow[i];
     
-    // Create column div
-    var col = document.createElement('div');
-    col.className = 'col-md-4';
+    // make the column
+    var columnDiv = document.createElement('div');
+    columnDiv.className = 'col-md-4';
     
-    // Create card div
-    var card = document.createElement('div');
-    card.className = 'card blog-card shadow-sm flex-fill h-100';
+    // make the card
+    var cardDiv = document.createElement('div');
+    cardDiv.className = 'card blog-card shadow-sm flex-fill h-100';
     
-    // Create image
-    var img = document.createElement('img');
-    img.className = 'card-img-top';
-    img.src = thread.image || 'img/placeholder.png';
+    // add image
+    var cardImage = document.createElement('img');
+    cardImage.className = 'card-img-top';
+    cardImage.src = currentThread.image || 'img/placeholder.png';
     
-    // Create card body
-    var body = document.createElement('div');
-    body.className = 'card-body';
+    // card body
+    var cardBody = document.createElement('div');
+    cardBody.className = 'card-body';
     
-    // Create title
-    var title = document.createElement('h5');
-    title.className = 'card-title';
-    title.textContent = thread.title;
+    // title
+    var cardTitle = document.createElement('h5');
+    cardTitle.className = 'card-title';
+    cardTitle.textContent = currentThread.title;
     
-    // Create meta info
-    var meta = document.createElement('p');
-    meta.className = 'text-muted small mb-1';
-    meta.textContent = thread.meta || 'By SportStore';
+    // meta info
+    var metaInfo = document.createElement('p');
+    metaInfo.className = 'text-muted small mb-1';
+    metaInfo.textContent = currentThread.meta || 'By SportStore';
     
-    // Create tags
-    var tagDiv = document.createElement('div');
-    tagDiv.className = 'mb-3';
-    if (thread.tags && thread.tags.length > 0) {
-      for (var j = 0; j < thread.tags.length; j++) {
-        var badge = document.createElement('span');
-        badge.className = 'badge bg-secondary me-1';
-        badge.textContent = thread.tags[j];
-        tagDiv.appendChild(badge);
+    // tags section
+    var tagsContainer = document.createElement('div');
+    tagsContainer.className = 'mb-3';
+    if (currentThread.tags && currentThread.tags.length > 0) {
+      for (var j = 0; j < currentThread.tags.length; j++) {
+        var tagBadge = document.createElement('span');
+        tagBadge.className = 'badge bg-secondary me-1';
+        tagBadge.textContent = currentThread.tags[j];
+        tagsContainer.appendChild(tagBadge);
       }
     }
     
-    // Create excerpt
-    var excerpt = document.createElement('p');
-    excerpt.className = 'card-text';
-    excerpt.textContent = thread.excerpt || thread.body.substring(0, 140);
+    // excerpt/preview text
+    var excerptText = document.createElement('p');
+    excerptText.className = 'card-text';
+    excerptText.textContent = currentThread.excerpt || currentThread.body.substring(0, 140);
     
-    // Create comment count
-    var commentCount = document.createElement('div');
-    commentCount.className = 'comment-count mb-2';
+    // comment count display
+    var commentInfo = document.createElement('div');
+    commentInfo.className = 'comment-number mb-2';
     var commentIcon = document.createElement('i');
     commentIcon.className = 'fas fa-comment';
-    var commentText = document.createElement('span');
-    var numComments = thread.comments ? thread.comments.length : 0;
-    commentText.textContent = ' ' + numComments + ' comments';
-    commentCount.appendChild(commentIcon);
-    commentCount.appendChild(commentText);
+    var commentCountText = document.createElement('span');
+    var totalComments = currentThread.comments ? currentThread.comments.length : 0;
+    commentCountText.textContent = ' ' + totalComments + ' comments';
+    commentInfo.appendChild(commentIcon);
+    commentInfo.appendChild(commentCountText);
     
-    // Create read more button
-    var buttonContainer = document.createElement('div');
-    buttonContainer.className = 'text-center';
-    var readBtn = document.createElement('a');
-    readBtn.className = 'btn btn-outline-dark btn-sm';
-    readBtn.href = '#';
-    readBtn.textContent = 'Read more';
-    readBtn.threadId = thread.id; // Store thread ID
-    readBtn.onclick = function(e) {
+    // read more button container
+    var btnContainer = document.createElement('div');
+    btnContainer.className = 'text-center';
+    var readMoreBtn = document.createElement('a');
+    readMoreBtn.className = 'btn btn-outline-dark btn-sm';
+    readMoreBtn.href = '#';
+    readMoreBtn.textContent = 'Read more';
+    readMoreBtn.threadId = currentThread.id;
+    readMoreBtn.onclick = function(e) {
       e.preventDefault();
-      showThreadDetail(this.threadId);
+      openThreadModal(this.threadId);
     };
-    buttonContainer.appendChild(readBtn);
+    btnContainer.appendChild(readMoreBtn);
     
-    // Put everything together
-    body.appendChild(title);
-    body.appendChild(meta);
-    body.appendChild(tagDiv);
-    body.appendChild(excerpt);
-    body.appendChild(commentCount);
-    body.appendChild(buttonContainer);
+    // put it all together
+    cardBody.appendChild(cardTitle);
+    cardBody.appendChild(metaInfo);
+    cardBody.appendChild(tagsContainer);
+    cardBody.appendChild(excerptText);
+    cardBody.appendChild(commentInfo);
+    cardBody.appendChild(btnContainer);
     
-    card.appendChild(img);
-    card.appendChild(body);
-    col.appendChild(card);
-    grid.appendChild(col);
+    cardDiv.appendChild(cardImage);
+    cardDiv.appendChild(cardBody);
+    columnDiv.appendChild(cardDiv);
+    gridContainer.appendChild(columnDiv);
   }
 }
 
-// Show thread detail in modal
-function showThreadDetail(threadId) {
-  // Find the thread
-  var thread = null;
-  for (var i = 0; i < threads.length; i++) {
-    if (threads[i].id === threadId) {
-      thread = threads[i];
+// Open the modal to show full thread details
+function openThreadModal(threadId) {
+  // find the thread we want to show
+  var selectedThread = null;
+  for (var i = 0; i < allThreads.length; i++) {
+    if (allThreads[i].id === threadId) {
+      selectedThread = allThreads[i];
       break;
     }
   }
   
-  if (!thread) {
-    return;
+  if (!selectedThread) {
+    return; // thread not found, shouldn't happen but just in case
   }
   
-  // Remove old modal if it exists
-  var oldModal = document.getElementById('forumDetailModal');
-  if (oldModal) {
-    oldModal.remove();
+  // remove any old modal if it exists
+  var existingModal = document.getElementById('forumDetailModal');
+  if (existingModal) {
+    existingModal.remove();
   }
   
-  // Create comments HTML
+  // build the comments HTML
   var commentsHTML = '';
-  if (thread.comments && thread.comments.length > 0) {
-    for (var i = 0; i < thread.comments.length; i++) {
-      var comment = thread.comments[i];
-      commentsHTML += '<div class="comment-item">';
-      commentsHTML += '<div class="comment-header">';
-      commentsHTML += '<span class="comment-author">' + escapeHTML(comment.author) + '</span>';
-      commentsHTML += '<span class="comment-date">' + comment.created + '</span>';
+  if (selectedThread.comments && selectedThread.comments.length > 0) {
+    for (var i = 0; i < selectedThread.comments.length; i++) {
+      var comment = selectedThread.comments[i];
+      commentsHTML += '<div class="comment-box">';
+      commentsHTML += '<div class="comment-top">';
+      commentsHTML += '<span class="comment-author-name">' + makeTextSafe(comment.author) + '</span>';
+      commentsHTML += '<span class="comment-time">' + comment.created + '</span>';
       commentsHTML += '</div>';
-      commentsHTML += '<p class="comment-text">' + escapeHTML(comment.text) + '</p>';
-      commentsHTML += '<div class="comment-actions">';
-      commentsHTML += '<button class="btn btn-sm btn-outline-danger" onclick="deleteComment(' + thread.id + ', ' + comment.id + ')">';
+      commentsHTML += '<p class="comment-message">' + makeTextSafe(comment.text) + '</p>';
+      commentsHTML += '<div class="comment-btns">';
+      commentsHTML += '<button class="btn btn-sm btn-outline-danger" onclick="removeComment(' + selectedThread.id + ', ' + comment.id + ')">';
       commentsHTML += '<i class="fas fa-trash"></i> Delete';
       commentsHTML += '</button>';
       commentsHTML += '</div>';
@@ -839,465 +836,470 @@ function showThreadDetail(threadId) {
     commentsHTML = '<p class="text-muted small">No comments yet. Be the first to comment!</p>';
   }
   
-  // Create tags HTML
+  // build tags HTML
   var tagsHTML = '';
-  if (thread.tags && thread.tags.length > 0) {
-    for (var i = 0; i < thread.tags.length; i++) {
-      tagsHTML += '<span class="badge bg-secondary me-1">' + thread.tags[i] + '</span>';
+  if (selectedThread.tags && selectedThread.tags.length > 0) {
+    for (var i = 0; i < selectedThread.tags.length; i++) {
+      tagsHTML += '<span class="badge bg-secondary me-1">' + selectedThread.tags[i] + '</span>';
     }
   }
   
-  // Create modal HTML
-  var modalHTML = '<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">';
-  modalHTML += '<div class="modal-content">';
-  modalHTML += '<div class="modal-header">';
-  modalHTML += '<h5 class="modal-title">' + escapeHTML(thread.title) + '</h5>';
-  modalHTML += '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>';
-  modalHTML += '</div>';
-  modalHTML += '<div class="modal-body">';
-  modalHTML += '<div class="text-muted small mb-2">Posted · ' + thread.created + '</div>';
-  modalHTML += '<img src="' + (thread.image || 'img/placeholder.png') + '" class="img-fluid mb-3" />';
-  modalHTML += '<p>' + escapeHTML(thread.body).replace(/\n/g, '<br/>') + '</p>';
-  modalHTML += '<hr/>';
-  modalHTML += '<div class="mb-3">' + tagsHTML + '</div>';
-  modalHTML += '<div class="comment-section">';
-  modalHTML += '<h6 class="mb-3">Comments (' + (thread.comments ? thread.comments.length : 0) + ')</h6>';
-  modalHTML += '<div id="commentsList">' + commentsHTML + '</div>';
-  modalHTML += '</div>';
-  modalHTML += '<div class="mt-3">';
-  modalHTML += '<label class="form-label small fw-bold">Add a comment</label>';
-  modalHTML += '<textarea id="commentInput_' + thread.id + '" class="form-control" rows="3" placeholder="Share your thoughts..." maxlength="500"></textarea>';
-  modalHTML += '<div class="char-counter" id="commentCounter_' + thread.id + '" style="text-align: right; margin-top: 5px;">0 / 500 characters</div>';
-  modalHTML += '<button class="btn btn-primary btn-sm mt-2" onclick="addComment(' + thread.id + ')">';
-  modalHTML += '<i class="fas fa-paper-plane me-1"></i>Post Comment';
-  modalHTML += '</button>';
-  modalHTML += '</div>';
-  modalHTML += '</div>';
-  modalHTML += '<div class="modal-footer">';
-  modalHTML += '<button class="btn btn-primary" onclick="editThread(' + thread.id + ')">';
-  modalHTML += '<i class="fas fa-edit me-1"></i>Edit Thread';
-  modalHTML += '</button>';
-  modalHTML += '<button class="btn btn-danger" onclick="deleteThread(' + thread.id + ')">';
-  modalHTML += '<i class="fas fa-trash me-1"></i>Delete Thread';
-  modalHTML += '</button>';
-  modalHTML += '<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
-  modalHTML += '</div>';
-  modalHTML += '</div>';
-  modalHTML += '</div>';
+  // create the full modal HTML - this is a lot of code but it works
+  var modalContent = '<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">';
+  modalContent += '<div class="modal-content">';
+  modalContent += '<div class="modal-header">';
+  modalContent += '<h5 class="modal-title">' + makeTextSafe(selectedThread.title) + '</h5>';
+  modalContent += '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>';
+  modalContent += '</div>';
+  modalContent += '<div class="modal-body">';
+  modalContent += '<div class="text-muted small mb-2">Posted · ' + selectedThread.created + '</div>';
+  modalContent += '<img src="' + (selectedThread.image || 'img/placeholder.png') + '" class="img-fluid mb-3" />';
+  modalContent += '<p>' + makeTextSafe(selectedThread.body).replace(/\n/g, '<br/>') + '</p>';
+  modalContent += '<hr/>';
+  modalContent += '<div class="mb-3">' + tagsHTML + '</div>';
+  modalContent += '<div class="comment-section">';
+  modalContent += '<h6 class="mb-3">Comments (' + (selectedThread.comments ? selectedThread.comments.length : 0) + ')</h6>';
+  modalContent += '<div id="commentsList">' + commentsHTML + '</div>';
+  modalContent += '</div>';
+  modalContent += '<div class="mt-3">';
+  modalContent += '<label class="form-label small fw-bold">Add a comment</label>';
+  modalContent += '<textarea id="commentInput_' + selectedThread.id + '" class="form-control" rows="3" placeholder="Share your thoughts..." maxlength="500"></textarea>';
+  modalContent += '<div class="counter-text" id="commentCounter_' + selectedThread.id + '" style="text-align: right; margin-top: 5px;">0 / 500 characters</div>';
+  modalContent += '<button class="btn btn-primary btn-sm mt-2" onclick="postComment(' + selectedThread.id + ')">';
+  modalContent += '<i class="fas fa-paper-plane me-1"></i>Post Comment';
+  modalContent += '</button>';
+  modalContent += '</div>';
+  modalContent += '</div>';
+  modalContent += '<div class="modal-footer">';
+  modalContent += '<button class="btn btn-primary" onclick="startEditingThread(' + selectedThread.id + ')">';
+  modalContent += '<i class="fas fa-edit me-1"></i>Edit Thread';
+  modalContent += '</button>';
+  modalContent += '<button class="btn btn-danger" onclick="removeThread(' + selectedThread.id + ')">';
+  modalContent += '<i class="fas fa-trash me-1"></i>Delete Thread';
+  modalContent += '</button>';
+  modalContent += '<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+  modalContent += '</div>';
+  modalContent += '</div>';
+  modalContent += '</div>';
   
-  // Create modal element
-  var modal = document.createElement('div');
-  modal.id = 'forumDetailModal';
-  modal.className = 'modal fade';
-  modal.innerHTML = modalHTML;
-  document.body.appendChild(modal);
+  // create the modal element
+  var modalElement = document.createElement('div');
+  modalElement.id = 'forumDetailModal';
+  modalElement.className = 'modal fade';
+  modalElement.innerHTML = modalContent;
+  document.body.appendChild(modalElement);
   
-  // Show modal
-  var bootstrapModal = new bootstrap.Modal(modal);
-  bootstrapModal.show();
+  // show the modal using bootstrap
+  var bsModal = new bootstrap.Modal(modalElement);
+  bsModal.show();
   
-  // Add comment counter listener
-  modal.addEventListener('shown.bs.modal', function() {
-    var commentInput = document.getElementById('commentInput_' + thread.id);
-    var commentCounter = document.getElementById('commentCounter_' + thread.id);
+  // setup comment counter after modal is shown
+  modalElement.addEventListener('shown.bs.modal', function() {
+    var commentBox = document.getElementById('commentInput_' + selectedThread.id);
+    var commentCounterText = document.getElementById('commentCounter_' + selectedThread.id);
     
-    if (commentInput) {
-      commentInput.addEventListener('input', function() {
-        var length = this.value.length;
-        commentCounter.textContent = length + ' / 500 characters';
+    if (commentBox) {
+      commentBox.addEventListener('input', function() {
+        var commentLen = this.value.length;
+        commentCounterText.textContent = commentLen + ' / 500 characters';
         
-        commentCounter.classList.remove('warning', 'danger');
-        if (length >= 450) {
-          commentCounter.classList.add('danger');
-        } else if (length >= 400) {
-          commentCounter.classList.add('warning');
+        commentCounterText.classList.remove('almost-full', 'too-much');
+        if (commentLen >= 450) {
+          commentCounterText.classList.add('too-much');
+        } else if (commentLen >= 400) {
+          commentCounterText.classList.add('almost-full');
         }
       });
     }
   });
   
-  // Remove modal from DOM when hidden
-  modal.addEventListener('hidden.bs.modal', function() {
-    modal.remove();
+  // clean up modal when closed
+  modalElement.addEventListener('hidden.bs.modal', function() {
+    modalElement.remove();
   });
 }
 
-// Escape HTML to prevent XSS attacks
-function escapeHTML(text) {
-  var div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+// Make text safe for HTML - prevents XSS attacks (learned this from stack overflow)
+function makeTextSafe(text) {
+  var tempDiv = document.createElement('div');
+  tempDiv.textContent = text;
+  return tempDiv.innerHTML;
 }
 
-// Add a comment to a thread
-function addComment(threadId) {
-  var commentInput = document.getElementById('commentInput_' + threadId);
-  var commentText = commentInput.value.trim();
+// Add a new comment to a thread
+function postComment(threadId) {
+  var commentBox = document.getElementById('commentInput_' + threadId);
+  var commentContent = commentBox.value.trim();
   
-  // Validate comment
-  if (commentText === '') {
+  // make sure they actually wrote something
+  if (commentContent === '') {
     alert('Please write a comment before submitting.');
     return;
   }
   
-  if (commentText.length < 5) {
+  // comments should be at least 5 characters
+  if (commentContent.length < 5) {
     alert('Comment must be at least 5 characters long.');
     return;
   }
   
-  // Find thread
-  var thread = null;
-  for (var i = 0; i < threads.length; i++) {
-    if (threads[i].id === threadId) {
-      thread = threads[i];
+  // find the thread
+  var targetThread = null;
+  for (var i = 0; i < allThreads.length; i++) {
+    if (allThreads[i].id === threadId) {
+      targetThread = allThreads[i];
       break;
     }
   }
   
-  if (!thread) {
+  if (!targetThread) {
     return;
   }
   
-  // Create new comment
-  var newComment = {
+  // create the new comment object
+  var freshComment = {
     id: Date.now(),
     author: 'User',
-    text: commentText,
+    text: commentContent,
     created: new Date().toLocaleString()
   };
   
-  // Add comment to thread
-  if (!thread.comments) {
-    thread.comments = [];
+  // add comment to thread
+  if (!targetThread.comments) {
+    targetThread.comments = [];
   }
-  thread.comments.push(newComment);
+  targetThread.comments.push(freshComment);
   
-  // Save to localStorage
-  saveThreads();
+  // save everything
+  saveThreadsToStorage();
   
-  // Close modal
-  var modal = document.getElementById('forumDetailModal');
-  var bootstrapModal = bootstrap.Modal.getInstance(modal);
-  bootstrapModal.hide();
+  // close and reopen modal to show new comment
+  var modalEl = document.getElementById('forumDetailModal');
+  var bsModal = bootstrap.Modal.getInstance(modalEl);
+  bsModal.hide();
   
-  // Reopen modal after a short delay
   setTimeout(function() {
-    showThreadDetail(threadId);
+    openThreadModal(threadId);
   }, 300);
   
-  // Refresh thread display
-  displayThreads();
+  // update the threads display
+  showAllThreads();
 }
 
-// Delete a comment
-function deleteComment(threadId, commentId) {
+// Delete a comment from a thread
+function removeComment(threadId, commentId) {
+  // make sure they really want to delete
   if (!confirm('Delete this comment? This action cannot be undone.')) {
     return;
   }
   
-  // Find thread
-  var thread = null;
-  for (var i = 0; i < threads.length; i++) {
-    if (threads[i].id === threadId) {
-      thread = threads[i];
+  // find the thread
+  var targetThread = null;
+  for (var i = 0; i < allThreads.length; i++) {
+    if (allThreads[i].id === threadId) {
+      targetThread = allThreads[i];
       break;
     }
   }
   
-  if (!thread) {
+  if (!targetThread) {
     return;
   }
   
-  // Remove comment
-  var newComments = [];
-  for (var i = 0; i < thread.comments.length; i++) {
-    if (thread.comments[i].id !== commentId) {
-      newComments.push(thread.comments[i]);
+  // filter out the comment we want to delete
+  var updatedComments = [];
+  for (var i = 0; i < targetThread.comments.length; i++) {
+    if (targetThread.comments[i].id !== commentId) {
+      updatedComments.push(targetThread.comments[i]);
     }
   }
-  thread.comments = newComments;
+  targetThread.comments = updatedComments;
   
-  // Save to localStorage
-  saveThreads();
+  // save changes
+  saveThreadsToStorage();
   
-  // Close modal
-  var modal = document.getElementById('forumDetailModal');
-  var bootstrapModal = bootstrap.Modal.getInstance(modal);
-  bootstrapModal.hide();
+  // refresh modal
+  var modalEl = document.getElementById('forumDetailModal');
+  var bsModal = bootstrap.Modal.getInstance(modalEl);
+  bsModal.hide();
   
-  // Reopen modal after a short delay
   setTimeout(function() {
-    showThreadDetail(threadId);
+    openThreadModal(threadId);
   }, 300);
   
-  // Refresh thread display
-  displayThreads();
+  showAllThreads();
 }
 
-// Edit a thread
-function editThread(threadId) {
-  // Find thread
-  var thread = null;
-  for (var i = 0; i < threads.length; i++) {
-    if (threads[i].id === threadId) {
-      thread = threads[i];
+// Load thread data into the form for editing
+function startEditingThread(threadId) {
+  // find thread to edit
+  var threadToEdit = null;
+  for (var i = 0; i < allThreads.length; i++) {
+    if (allThreads[i].id === threadId) {
+      threadToEdit = allThreads[i];
       break;
     }
   }
   
-  if (!thread) {
+  if (!threadToEdit) {
     return;
   }
   
-  // Fill form with thread data
-  document.getElementById('threadTitle').value = thread.title;
-  document.getElementById('threadBody').value = thread.body;
+  // fill in the form with thread data
+  document.getElementById('threadTitle').value = threadToEdit.title;
+  document.getElementById('threadBody').value = threadToEdit.body;
   
-  // Convert tags array to comma-separated string
-  if (thread.tags && thread.tags.length > 0) {
-    var tagsString = thread.tags.join(', ');
+  // convert tags array back to string
+  if (threadToEdit.tags && threadToEdit.tags.length > 0) {
+    var tagsString = threadToEdit.tags.join(', ');
     document.getElementById('threadTags').value = tagsString;
   }
   
-  // Update counters
-  updateTitleCounter();
-  updateBodyCounter();
-  updateTagsCounter();
+  // update all the counters
+  updateTitleCount();
+  updateMessageCount();
+  updateTagsCount();
   
-  // Set image if exists
-  if (thread.image && thread.image !== 'img/3.png' && thread.image !== 'img/placeholder.png') {
-    currentImageData = thread.image;
-    document.getElementById('previewImg').src = thread.image;
+  // show image if there is one
+  if (threadToEdit.image && threadToEdit.image !== 'img/3.png' && threadToEdit.image !== 'img/placeholder.png') {
+    currentImage = threadToEdit.image;
+    document.getElementById('previewImg').src = threadToEdit.image;
     document.getElementById('imagePreview').style.display = 'block';
   }
   
-  // Change button text
+  // change button to say "Update" instead of "Post"
   document.getElementById('postBtnText').textContent = 'Update Thread';
   
-  // Store edit ID
-  currentEditId = threadId;
+  // remember we're editing
+  editingThreadId = threadId;
   
-  // Update submit button state
-  updateSubmitButton();
+  // enable post button
+  checkPostButton();
   
-  // Close modal
-  var modal = document.getElementById('forumDetailModal');
-  var bootstrapModal = bootstrap.Modal.getInstance(modal);
-  bootstrapModal.hide();
+  // close modal
+  var modalEl = document.getElementById('forumDetailModal');
+  var bsModal = bootstrap.Modal.getInstance(modalEl);
+  bsModal.hide();
   
-  // Scroll to top of page
+  // scroll to top so user can see the form
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Delete a thread
-function deleteThread(threadId) {
+// Delete a thread completely
+function removeThread(threadId) {
   if (!confirm('Delete this thread? This action cannot be undone.')) {
     return;
   }
   
-  // Remove thread from array
-  var newThreads = [];
-  for (var i = 0; i < threads.length; i++) {
-    if (threads[i].id !== threadId) {
-      newThreads.push(threads[i]);
+  // remove thread from array
+  var keptThreads = [];
+  for (var i = 0; i < allThreads.length; i++) {
+    if (allThreads[i].id !== threadId) {
+      keptThreads.push(allThreads[i]);
     }
   }
-  threads = newThreads;
+  allThreads = keptThreads;
   
-  // Save to localStorage
-  saveThreads();
+  // save changes
+  saveThreadsToStorage();
   
-  // Close modal
-  var modal = document.getElementById('forumDetailModal');
-  var bootstrapModal = bootstrap.Modal.getInstance(modal);
-  bootstrapModal.hide();
+  // close modal
+  var modalEl = document.getElementById('forumDetailModal');
+  var bsModal = bootstrap.Modal.getInstance(modalEl);
+  bsModal.hide();
   
-  // Refresh thread display
-  displayThreads();
+  // refresh display
+  showAllThreads();
 }
 
-// Form submission
+// Handle form submission when user clicks post button
 document.getElementById('threadForm').addEventListener('submit', function(e) {
   e.preventDefault();
   
-  // Get form values
-  var title = document.getElementById('threadTitle').value.trim();
-  var body = document.getElementById('threadBody').value.trim();
-  var tagsInput = document.getElementById('threadTags').value;
+  console.log('Form submitted!'); // debugging - can remove this later
   
-  // Validate one more time before submitting
-  if (title.length < 10) {
+  // get all the form values
+  var titleVal = document.getElementById('threadTitle').value.trim();
+  var bodyVal = document.getElementById('threadBody').value.trim();
+  var tagsVal = document.getElementById('threadTags').value;
+  
+  // double check validation before submitting
+  if (titleVal.length < 10) {
     alert('Title must be at least 10 characters');
     return;
   }
   
-  if (body.length < 20) {
+  if (bodyVal.length < 20) {
     alert('Message must be at least 20 characters');
     return;
   }
   
-  // Process tags
-  var tags = [];
-  if (tagsInput.trim().length > 0) {
-    var tagArray = tagsInput.split(',');
-    for (var i = 0; i < tagArray.length; i++) {
-      var tag = tagArray[i].trim();
-      if (tag.length > 0) {
-        tags.push(tag);
+  // process tags into array
+  var tagsArray = [];
+  if (tagsVal.trim().length > 0) {
+    var splitTags = tagsVal.split(',');
+    for (var i = 0; i < splitTags.length; i++) {
+      var cleanTag = splitTags[i].trim();
+      if (cleanTag.length > 0) {
+        tagsArray.push(cleanTag);
       }
     }
   }
   
-  // Check if editing or creating new
-  if (currentEditId) {
-    // Update existing thread
-    for (var i = 0; i < threads.length; i++) {
-      if (threads[i].id === currentEditId) {
-        threads[i].title = title;
-        threads[i].body = body;
-        threads[i].tags = tags;
-        threads[i].excerpt = body.substring(0, 140);
-        if (currentImageData) {
-          threads[i].image = currentImageData;
+  // check if we're editing or creating new
+  if (editingThreadId) {
+    // update existing thread
+    for (var i = 0; i < allThreads.length; i++) {
+      if (allThreads[i].id === editingThreadId) {
+        allThreads[i].title = titleVal;
+        allThreads[i].body = bodyVal;
+        allThreads[i].tags = tagsArray;
+        allThreads[i].excerpt = bodyVal.substring(0, 140);
+        if (currentImage) {
+          allThreads[i].image = currentImage;
         }
         break;
       }
     }
     
-    currentEditId = null;
+    editingThreadId = null;
     document.getElementById('postBtnText').textContent = 'Post Thread';
   } else {
-    // Create new thread
-    var newThread = {
+    // create brand new thread
+    var brandNewThread = {
       id: Date.now(),
-      title: title,
-      body: body,
+      title: titleVal,
+      body: bodyVal,
       meta: 'By SportStore • Community',
-      tags: tags,
-      excerpt: body.substring(0, 140),
-      image: currentImageData || 'img/3.png',
+      tags: tagsArray,
+      excerpt: bodyVal.substring(0, 140),
+      image: currentImage || 'img/3.png',
       created: new Date().toLocaleString(),
       comments: []
     };
     
-    threads.unshift(newThread); // Add to beginning of array
+    // add to beginning of array so it shows up first
+    allThreads.unshift(brandNewThread);
   }
   
-  // Save to localStorage
-  saveThreads();
+  // save to storage
+  saveThreadsToStorage();
   
-  // Reset form
-  document.getElementById('threadForm').reset();
+  // reset the form
+  this.reset();
   document.getElementById('imagePreview').style.display = 'none';
-  currentImageData = null;
+  currentImage = null;
   
-  // Remove all error states
-  var invalidInputs = document.querySelectorAll('.is-invalid');
-  for (var i = 0; i < invalidInputs.length; i++) {
-    invalidInputs[i].classList.remove('is-invalid');
+  // clear all error states
+  var errorFields = document.querySelectorAll('.error-input');
+  for (var i = 0; i < errorFields.length; i++) {
+    errorFields[i].classList.remove('error-input');
   }
   
-  var errorMessages = document.querySelectorAll('.invalid-feedback');
-  for (var i = 0; i < errorMessages.length; i++) {
-    errorMessages[i].classList.remove('show');
+  var errorMsgs = document.querySelectorAll('.error-message');
+  for (var i = 0; i < errorMsgs.length; i++) {
+    errorMsgs[i].classList.remove('show-error');
   }
   
-  // Reset counters
+  // reset counters
   document.getElementById('titleCounter').textContent = '0 / 120 characters';
   document.getElementById('bodyCounter').textContent = '0 / 2000 characters';
   document.getElementById('tagsCounter').textContent = '0 / 200 characters';
   
-  // Refresh display
-  displayThreads();
+  // refresh the thread display
+  showAllThreads();
   
-  // Show success message
+  // show success message
   alert('Thread posted successfully!');
 });
 
-// Clear button
+// Clear button functionality
 document.getElementById('clearBtn').addEventListener('click', function() {
   if (confirm('Clear the form?')) {
     document.getElementById('threadForm').reset();
     document.getElementById('imagePreview').style.display = 'none';
-    currentImageData = null;
-    currentEditId = null;
+    currentImage = null;
+    editingThreadId = null;
     
-    // Remove all error states
-    var invalidInputs = document.querySelectorAll('.is-invalid');
-    for (var i = 0; i < invalidInputs.length; i++) {
-      invalidInputs[i].classList.remove('is-invalid');
+    // remove errors
+    var errorFields = document.querySelectorAll('.error-input');
+    for (var i = 0; i < errorFields.length; i++) {
+      errorFields[i].classList.remove('error-input');
     }
     
-    var errorMessages = document.querySelectorAll('.invalid-feedback');
-    for (var i = 0; i < errorMessages.length; i++) {
-      errorMessages[i].classList.remove('show');
+    var errorMsgs = document.querySelectorAll('.error-message');
+    for (var i = 0; i < errorMsgs.length; i++) {
+      errorMsgs[i].classList.remove('show-error');
     }
     
-    // Reset counters
+    // reset counters
     document.getElementById('titleCounter').textContent = '0 / 120 characters';
     document.getElementById('bodyCounter').textContent = '0 / 2000 characters';
     document.getElementById('tagsCounter').textContent = '0 / 200 characters';
     
     document.getElementById('postBtnText').textContent = 'Post Thread';
-    updateSubmitButton();
+    checkPostButton();
   }
 });
 
 // Remove image button
 document.getElementById('removeImage').addEventListener('click', function() {
-  currentImageData = null;
+  currentImage = null;
   document.getElementById('threadImage').value = '';
   document.getElementById('imagePreview').style.display = 'none';
-  document.getElementById('threadImage').classList.remove('is-invalid');
-  document.getElementById('imageError').classList.remove('show');
-  updateSubmitButton();
+  document.getElementById('threadImage').classList.remove('error-input');
+  document.getElementById('imageError').classList.remove('show-error');
+  checkPostButton();
 });
 
-// Add event listeners for live validation
+// Setup all the input listeners for live validation
 document.getElementById('threadTitle').addEventListener('input', function() {
-  updateTitleCounter();
-  checkTitle();
-  updateSubmitButton();
+  updateTitleCount();
+  validateTitle();
+  checkPostButton();
 });
 
 document.getElementById('threadBody').addEventListener('input', function() {
-  updateBodyCounter();
-  checkMessage();
-  updateSubmitButton();
+  updateMessageCount();
+  validateMessage();
+  checkPostButton();
 });
 
 document.getElementById('threadTags').addEventListener('input', function() {
-  updateTagsCounter();
-  checkTags();
-  updateSubmitButton();
+  updateTagsCount();
+  validateTags();
+  checkPostButton();
 });
 
 document.getElementById('threadImage').addEventListener('change', function() {
-  checkImage();
-  updateSubmitButton();
+  validateImage();
+  checkPostButton();
 });
 
-// Search functionality
+// Search by title
 document.getElementById('searchInput').addEventListener('input', function() {
-  searchText = this.value;
-  displayThreads();
+  searchQuery = this.value;
+  showAllThreads();
 });
 
+// Search by content
 document.getElementById('contentSearch').addEventListener('input', function() {
-  contentSearchText = this.value;
-  displayThreads();
+  contentSearchQuery = this.value;
+  showAllThreads();
 });
 
 // Sort functionality
 document.getElementById('sortSelect').addEventListener('change', function() {
-  sortOption = this.value;
-  displayThreads();
+  sortBy = this.value;
+  showAllThreads();
 });
 
-// Load threads and display when page loads
-loadThreads();
-displayThreads();
-updateSubmitButton();
+// Load everything when page loads
+loadThreadsFromStorage();
+showAllThreads();
+checkPostButton();
+
+console.log('Forum loaded successfully!'); // just for debugging
 </script>
 
 </body>
