@@ -1,3 +1,52 @@
+  <script>
+  // --- Web Storage API for Review Form Persistence ---
+  document.addEventListener('DOMContentLoaded', function() {
+    const reviewForm = document.querySelector('#reviewForm form');
+    if (!reviewForm) return;
+
+    const STORAGE_KEY = 'reviewFormDraft';
+
+    // Save form data to localStorage
+    function saveFormData() {
+      const data = {};
+      Array.from(reviewForm.elements).forEach(el => {
+        if (el.name || el.type === 'file') {
+          if (el.type === 'file') return; // Don't store files
+          data[el.name || el.previousElementSibling?.textContent.trim()] = el.value;
+        }
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // Load form data from localStorage
+    function loadFormData() {
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      Array.from(reviewForm.elements).forEach(el => {
+        if (el.name || el.type === 'file') {
+          if (el.type === 'file') return;
+          const key = el.name || el.previousElementSibling?.textContent.trim();
+          if (data[key]) el.value = data[key];
+        }
+      });
+    }
+
+    // Clear form data from localStorage on submit
+    reviewForm.addEventListener('submit', function(e) {
+      localStorage.removeItem(STORAGE_KEY);
+    });
+
+    // Save on input/change
+    Array.from(reviewForm.elements).forEach(el => {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+        el.addEventListener('input', saveFormData);
+        el.addEventListener('change', saveFormData);
+      }
+    });
+
+    // Load on page load
+    loadFormData();
+  });
+  </script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +62,7 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="css/globals.css" />
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="product_review_and_rating/PRL_styleguide.css" />
+  <link rel="stylesheet" href="css/styleguide.css" />
 
   <title>Product Review List</title>
 </head>
@@ -49,8 +98,7 @@
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item"><a href="#">Shop</a></li>
-        <li class="breadcrumb-item"><a href="#">Men</a></li>
-        <li class="breadcrumb-item active">T-shirts</li>
+        <li class="breadcrumb-item active">Nike Air Force 1 High By You</li>
       </ol>
     </div>
   </nav>
@@ -153,15 +201,16 @@
             <form>
               <div class="mb-3">
                 <label class="form-label">Review Title</label>
-                <input type="text" class="form-control" placeholder="Enter review title">
+                <input type="text" class="form-control" name="title" placeholder="Enter review title">
               </div>
               <div class="mb-3">
                 <label class="form-label">Description</label>
-                <textarea class="form-control" rows="3" placeholder="Write your review"></textarea>
+                <textarea class="form-control" name="description" rows="3" placeholder="Write your review"></textarea>
               </div>
               <div class="mb-3">
                 <label class="form-label">Star Rating</label>
-                <select class="form-select">
+                <select class="form-select" name="rating" required>
+                  <option value="" selected disabled hidden>Select rating</option>
                   <option>5 Stars</option>
                   <option>4 Stars</option>
                   <option>3 Stars</option>
@@ -171,87 +220,42 @@
               </div>
               <div class="mb-3">
                 <label class="form-label">Your Name</label>
-                <input type="text" class="form-control" placeholder="Enter your name">
+                <input type="text" class="form-control" name="username" placeholder="Enter your name">
               </div>
               <div class="mb-3">
                 <label class="form-label">Date Added</label>
-                <input type="date" class="form-control">
+                <input type="date" class="form-control" name="date" style="color: #888;">
               </div>
               <div class="mb-3">
                 <label class="form-label">Image (optional)</label>
-                <input type="file" class="form-control">
+                <input type="file" class="form-control" name="image">
               </div>
-              <button type="button" class="btn btn-dark">Submit Review</button>
+              <button type="submit" class="btn btn-dark">Submit Review</button>
             </form>
           </div>
         </div>
 
-        <div class="row g-4">
-          <!-- Review Card Example -->
-          <div class="col-md-6 col-lg-4">
-            <div class="card h-100">
-              <div class="card-body">
-                <div class="mb-2">
-                  <span class="text-warning">
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-regular fa-star"></i>
-                  </span>
-                </div>
-                <h6 class="fw-bold mb-1">John Doe <span class="badge bg-success ms-2">Verified</span></h6>
-                <p class="text-muted small mb-1">7/6/2022 at 5:42PM</p>
-                <h6 class="fw-bold mb-1">Great Everyday Shoe</h6>
-                <p class="mb-0">Great product! Really comfortable and fits well.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-4">
-            <div class="card h-100">
-              <div class="card-body">
-                <div class="mb-2">
-                  <span class="text-warning">
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                  </span>
-                </div>
-                <h6 class="fw-bold mb-1">Jane Doe <span class="badge bg-success ms-2">Verified</span></h6>
-                <p class="text-muted small mb-1">5/6/2022 at 4:12PM</p>
-                <h6 class="fw-bold mb-1">Super Comfortable</h6>
-                <p class="mb-0">Ridiculously comfortable—like walking on well-trained marshmallows. Easily my new daily pair.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-4">
-            <div class="card h-100">
-              <div class="card-body">
-                <div class="mb-2">
-                  <span class="text-warning">
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-solid fa-star"></i>
-                    <i class="fa-regular fa-star"></i>
-                  </span>
-                </div>
-                <h6 class="fw-bold mb-1">Jean D'Arc <span class="badge bg-success ms-2">Verified</span></h6>
-                <p class="small mb-1">19/1/2023 at 10:31AM</p>
-                <h6 class="fw-bold mb-1">Supportive & Stylish</h6>
-                <p class="mb-0">Great support and looks sharp, just needed a tiny bit of break-in time.</p>
-              </div>
-            </div>
-          </div>
-          <!-- Repeat review cards as needed -->
+        <!-- Review Controls -->
+        <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+          <input id="reviewSearch" class="form-control w-auto" style="min-width:200px" type="text" placeholder="Search reviews...">
+          <select id="reviewSort" class="form-select w-auto">
+            <option value="date-desc">Newest</option>
+            <option value="date-asc">Oldest</option>
+            <option value="rating-desc">Highest Rating</option>
+            <option value="rating-asc">Lowest Rating</option>
+          </select>
+          <select id="reviewFilter" class="form-select w-auto">
+            <option value="all">All Ratings</option>
+            <option value="5">5 Stars</option>
+            <option value="4">4 Stars</option>
+            <option value="3">3 Stars</option>
+            <option value="2">2 Stars</option>
+            <option value="1">1 Star</option>
+          </select>
         </div>
-        <div class="text-center mt-4">
-          <button class="btn btn-outline-dark">Load More Reviews</button>
-        </div>
+        <!-- Review List/Detail Container -->
+        <div id="reviewList" class="row g-4"></div>
+        <div id="reviewDetail" class="d-none"></div>
       </div>
       <div class="tab-pane fade" id="faqs" role="tabpanel">
         <p>FAQs content goes here.</p>
@@ -376,6 +380,262 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  // --- Review Data (static for now) ---
+  const reviews = [
+    {
+      id: 1,
+      title: "Great Everyday Shoe",
+      summary: "Great product! Really comfortable and fits well.",
+      content: "Great product! Really comfortable and fits well. I wear them every day and they still look new. Highly recommend for anyone looking for comfort and style.",
+      name: "John Doe",
+      date: "2022-06-07",
+      rating: 4,
+      verified: true,
+      thumbnail: "img/Review-1.jpg",
+      color: "White",
+      size: "41"
+    },
+    {
+      id: 2,
+      title: "Super Comfortable",
+      summary: "Ridiculously comfortable—like walking on well-trained marshmallows. Easily my new daily pair.",
+      content: "Ridiculously comfortable—like walking on well-trained marshmallows. Easily my new daily pair. The fit is perfect and the cushioning is amazing.",
+      name: "Jane Doe",
+      date: "2022-06-05",
+      rating: 5,
+      verified: true,
+      thumbnail: "img/Review-2.jpg",
+      color: "Mint Green",
+      size: "40"
+    },
+    {
+      id: 3,
+      title: "Supportive & Stylish",
+      summary: "Great support and looks sharp, just needed a tiny bit of break-in time.",
+      content: "Great support and looks sharp, just needed a tiny bit of break-in time. After a week, they felt perfect. Would buy again!",
+      name: "Jean D'Arc",
+      date: "2023-01-19",
+      rating: 4,
+      verified: true,
+      thumbnail: "img/Review-3.jpg",
+      color: "Orange - Black Satin",
+      size: "42"
+    }
+  ];
+
+  // --- Render Functions ---
+  function renderStars(rating) {
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+      html += `<i class="fa-star fa${i <= rating ? 's' : 'r'} fa-solid text-warning"></i>`;
+    }
+    return html;
+  }
+
+  function renderReviewList(list) {
+    const container = document.getElementById('reviewList');
+    container.innerHTML = '';
+    if (!list.length) {
+      container.innerHTML = '<div class="col-12 text-center text-muted">No reviews found.</div>';
+      return;
+    }
+    list.forEach(r => {
+      container.innerHTML += `
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 review-preview" data-id="${r.id}" style="cursor:pointer;">
+            <img src="${r.thumbnail}" class="card-img-top" alt="Review Thumbnail" style="height:180px;object-fit:cover;">
+            <div class="card-body">
+              <div class="mb-2">${renderStars(r.rating)}</div>
+              <h6 class="fw-bold mb-1">${r.name} ${r.verified ? '<span class="badge bg-success ms-2">Verified</span>' : ''}</h6>
+              <p class="text-muted small mb-1">${new Date(r.date).toLocaleDateString()}</p>
+              <h6 class="fw-bold mb-1">${r.title}</h6>
+              <p class="mb-0">${r.summary}</p>
+              <p class="mb-0 text-muted small">Color: <span class="fw-semibold">${r.color}</span> | Size: <span class="fw-semibold">${r.size}</span></p>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    // Add click event for detail view
+    container.querySelectorAll('.review-preview').forEach(card => {
+      card.addEventListener('click', function() {
+        const id = +this.getAttribute('data-id');
+        showReviewDetail(id);
+      });
+    });
+  }
+
+  function showReviewDetail(id) {
+    const r = reviews.find(rv => rv.id === id);
+    if (!r) return;
+    const detail = document.getElementById('reviewDetail');
+    detail.innerHTML = `
+      <div class="card mb-4">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img src="${r.thumbnail}" class="img-fluid rounded-start" alt="Review Thumbnail">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <div class="mb-2">${renderStars(r.rating)}</div>
+              <h5 class="card-title">${r.title}</h5>
+              <h6 class="fw-bold mb-1">${r.name} ${r.verified ? '<span class="badge bg-success ms-2">Verified</span>' : ''}</h6>
+              <p class="text-muted small mb-1">${new Date(r.date).toLocaleDateString()}</p>
+              <p class="mb-1 text-muted small">Color: <span class="fw-semibold">${r.color}</span> | Size: <span class="fw-semibold">${r.size}</span></p>
+              <p class="card-text">${r.content}</p>
+              <button class="btn btn-outline-secondary mt-2" id="backToList">Back to List</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('reviewList').classList.add('d-none');
+    detail.classList.remove('d-none');
+    document.getElementById('backToList').onclick = function() {
+      detail.classList.add('d-none');
+      document.getElementById('reviewList').classList.remove('d-none');
+    };
+  }
+
+  // --- Sort, Filter, Search ---
+  function getFilteredSortedReviews() {
+    let list = [...reviews];
+    // Filter
+    const filterVal = document.getElementById('reviewFilter').value;
+    if (filterVal !== 'all') {
+      list = list.filter(r => r.rating === +filterVal);
+    }
+    // Search
+    const searchVal = document.getElementById('reviewSearch').value.trim().toLowerCase();
+    if (searchVal) {
+      list = list.filter(r =>
+        r.title.toLowerCase().includes(searchVal) ||
+        r.summary.toLowerCase().includes(searchVal) ||
+        r.content.toLowerCase().includes(searchVal) ||
+        r.name.toLowerCase().includes(searchVal)
+      );
+    }
+    // Sort
+    const sortVal = document.getElementById('reviewSort').value;
+    if (sortVal === 'date-desc') list.sort((a,b) => b.date.localeCompare(a.date));
+    if (sortVal === 'date-asc') list.sort((a,b) => a.date.localeCompare(b.date));
+    if (sortVal === 'rating-desc') list.sort((a,b) => b.rating - a.rating);
+    if (sortVal === 'rating-asc') list.sort((a,b) => a.rating - b.rating);
+    return list;
+  }
+
+  function updateReviewList() {
+    renderReviewList(getFilteredSortedReviews());
+    document.getElementById('reviewDetail').classList.add('d-none');
+    document.getElementById('reviewList').classList.remove('d-none');
+  }
+
+  // --- Event Listeners ---
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initial render
+    updateReviewList();
+    // Controls
+    document.getElementById('reviewSort').addEventListener('change', updateReviewList);
+    document.getElementById('reviewFilter').addEventListener('change', updateReviewList);
+    document.getElementById('reviewSearch').addEventListener('input', updateReviewList);
+  });
+  </script>
+
+  <script>
+  // Comprehensive validation for the review form
+  document.addEventListener('DOMContentLoaded', function() {
+    // Find the review form (inside the collapse)
+    const reviewForm = document.querySelector('#reviewForm form');
+    if (!reviewForm) return;
+
+    // Helper: create or get error message element
+    function getErrorElem(input) {
+      let err = input.parentElement.querySelector('.invalid-feedback');
+      if (!err) {
+        err = document.createElement('div');
+        err.className = 'invalid-feedback';
+        input.parentElement.appendChild(err);
+      }
+      return err;
+    }
+
+    // Validation rules
+    function validateField(input) {
+      const name = input.previousElementSibling ? input.previousElementSibling.textContent.trim().toLowerCase() : '';
+      const value = input.value.trim();
+      let valid = true, msg = '';
+      if (input.type === 'text' && name === 'review title') {
+        if (!value) { valid = false; msg = 'Title is required.'; }
+        else if (value.length < 5) { valid = false; msg = 'Title must be at least 5 characters.'; }
+      }
+      if (input.tagName === 'TEXTAREA') {
+        if (!value) { valid = false; msg = 'Description is required.'; }
+        else if (value.length < 10) { valid = false; msg = 'Description must be at least 10 characters.'; }
+      }
+      if (input.tagName === 'SELECT' && name === 'star rating') {
+        if (!value) { valid = false; msg = 'Please select a rating.'; }
+      }
+      if (input.type === 'text' && name === 'your name') {
+        if (!value) { valid = false; msg = 'Name is required.'; }
+        else if (!/^[a-zA-Z\s']+$/.test(value)) { valid = false; msg = 'Name must be letters only.'; }
+      }
+      if (input.type === 'date') {
+        if (!value) { valid = false; msg = 'Date is required.'; }
+        else {
+          const today = new Date();
+          const inputDate = new Date(value);
+          if (inputDate > today) { valid = false; msg = 'Date cannot be in the future.'; }
+        }
+      }
+      if (input.type === 'file') {
+        if (input.files.length > 0) {
+          const file = input.files[0];
+          if (!file.type.startsWith('image/')) {
+            valid = false; msg = 'Only image files are allowed.';
+          }
+        }
+      }
+      // Show/hide error
+      const err = getErrorElem(input);
+      if (!valid) {
+        input.classList.add('is-invalid');
+        err.textContent = msg;
+      } else {
+        input.classList.remove('is-invalid');
+        err.textContent = '';
+      }
+      return valid;
+    }
+
+    // Validate all fields on submit
+    reviewForm.addEventListener('submit', function(e) {
+      let allValid = true;
+      Array.from(reviewForm.elements).forEach(el => {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+          if (!validateField(el)) allValid = false;
+        }
+      });
+      if (!allValid) {
+        e.preventDefault();
+      } else {
+        alert('Review submitted successfully!');
+        // Here you would handle the review data (e.g., save, display, etc.)
+        e.preventDefault(); // Remove this if you want real submission
+      }
+    });
+
+    // Live validation on input/change/blur
+    Array.from(reviewForm.elements).forEach(el => {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+        el.addEventListener('input', () => validateField(el));
+        el.addEventListener('change', () => validateField(el));
+        el.addEventListener('blur', () => validateField(el));
+      }
+    });
+  });
+  </script>
   </div> <!-- End prl-wrapper -->
 </body>
 </html>
