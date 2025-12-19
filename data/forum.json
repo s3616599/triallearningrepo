@@ -1,0 +1,145 @@
+[
+  {
+    "id": 1,
+    "title": "Which football boots (cleats) are best for firm natural grass?",
+    "author": "Community",
+    "meta": "By SportStore • Football",
+    "tags": ["football", "cleats", "boots", "FG"],
+    "excerpt": "I'm switching from turf to 11-a-side on firm natural grass pitches and need new boots.",
+    "body": "I'm switching from turf to 11-a-side on firm natural grass pitches and need new boots. I prefer lightweight models with good traction and a snug fit. Any recommendations for studs pattern and brands (under $200) that perform well on firmer surfaces?",
+    "image": "img/1.png",
+    "created": "2025-12-01T09:15:00Z",
+    "comments": [
+      {
+        "id": 101,
+        "author": "SoccerPro23",
+        "text": "Nike Mercurial Vapor are excellent for firm ground. Great traction and very lightweight!",
+        "created": "2025-12-01T10:30:00Z"
+      },
+      {
+        "id": 102,
+        "author": "FootballFan",
+        "text": "I'd recommend Adidas Predator series. They have amazing grip on firm grass.",
+        "created": "2025-12-01T14:20:00Z"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Best long-run shoes for high-mileage training (neutral runner)?",
+    "author": "Community",
+    "meta": "By SportStore • Running",
+    "tags": ["running", "shoes", "training"],
+    "excerpt": "Training for a marathon — weekly mileage around 60—80 km. Looking for long-run shoes.",
+    "body": "Training for a marathon (60—80 km/week). Need shoes offering cushioning and durability without being sluggish. Prefer neutral cushioning and something that lasts beyond 800 km if possible. What worked for you?",
+    "image": "img/2.png",
+    "created": "2025-11-28T18:02:00Z",
+    "comments": [
+      {
+        "id": 201,
+        "author": "MarathonRunner",
+        "text": "Brooks Ghost series is fantastic for high mileage. Super comfortable and durable!",
+        "created": "2025-11-28T19:15:00Z"
+      },
+      {
+        "id": 202,
+        "author": "RunningCoach",
+        "text": "Have you tried Nike Pegasus? They're my go-to for long distance training.",
+        "created": "2025-11-29T08:45:00Z"
+      },
+      {
+        "id": 203,
+        "author": "UltraRunner",
+        "text": "Hoka Clifton is worth looking at too. Amazing cushioning for those long miles.",
+        "created": "2025-11-29T12:30:00Z"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Basketball shoes for outdoor courts - recommendations?",
+    "author": "Community",
+    "meta": "By SportStore • Basketball",
+    "tags": ["basketball", "outdoor", "shoes"],
+    "excerpt": "Playing mostly on outdoor concrete courts. Need durable basketball shoes that can handle rough surfaces.",
+    "body": "I play pickup basketball 3-4 times a week on outdoor concrete courts. Looking for shoes with excellent grip, ankle support, and durability. Budget is around $150. What do you recommend?",
+    "image": "img/3.png",
+    "created": "2025-11-25T14:30:00Z",
+    "comments": [
+      {
+        "id": 301,
+        "author": "HoopDreams",
+        "text": "Nike LeBron Witness series is built for outdoor play. Very durable!",
+        "created": "2025-11-25T16:45:00Z"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Yoga mat recommendations for beginners?",
+    "author": "Community",
+    "meta": "By SportStore • Yoga",
+    "tags": ["yoga", "mat", "beginner"],
+    "excerpt": "Just started yoga and need a good mat. What thickness and material works best?",
+    "body": "I'm new to yoga and overwhelmed by all the mat options. Should I get a thick or thin mat? What about material - rubber, PVC, or TPE? Looking for something under $50 that provides good grip and cushioning.",
+    "image": "img/placeholder.png",
+    "created": "2025-11-20T10:00:00Z",
+    "comments": [
+      {
+        "id": 401,
+        "author": "YogaTeacher",
+        "text": "For beginners, I recommend a 6mm thick mat. Manduka or Liforme are excellent brands.",
+        "created": "2025-11-20T11:20:00Z"
+      },
+      {
+        "id": 402,
+        "author": "ZenMaster",
+        "text": "Natural rubber mats are eco-friendly and provide great grip. Worth the investment!",
+        "created": "2025-11-20T15:30:00Z"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Swimming goggles that don't leak - do they exist?",
+    "author": "Community",
+    "meta": "By SportStore • Swimming",
+    "tags": ["swimming", "goggles", "equipment"],
+    "excerpt": "Tried multiple goggles but they all leak after a few weeks. Any suggestions?",
+    "body": "I'm training for a triathlon and swim 4-5 times per week. Every pair of goggles I buy starts leaking within a month. Are there any truly leak-proof options? Willing to spend up to $60 for quality.",
+    "image": "img/placeholder.png",
+    "created": "2025-11-15T08:45:00Z",
+    "comments": []
+  },
+  {
+    "id": 6,
+    "title": "Best gym bag for daily commuters?",
+    "author": "Community",
+    "meta": "By SportStore • Fitness",
+    "tags": ["gym", "bag", "commute"],
+    "excerpt": "Looking for a gym bag that fits laptop, gym clothes, and shoes. Must be comfortable for cycling.",
+    "body": "I cycle to work and hit the gym during lunch. Need a bag that can carry my laptop (15 inch), gym clothes, shoes, and lunch. Waterproof would be a bonus. What do you use?",
+    "image": "img/placeholder.png",
+    "created": "2025-11-10T07:30:00Z",
+    "comments": [
+      {
+        "id": 601,
+        "author": "CyclingCommuter",
+        "text": "Check out North Face Base Camp duffel. Perfect size and completely waterproof!",
+        "created": "2025-11-10T09:00:00Z"
+      },
+      {
+        "id": 602,
+        "author": "GymRat",
+        "text": "Adidas Defender duffel has separate shoe compartment. Game changer!",
+        "created": "2025-11-10T12:15:00Z"
+      },
+      {
+        "id": 603,
+        "author": "BikeToWork",
+        "text": "I use a backpack-style gym bag from Under Armour. Much better for cycling than a duffel.",
+        "created": "2025-11-11T08:30:00Z"
+      }
+    ]
+  }
+]
