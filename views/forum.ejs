@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/styleguide.css" />
 
-  <title>Forum - Discussion Threads</title>
+  <title>Community Forum</title>
 </head>
 <body>
   <div class="prl-wrapper">
@@ -34,8 +34,8 @@
             <li class="nav-item"><a class="nav-link active" href="/forum">Forum</a></li>
             <li class="nav-item"><a class="nav-link" href="/sitemap">Sitemap</a></li>
           </ul>
-          <form class="d-flex me-3" action="/search" method="GET">
-            <input class="form-control" type="search" name="q" placeholder="Search products">
+          <form class="d-flex me-3">
+            <input class="form-control" type="search" placeholder="Search products">
           </form>
           <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
           <% if (user) { %>
@@ -60,18 +60,49 @@
     <!-- FORUM HEADER SECTION -->
     <section class="py-5">
       <div class="container">
-        <div class="row">
-          <div class="col-12">
-            <h2 class="fw-bold mb-3">Community Forum</h2>
+        <div class="row g-5">
+          <!-- Forum Image/Icon -->
+          <div class="col-md-5">
+            <div class="card">
+              <div class="card-body text-center p-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 420px; display: flex; align-items: center; justify-content: center;">
+                <div>
+                  <i class="fa-solid fa-comments fs-1 text-white mb-3" style="font-size: 120px;"></i>
+                  <h3 class="text-white fw-bold">Community Forum</h3>
+                  <p class="text-white">Join the conversation</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Forum Info -->
+          <div class="col-md-7">
+            <h2 class="fw-bold mb-3">Sports Community Discussions</h2>
             <div class="mb-2">
               <span class="text-warning">
                 <i class="fa-solid fa-users"></i>
+                <i class="fa-solid fa-users"></i>
+                <i class="fa-solid fa-users"></i>
+                <i class="fa-solid fa-users"></i>
+                <i class="fa-solid fa-users"></i>
               </span>
-              <span class="ms-2 text-muted">
-                (<%= threads ? threads.length : 0 %> discussions)
-              </span>
+              <span class="ms-2 text-muted">(<%= threads ? threads.length : 0 %> active discussions)</span>
             </div>
-            <p class="mb-4">Join the conversation! Share your questions, tips, and experiences about sports gear and training.</p>
+            <div class="mb-3">
+              <span class="fs-4 fw-bold text-success">Free to Join</span>
+              <span class="badge bg-success ms-2">Active Community</span>
+            </div>
+            <p class="mb-4">Connect with fellow sports enthusiasts! Share your experiences, ask questions, and get advice on sports gear, training tips, and everything in between.</p>
+            
+            <% if (!user) { %>
+              <div class="alert alert-info">
+                <i class="fa-solid fa-info-circle me-2"></i>
+                <a href="/login" class="alert-link">Login</a> to participate in discussions and create new threads.
+              </div>
+            <% } else { %>
+              <div class="alert alert-success">
+                <i class="fa-solid fa-check-circle me-2"></i>
+                Welcome back, <strong><%= user.username || user.name %></strong>! You can now participate in all discussions.
+              </div>
+            <% } %>
           </div>
         </div>
       </div>
@@ -82,295 +113,224 @@
       <div class="container">
         <ul class="nav nav-tabs mb-3" id="forumTab" role="tablist">
           <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="all-threads-tab" data-bs-toggle="tab" data-bs-target="#all-threads" type="button" role="tab">All Discussions</button>
+            <button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories" type="button" role="tab">Categories</button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="create-thread-tab" data-bs-toggle="tab" data-bs-target="#create-thread" type="button" role="tab">Start Discussion</button>
+            <button class="nav-link active" id="threads-tab" data-bs-toggle="tab" data-bs-target="#threads" type="button" role="tab">All Discussions</button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="my-threads-tab" data-bs-toggle="tab" data-bs-target="#my-threads" type="button" role="tab">My Threads</button>
+            <button class="nav-link" id="guidelines-tab" data-bs-toggle="tab" data-bs-target="#guidelines" type="button" role="tab">Guidelines</button>
           </li>
         </ul>
         
         <div class="tab-content" id="forumTabContent">
+          <!-- CATEGORIES TAB -->
+          <div class="tab-pane fade" id="categories" role="tabpanel">
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <i class="fa-solid fa-running fs-2 text-primary me-3"></i>
+                      <div>
+                        <h5 class="card-title mb-0">Running & Athletics</h5>
+                        <small class="text-muted">125 discussions</small>
+                      </div>
+                    </div>
+                    <p class="card-text">Discuss running shoes, marathon training, track & field equipment, and running techniques.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <i class="fa-solid fa-basketball fs-2 text-warning me-3"></i>
+                      <div>
+                        <h5 class="card-title mb-0">Basketball</h5>
+                        <small class="text-muted">89 discussions</small>
+                      </div>
+                    </div>
+                    <p class="card-text">Talk about basketball shoes, training equipment, court surfaces, and playing techniques.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <i class="fa-solid fa-futbol fs-2 text-success me-3"></i>
+                      <div>
+                        <h5 class="card-title mb-0">Football/Soccer</h5>
+                        <small class="text-muted">156 discussions</small>
+                      </div>
+                    </div>
+                    <p class="card-text">Share experiences about cleats, shin guards, training methods, and field conditions.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card h-100">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <i class="fa-solid fa-dumbbell fs-2 text-danger me-3"></i>
+                      <div>
+                        <h5 class="card-title mb-0">Training & Fitness</h5>
+                        <small class="text-muted">203 discussions</small>
+                      </div>
+                    </div>
+                    <p class="card-text">Discuss workout gear, training programs, nutrition tips, and fitness equipment.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- ALL THREADS TAB -->
-          <div class="tab-pane fade show active" id="all-threads" role="tabpanel">
-            <!-- FILTER AND SEARCH SECTION -->
+          <div class="tab-pane fade show active" id="threads" role="tabpanel">
+            <!-- THREAD SECTION-->
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h4 class="mb-0">All Discussions <span class="text-muted">(<%= threads ? threads.length : 0 %>)</span></h4>
               <div>
                 <button class="btn btn-outline-secondary btn-sm me-2" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
                   <i class="fa-solid fa-filter"></i> Filter
                 </button>
+                <% if (user) { %>
+                  <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#threadForm" aria-expanded="false" aria-controls="threadForm">
+                    <i class="fa-solid fa-plus"></i> New Discussion
+                  </button>
+                <% } else { %>
+                  <a href="/login" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Login to Post
+                  </a>
+                <% } %>
               </div>
             </div>
+
+            <!-- Create Thread Form (collapsible) -->
+            <% if (user) { %>
+            <div class="collapse mb-4" id="threadForm">
+              <div class="card card-body">
+                <h5 class="mb-3">Start a New Discussion</h5>
+                <form action="/forum/threads" method="POST" enctype="multipart/form-data">
+                  <div class="mb-3">
+                    <label class="form-label">Thread Title</label>
+                    <input type="text" class="form-control" name="title" placeholder="Enter discussion title" maxlength="120" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Message</label>
+                    <textarea class="form-control" name="body" rows="4" placeholder="Share your thoughts, questions, or advice..." maxlength="2000" required></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Tags (comma separated)</label>
+                    <input type="text" class="form-control" name="tags" placeholder="e.g. running, shoes, marathon" maxlength="200">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Image (optional)</label>
+                    <input type="file" class="form-control" name="image" accept="image/*">
+                  </div>
+                  <button type="submit" class="btn btn-dark">
+                    <i class="fa-solid fa-paper-plane me-2"></i>Post Discussion
+                  </button>
+                </form>
+              </div>
+            </div>
+            <% } %>
 
             <!-- Filter Controls (Collapsible) -->
             <div class="collapse mb-4" id="filterCollapse">
               <div class="card card-body">
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label class="form-label small">Search by title</label>
-                    <input id="searchInput" class="form-control" type="text" placeholder="Search threads..." value="<%= searchQuery || '' %>">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label small">Search by content</label>
-                    <input id="contentSearch" class="form-control" type="text" placeholder="Search in post content..." value="<%= contentQuery || '' %>">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label small">Sort by</label>
-                    <select id="sortSelect" class="form-control">
-                      <option value="newest" <%= sortBy === 'newest' ? 'selected' : '' %>>Newest First</option>
-                      <option value="oldest" <%= sortBy === 'oldest' ? 'selected' : '' %>>Oldest First</option>
-                    </select>
-                  </div>
+                <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+                  <input id="threadSearch" class="form-control w-auto" style="min-width:200px" type="text" placeholder="Search discussions...">
+                  <select id="threadSort" class="form-select w-auto">
+                    <option value="date-desc">Newest</option>
+                    <option value="date-asc">Oldest</option>
+                    <option value="comments-desc">Most Comments</option>
+                    <option value="comments-asc">Least Comments</option>
+                  </select>
+                  <select id="threadFilter" class="form-select w-auto">
+                    <option value="all">All Categories</option>
+                    <option value="running">Running</option>
+                    <option value="basketball">Basketball</option>
+                    <option value="football">Football</option>
+                    <option value="training">Training</option>
+                  </select>
                 </div>
               </div>
             </div>
 
-            <!-- Thread List -->
-            <div id="threadList" class="row g-4">
-              <% if (threads && threads.length > 0) { %>
-                <% threads.forEach(function(thread) { %>
-                  <div class="col-md-6 col-lg-4 thread-card-item">
-                    <div class="card h-100 thread-preview" style="cursor:pointer;">
-                      <img src="<%= thread.image || '/img/placeholder.png' %>" class="card-img-top" alt="Thread Image" style="height:180px;object-fit:cover;">
-                      <div class="card-body">
-                        <div class="mb-3">
-                          <% if (thread.tags && thread.tags.length > 0) { %>
-                            <% thread.tags.forEach(function(tag) { %>
-                              <span class="badge bg-secondary me-1"><%= tag %></span>
-                            <% }); %>
-                          <% } %>
-                        </div>
-                        <h6 class="fw-bold mb-1"><%= thread.title %></h6>
-                        <p class="text-muted small mb-1"><%= thread.meta || 'By Community' %></p>
-                        <p class="mb-2"><%= thread.excerpt || thread.body.substring(0, 100) + '...' %></p>
-                        <div class="d-flex align-items-center justify-content-between">
-                          <small class="text-muted">
-                            <i class="fa-solid fa-comment"></i> <%= thread.comments ? thread.comments.length : 0 %> comments
-                          </small>
-                          <a href="/forum/threads/<%= thread._id %>" class="btn btn-outline-dark btn-sm">Read more</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                <% }); %>
-              <% } else { %>
-                <div class="col-12">
-                  <div class="alert alert-info text-center">
-                    No discussions found. Be the first to start a conversation!
-                  </div>
-                </div>
-              <% } %>
-            </div>
-
-            <!-- Thread Detail View (Hidden by default) -->
+            <!-- Thread List/Detail Container -->
+            <div id="threadList" class="row g-4"></div>
             <div id="threadDetail" class="d-none"></div>
           </div>
 
-          <!-- CREATE THREAD TAB -->
-          <div class="tab-pane fade" id="create-thread" role="tabpanel">
-            <% if (!user) { %>
-              <div class="alert alert-info">
-                Please <a href="/login">login</a> to create a new discussion thread.
-              </div>
-            <% } else { %>
-              <h4 class="mb-4">Start a New Discussion</h4>
-              
-              <form id="threadForm" action="/forum/threads" method="POST" enctype="multipart/form-data">
-                <!-- Title -->
-                <div class="mb-3">
-                  <label for="threadTitle" class="form-label">
-                    Discussion Title <span class="text-danger">*</span>
-                  </label>
-                  <input 
-                    type="text" 
-                    id="threadTitle" 
-                    name="title"
-                    class="form-control" 
-                    maxlength="120" 
-                    placeholder="e.g. Best running shoes for marathon training?"
-                    required
-                  >
-                  <div class="invalid-feedback" id="titleError"></div>
-                  <small class="text-muted" id="titleCounter">0 / 120 characters</small>
-                </div>
-
-                <!-- Message -->
-                <div class="mb-3">
-                  <label for="threadBody" class="form-label">
-                    Message <span class="text-danger">*</span>
-                  </label>
-                  <textarea 
-                    id="threadBody" 
-                    name="body"
-                    class="form-control" 
-                    rows="6" 
-                    maxlength="2000"
-                    placeholder="Share your thoughts, questions, or advice..."
-                    required
-                  ></textarea>
-                  <div class="invalid-feedback" id="bodyError"></div>
-                  <small class="text-muted" id="bodyCounter">0 / 2000 characters</small>
-                </div>
-
-                <!-- Tags -->
-                <div class="mb-3">
-                  <label for="threadTags" class="form-label">
-                    Tags <span class="text-muted small">(Optional, comma separated)</span>
-                  </label>
-                  <input 
-                    id="threadTags" 
-                    name="tags"
-                    class="form-control" 
-                    placeholder="e.g. running, marathon, shoes"
-                    maxlength="200"
-                  >
-                  <div class="invalid-feedback" id="tagsError"></div>
-                  <small class="text-muted" id="tagsCounter">0 / 200 characters</small>
-                </div>
-
-                <!-- Image Upload -->
-                <div class="mb-3">
-                  <label for="threadImage" class="form-label">
-                    Image <span class="text-muted small">(Optional, max 5MB)</span>
-                  </label>
-                  <input 
-                    id="threadImage" 
-                    name="image"
-                    type="file" 
-                    class="form-control" 
-                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                  >
-                  <div class="invalid-feedback" id="imageError"></div>
-                  
-                  <!-- Image Preview -->
-                  <div id="imagePreview" style="display: none; margin-top: 10px;">
-                    <img id="previewImg" src="" alt="Preview" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
-                    <button id="removeImage" type="button" class="btn btn-sm btn-danger ms-2">
-                      <i class="fas fa-times"></i> Remove
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Buttons -->
-                <div class="d-flex gap-2">
-                  <button type="button" class="btn btn-outline-secondary" id="clearBtn">
-                    <i class="fa-solid fa-eraser"></i> Clear Form
-                  </button>
-                  <button type="submit" class="btn btn-primary" id="postBtn">
-                    <i class="fa-solid fa-paper-plane"></i> Post Discussion
-                  </button>
-                </div>
-              </form>
-            <% } %>
-          </div>
-
-          <!-- MY THREADS TAB -->
-          <div class="tab-pane fade" id="my-threads" role="tabpanel">
-            <% if (!user) { %>
-              <div class="alert alert-info">
-                Please <a href="/login">login</a> to view your discussions.
-              </div>
-            <% } else { %>
-              <h4 class="mb-4">My Discussions</h4>
-              
-              <div class="row g-4">
-                <% 
-                var myThreads = threads ? threads.filter(function(t) { 
-                  return user && t.author && t.author.toString() === user._id.toString(); 
-                }) : [];
-                %>
+          <!-- GUIDELINES TAB -->
+          <div class="tab-pane fade" id="guidelines" role="tabpanel">
+            <h4 class="mb-3">Community Guidelines</h4>
+            <div class="card">
+              <div class="card-body">
+                <h6 class="fw-bold">Be Respectful</h6>
+                <p>Treat all community members with respect. No harassment, hate speech, or personal attacks.</p>
                 
-                <% if (myThreads.length > 0) { %>
-                  <% myThreads.forEach(function(thread) { %>
-                    <div class="col-md-6 col-lg-4">
-                      <div class="card h-100">
-                        <img src="<%= thread.image || '/img/placeholder.png' %>" class="card-img-top" alt="Thread Image" style="height:180px;object-fit:cover;">
-                        <div class="card-body">
-                          <div class="mb-3">
-                            <% if (thread.tags && thread.tags.length > 0) { %>
-                              <% thread.tags.forEach(function(tag) { %>
-                                <span class="badge bg-secondary me-1"><%= tag %></span>
-                              <% }); %>
-                            <% } %>
-                          </div>
-                          <h6 class="fw-bold mb-1"><%= thread.title %></h6>
-                          <p class="mb-2"><%= thread.excerpt || thread.body.substring(0, 100) + '...' %></p>
-                          <div class="d-flex align-items-center justify-content-between">
-                            <small class="text-muted">
-                              <i class="fa-solid fa-comment"></i> <%= thread.comments ? thread.comments.length : 0 %> comments
-                            </small>
-                            <a href="/forum/threads/<%= thread._id %>" class="btn btn-outline-dark btn-sm">View</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  <% }); %>
-                <% } else { %>
-                  <div class="col-12">
-                    <div class="alert alert-info">
-                      You haven't started any discussions yet. <a href="#create-thread" data-bs-toggle="tab" data-bs-target="#create-thread">Start one now!</a>
-                    </div>
-                  </div>
-                <% } %>
+                <h6 class="fw-bold mt-3">Stay On Topic</h6>
+                <p>Keep discussions relevant to sports equipment, training, and related topics.</p>
+                
+                <h6 class="fw-bold mt-3">No Spam or Self-Promotion</h6>
+                <p>Don't spam the forum with advertisements or excessive self-promotion.</p>
+                
+                <h6 class="fw-bold mt-3">Use Clear Titles</h6>
+                <p>Create descriptive thread titles that accurately represent your question or topic.</p>
+                
+                <h6 class="fw-bold mt-3">Search Before Posting</h6>
+                <p>Check if your question has already been answered before creating a new thread.</p>
               </div>
-            <% } %>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- RELATED CATEGORIES -->
+    <!-- TRENDING DISCUSSIONS -->
     <section class="py-5 bg-light">
       <div class="container">
-        <h4 class="mb-4">Popular Categories</h4>
+        <h4 class="mb-4">Trending Discussions</h4>
         <div class="row g-4">
-          <div class="col-6 col-md-3">
-            <div class="card h-100 text-center">
-              <div class="card-body">
-                <i class="fa-solid fa-running fs-1 text-primary mb-3"></i>
-                <h6 class="card-title">Running</h6>
-                <p class="text-muted small mb-0">125 discussions</p>
+          <% 
+          var trendingThreads = threads ? threads.slice(0, 4) : [];
+          if (trendingThreads.length > 0) {
+            trendingThreads.forEach(function(thread) { 
+          %>
+            <div class="col-6 col-md-3">
+              <div class="card h-100">
+                <img src="<%= thread.image || '/img/placeholder.png' %>" class="card-img-top" alt="Thread Image" style="height: 180px; object-fit: cover;">
+                <div class="card-body">
+                  <h6 class="card-title"><%= thread.title.substring(0, 50) %><%= thread.title.length > 50 ? '...' : '' %></h6>
+                  <div class="mb-2">
+                    <span class="text-muted small">
+                      <i class="fa-solid fa-comment"></i> <%= thread.comments ? thread.comments.length : 0 %>
+                    </span>
+                  </div>
+                  <a href="/forum/threads/<%= thread._id %>" class="btn btn-sm btn-outline-dark w-100">View</a>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="card h-100 text-center">
-              <div class="card-body">
-                <i class="fa-solid fa-basketball fs-1 text-warning mb-3"></i>
-                <h6 class="card-title">Basketball</h6>
-                <p class="text-muted small mb-0">89 discussions</p>
-              </div>
+          <% 
+            });
+          } else {
+          %>
+            <div class="col-12">
+              <p class="text-muted text-center">No trending discussions yet.</p>
             </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="card h-100 text-center">
-              <div class="card-body">
-                <i class="fa-solid fa-futbol fs-1 text-success mb-3"></i>
-                <h6 class="card-title">Football</h6>
-                <p class="text-muted small mb-0">156 discussions</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="card h-100 text-center">
-              <div class="card-body">
-                <i class="fa-solid fa-dumbbell fs-1 text-danger mb-3"></i>
-                <h6 class="card-title">Training</h6>
-                <p class="text-muted small mb-0">203 discussions</p>
-              </div>
-            </div>
-          </div>
+          <% } %>
         </div>
       </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="bg-light pt-5 mt-0">
+    <footer class="bg-light pt-5 mt-5">
       <div class="container">
         <div class="row">
+          <!-- Column 1: Logo + Social -->
           <div class="col-md-3 mb-4">
             <div class="d-flex align-items-center gap-2 mb-2">
               <div class="p-2 border rounded"><i class="fa-solid fa-store fs-3"></i></div>
@@ -383,7 +343,7 @@
               <i class="fab fa-youtube fs-5"></i>
             </div>
           </div>
-
+          <!-- Column 2: Shop -->
           <div class="col-md-2 mb-4">
             <h6 class="text-muted">SHOP</h6>
             <ul class="list-unstyled mt-2">
@@ -392,7 +352,7 @@
               <li><a href="/cart" class="text-decoration-none text-dark">Cart</a></li>
             </ul>
           </div>
-
+          <!-- Column 3: Company -->
           <div class="col-md-2 mb-4">
             <h6 class="text-muted">COMPANY</h6>
             <ul class="list-unstyled mt-2">
@@ -401,7 +361,7 @@
               <li><a href="/careers" class="text-decoration-none text-dark">Careers</a></li>
             </ul>
           </div>
-
+          <!-- Column 4: Support -->
           <div class="col-md-2 mb-4">
             <h6 class="text-muted">SUPPORT</h6>
             <ul class="list-unstyled mt-2">
@@ -410,7 +370,7 @@
               <li><a href="/privacy" class="text-decoration-none text-dark">Privacy Policy</a></li>
             </ul>
           </div>
-
+          <!-- Column 5: Payments -->
           <div class="col-md-3 mb-4">
             <h6 class="text-muted">ACCEPTED PAYMENTS</h6>
             <div class="d-flex gap-2 mt-2">
@@ -421,212 +381,128 @@
             </div>
           </div>
         </div>
-
         <hr class="mt-4">
-
         <div class="text-center pb-3 small text-muted">
           © 2025 Ecommerce. All rights reserved.
         </div>
       </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script id="threadsData" type="application/json"><%- JSON.stringify(threads || []) %></script>
+
+    <script>
+    // --- Thread Data (from server) ---
+    const threads = JSON.parse(document.getElementById('threadsData')?.textContent || '[]');
+
+    // --- Render Functions ---
+    function renderTags(tags) {
+      if (!tags || tags.length === 0) return '';
+      let html = '<div class="mb-2">';
+      tags.forEach(tag => {
+        html += `<span class="badge bg-secondary me-1">${tag}</span>`;
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function renderThreadList(list) {
+      const container = document.getElementById('threadList');
+      container.innerHTML = '';
+      if (!list.length) {
+        container.innerHTML = '<div class="col-12 text-center text-muted">No discussions found.</div>';
+        return;
+      }
+      list.forEach(t => {
+        const commentCount = t.comments ? t.comments.length : 0;
+        container.innerHTML += `
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 thread-preview" data-id="${t._id}" style="cursor:pointer;">
+              <img src="${t.image || '/img/placeholder.png'}" class="card-img-top" alt="Thread Image" style="height:180px;object-fit:cover;">
+              <div class="card-body">
+                ${renderTags(t.tags)}
+                <h6 class="fw-bold mb-1">${t.title}</h6>
+                <p class="text-muted small mb-1">${t.meta || 'By Community'}</p>
+                <p class="mb-2">${(t.excerpt || t.body || '').substring(0, 100)}...</p>
+                <div class="d-flex align-items-center justify-content-between">
+                  <small class="text-muted">
+                    <i class="fa-solid fa-comment"></i> ${commentCount} comments
+                  </small>
+                  <small class="text-muted">${new Date(t.createdAt || t.created).toLocaleDateString()}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      // Add click event for detail view (redirect to thread page)
+      container.querySelectorAll('.thread-preview').forEach(card => {
+        card.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          window.location.href = '/forum/threads/' + id;
+        });
+      });
+    }
+
+    // --- Sort, Filter, Search ---
+    function getFilteredSortedThreads() {
+      let list = [...threads];
+      
+      // Search
+      const searchVal = document.getElementById('threadSearch')?.value.trim().toLowerCase();
+      if (searchVal) {
+        list = list.filter(t =>
+          t.title.toLowerCase().includes(searchVal) ||
+          (t.body || '').toLowerCase().includes(searchVal) ||
+          (t.tags || []).some(tag => tag.toLowerCase().includes(searchVal))
+        );
+      }
+      
+      // Filter by category
+      const filterVal = document.getElementById('threadFilter')?.value;
+      if (filterVal && filterVal !== 'all') {
+        list = list.filter(t => 
+          (t.tags || []).some(tag => tag.toLowerCase().includes(filterVal.toLowerCase()))
+        );
+      }
+      
+      // Sort
+      const sortVal = document.getElementById('threadSort')?.value || 'date-desc';
+      if (sortVal === 'date-desc') {
+        list.sort((a,b) => new Date(b.createdAt || b.created) - new Date(a.createdAt || a.created));
+      } else if (sortVal === 'date-asc') {
+        list.sort((a,b) => new Date(a.createdAt || a.created) - new Date(b.createdAt || b.created));
+      } else if (sortVal === 'comments-desc') {
+        list.sort((a,b) => (b.comments?.length || 0) - (a.comments?.length || 0));
+      } else if (sortVal === 'comments-asc') {
+        list.sort((a,b) => (a.comments?.length || 0) - (b.comments?.length || 0));
+      }
+      
+      return list;
+    }
+
+    function updateThreadList() {
+      renderThreadList(getFilteredSortedThreads());
+      document.getElementById('threadDetail').classList.add('d-none');
+      document.getElementById('threadList').classList.remove('d-none');
+    }
+
+    // --- Event Listeners ---
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initial render
+      updateThreadList();
+      
+      // Controls
+      const threadSearch = document.getElementById('threadSearch');
+      const threadSort = document.getElementById('threadSort');
+      const threadFilter = document.getElementById('threadFilter');
+      
+      if (threadSearch) threadSearch.addEventListener('input', updateThreadList);
+      if (threadSort) threadSort.addEventListener('change', updateThreadList);
+      if (threadFilter) threadFilter.addEventListener('change', updateThreadList);
+    });
+    </script>
   </div> <!-- End prl-wrapper -->
-
-  <!-- Bootstrap JavaScript -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Form Validation and Interaction Script -->
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const threadForm = document.getElementById('threadForm');
-    if (!threadForm) return;
-
-    // Validation functions
-    function validateTitle() {
-      const field = document.getElementById('threadTitle');
-      const value = field.value.trim();
-      const error = document.getElementById('titleError');
-      
-      field.classList.remove('is-invalid');
-      error.textContent = '';
-      
-      if (value.length > 0 && value.length < 10) {
-        field.classList.add('is-invalid');
-        error.textContent = 'Title must be at least 10 characters';
-        return false;
-      }
-      
-      if (value.length > 0 && !/^[a-zA-Z0-9\s\-\?\!\.\,\'\"]+$/.test(value)) {
-        field.classList.add('is-invalid');
-        error.textContent = 'Title contains invalid characters';
-        return false;
-      }
-      
-      return true;
-    }
-
-    function validateBody() {
-      const field = document.getElementById('threadBody');
-      const value = field.value.trim();
-      const error = document.getElementById('bodyError');
-      
-      field.classList.remove('is-invalid');
-      error.textContent = '';
-      
-      if (value.length > 0 && value.length < 20) {
-        field.classList.add('is-invalid');
-        error.textContent = 'Message must be at least 20 characters';
-        return false;
-      }
-      
-      return true;
-    }
-
-    function validateTags() {
-      const field = document.getElementById('threadTags');
-      const value = field.value.trim();
-      const error = document.getElementById('tagsError');
-      
-      field.classList.remove('is-invalid');
-      error.textContent = '';
-      
-      if (value.length > 0) {
-        const tags = value.split(',').map(t => t.trim()).filter(t => t.length > 0);
-        if (tags.length > 10) {
-          field.classList.add('is-invalid');
-          error.textContent = 'Maximum 10 tags allowed';
-          return false;
-        }
-      }
-      
-      return true;
-    }
-
-    function validateImage() {
-      const field = document.getElementById('threadImage');
-      const error = document.getElementById('imageError');
-      
-      field.classList.remove('is-invalid');
-      error.textContent = '';
-      
-      if (field.files.length > 0) {
-        const file = field.files[0];
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        
-        if (file.size > maxSize) {
-          field.classList.add('is-invalid');
-          error.textContent = 'Image size must be less than 5MB';
-          document.getElementById('imagePreview').style.display = 'none';
-          return false;
-        }
-        
-        if (!['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
-          field.classList.add('is-invalid');
-          error.textContent = 'Only JPEG, PNG, GIF, and WebP images are allowed';
-          document.getElementById('imagePreview').style.display = 'none';
-          return false;
-        }
-        
-        // Show preview
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById('previewImg').src = e.target.result;
-          document.getElementById('imagePreview').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-      }
-      
-      return true;
-    }
-
-    // Character counters
-    function updateCounter(fieldId, counterId, max) {
-      const field = document.getElementById(fieldId);
-      const counter = document.getElementById(counterId);
-      const length = field.value.length;
-      counter.textContent = length + ' / ' + max + ' characters';
-      
-      if (length > max * 0.9) {
-        counter.style.color = '#dc3545';
-      } else if (length > max * 0.75) {
-        counter.style.color = '#ffc107';
-      } else {
-        counter.style.color = '#6c757d';
-      }
-    }
-
-    // Event listeners
-    document.getElementById('threadTitle').addEventListener('input', function() {
-      validateTitle();
-      updateCounter('threadTitle', 'titleCounter', 120);
-    });
-
-    document.getElementById('threadBody').addEventListener('input', function() {
-      validateBody();
-      updateCounter('threadBody', 'bodyCounter', 2000);
-    });
-
-    document.getElementById('threadTags').addEventListener('input', function() {
-      validateTags();
-      updateCounter('threadTags', 'tagsCounter', 200);
-    });
-
-    document.getElementById('threadImage').addEventListener('change', validateImage);
-
-    document.getElementById('removeImage').addEventListener('click', function() {
-      document.getElementById('threadImage').value = '';
-      document.getElementById('imagePreview').style.display = 'none';
-    });
-
-    document.getElementById('clearBtn').addEventListener('click', function() {
-      if (confirm('Clear the form?')) {
-        threadForm.reset();
-        document.getElementById('imagePreview').style.display = 'none';
-        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-        updateCounter('threadTitle', 'titleCounter', 120);
-        updateCounter('threadBody', 'bodyCounter', 2000);
-        updateCounter('threadTags', 'tagsCounter', 200);
-      }
-    });
-
-    // Form submission
-    threadForm.addEventListener('submit', function(e) {
-      if (!validateTitle() || !validateBody() || !validateTags() || !validateImage()) {
-        e.preventDefault();
-        alert('Please fix the errors in the form before submitting.');
-      }
-    });
-  });
-
-  // Client-side filtering
-  document.getElementById('searchInput')?.addEventListener('input', filterThreads);
-  document.getElementById('contentSearch')?.addEventListener('input', filterThreads);
-
-  function filterThreads() {
-    const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-    const contentQuery = document.getElementById('contentSearch').value.toLowerCase();
-    const cards = document.querySelectorAll('.thread-card-item');
-    
-    cards.forEach(function(card) {
-      const title = card.querySelector('.fw-bold').textContent.toLowerCase();
-      const content = card.querySelector('p').textContent.toLowerCase();
-      
-      const titleMatch = title.includes(searchQuery);
-      const contentMatch = content.includes(contentQuery);
-      
-      if (titleMatch && contentMatch) {
-        card.style.display = '';
-      } else {
-        card.style.display = 'none';
-      }
-    });
-  }
-
-  // Sort functionality
-  document.getElementById('sortSelect')?.addEventListener('change', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set('sort', this.value);
-    window.location.search = urlParams.toString();
-  });
-  </script>
 </body>
 </html>
