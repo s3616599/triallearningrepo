@@ -19,7 +19,7 @@
 </head>
 <body>
   <div class="prl-wrapper">
-    <!-- HEADER (NAVBAR) -->
+    <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
       <div class="container">
         <a class="navbar-brand fw-bold" href="/">Ecommerce</a>
@@ -57,23 +57,21 @@
       </div>
     </nav>
 
-    <!-- FORUM HEADER SECTION -->
+    <!-- FORUM HEADER -->
     <section class="py-5">
       <div class="container">
         <div class="row g-5">
-          <!-- Forum Image/Icon -->
           <div class="col-md-5">
             <div class="card">
               <div class="card-body text-center p-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 420px; display: flex; align-items: center; justify-content: center;">
                 <div>
-                  <i class="fa-solid fa-comments fs-1 text-white mb-3" style="font-size: 120px;"></i>
+                  <i class="fa-solid fa-comments text-white mb-3" style="font-size: 120px;"></i>
                   <h3 class="text-white fw-bold">Community Forum</h3>
                   <p class="text-white">Join the conversation</p>
                 </div>
               </div>
             </div>
           </div>
-          <!-- Forum Info -->
           <div class="col-md-7">
             <h2 class="fw-bold mb-3">Sports Community Discussions</h2>
             <div class="mb-2">
@@ -84,31 +82,19 @@
                 <i class="fa-solid fa-users"></i>
                 <i class="fa-solid fa-users"></i>
               </span>
-              <span class="ms-2 text-muted">(<%= threads ? threads.length : 0 %> active discussions)</span>
+              <span class="ms-2 text-muted">(<%= threads ? threads.length : 0 %> discussions)</span>
             </div>
             <div class="mb-3">
               <span class="fs-4 fw-bold text-success">Free to Join</span>
               <span class="badge bg-success ms-2">Active Community</span>
             </div>
-            <p class="mb-4">Connect with fellow sports enthusiasts! Share your experiences, ask questions, and get advice on sports gear, training tips, and everything in between.</p>
-            
-            <% if (!user) { %>
-              <div class="alert alert-info">
-                <i class="fa-solid fa-info-circle me-2"></i>
-                <a href="/login" class="alert-link">Login</a> to participate in discussions and create new threads.
-              </div>
-            <% } else { %>
-              <div class="alert alert-success">
-                <i class="fa-solid fa-check-circle me-2"></i>
-                Welcome back, <strong><%= user.username || user.name %></strong>! You can now participate in all discussions.
-              </div>
-            <% } %>
+            <p class="mb-4">Connect with sports enthusiasts! Share experiences, ask questions, and get advice on gear and training.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FORUM TABS -->
+    <!-- TABS -->
     <section class="border-top py-4">
       <div class="container">
         <ul class="nav nav-tabs mb-3" id="forumTab" role="tablist">
@@ -116,7 +102,7 @@
             <button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories" type="button" role="tab">Categories</button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="threads-tab" data-bs-toggle="tab" data-bs-target="#threads" type="button" role="tab">All Discussions</button>
+            <button class="nav-link active" id="discussions-tab" data-bs-toggle="tab" data-bs-target="#discussions" type="button" role="tab">Discussions</button>
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="guidelines-tab" data-bs-toggle="tab" data-bs-target="#guidelines" type="button" role="tab">Guidelines</button>
@@ -124,144 +110,126 @@
         </ul>
         
         <div class="tab-content" id="forumTabContent">
+          
           <!-- CATEGORIES TAB -->
           <div class="tab-pane fade" id="categories" role="tabpanel">
             <div class="row g-4">
               <div class="col-md-6">
                 <div class="card h-100">
                   <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                      <i class="fa-solid fa-running fs-2 text-primary me-3"></i>
-                      <div>
-                        <h5 class="card-title mb-0">Running & Athletics</h5>
-                        <small class="text-muted">125 discussions</small>
-                      </div>
-                    </div>
-                    <p class="card-text">Discuss running shoes, marathon training, track & field equipment, and running techniques.</p>
+                    <h5 class="card-title"><i class="fa-solid fa-running text-primary me-2"></i>Running</h5>
+                    <p class="card-text">Discuss running shoes and training</p>
                   </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="card h-100">
                   <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                      <i class="fa-solid fa-basketball fs-2 text-warning me-3"></i>
-                      <div>
-                        <h5 class="card-title mb-0">Basketball</h5>
-                        <small class="text-muted">89 discussions</small>
-                      </div>
-                    </div>
-                    <p class="card-text">Talk about basketball shoes, training equipment, court surfaces, and playing techniques.</p>
+                    <h5 class="card-title"><i class="fa-solid fa-basketball text-warning me-2"></i>Basketball</h5>
+                    <p class="card-text">Talk about basketball gear</p>
                   </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="card h-100">
                   <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                      <i class="fa-solid fa-futbol fs-2 text-success me-3"></i>
-                      <div>
-                        <h5 class="card-title mb-0">Football/Soccer</h5>
-                        <small class="text-muted">156 discussions</small>
-                      </div>
-                    </div>
-                    <p class="card-text">Share experiences about cleats, shin guards, training methods, and field conditions.</p>
+                    <h5 class="card-title"><i class="fa-solid fa-futbol text-success me-2"></i>Football</h5>
+                    <p class="card-text">Share football experiences</p>
                   </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="card h-100">
                   <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                      <i class="fa-solid fa-dumbbell fs-2 text-danger me-3"></i>
-                      <div>
-                        <h5 class="card-title mb-0">Training & Fitness</h5>
-                        <small class="text-muted">203 discussions</small>
-                      </div>
-                    </div>
-                    <p class="card-text">Discuss workout gear, training programs, nutrition tips, and fitness equipment.</p>
+                    <h5 class="card-title"><i class="fa-solid fa-dumbbell text-danger me-2"></i>Training</h5>
+                    <p class="card-text">Discuss workouts and fitness</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- ALL THREADS TAB -->
-          <div class="tab-pane fade show active" id="threads" role="tabpanel">
-            <!-- THREAD SECTION-->
+          <!-- DISCUSSIONS TAB -->
+          <div class="tab-pane fade show active" id="discussions" role="tabpanel">
+            
+            <!-- Header with buttons -->
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h4 class="mb-0">All Discussions <span class="text-muted">(<%= threads ? threads.length : 0 %>)</span></h4>
               <div>
-                <button class="btn btn-outline-secondary btn-sm me-2" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
-                  <i class="fa-solid fa-filter"></i> Filter
-                </button>
+                <button class="btn btn-outline-secondary btn-sm me-2">Filter</button>
                 <% if (user) { %>
-                  <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#threadForm" aria-expanded="false" aria-controls="threadForm">
-                    <i class="fa-solid fa-plus"></i> New Discussion
+                  <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#newThreadForm">
+                    Write a Thread
                   </button>
                 <% } else { %>
-                  <a href="/login" class="btn btn-primary btn-sm">
-                    <i class="fa-solid fa-plus"></i> Login to Post
-                  </a>
+                  <a href="/login" class="btn btn-primary btn-sm">Login to Post</a>
                 <% } %>
               </div>
             </div>
 
-            <!-- Create Thread Form (collapsible) -->
+            <!-- New Thread Form (collapsible) -->
             <% if (user) { %>
-            <div class="collapse mb-4" id="threadForm">
+            <div class="collapse mb-4" id="newThreadForm">
               <div class="card card-body">
-                <h5 class="mb-3">Start a New Discussion</h5>
                 <form action="/forum/threads" method="POST" enctype="multipart/form-data">
                   <div class="mb-3">
-                    <label class="form-label">Thread Title</label>
-                    <input type="text" class="form-control" name="title" placeholder="Enter discussion title" maxlength="120" required>
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-control" name="title" placeholder="Enter thread title" required>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Message</label>
-                    <textarea class="form-control" name="body" rows="4" placeholder="Share your thoughts, questions, or advice..." maxlength="2000" required></textarea>
+                    <textarea class="form-control" name="body" rows="3" placeholder="Write your message" required></textarea>
                   </div>
                   <div class="mb-3">
-                    <label class="form-label">Tags (comma separated)</label>
-                    <input type="text" class="form-control" name="tags" placeholder="e.g. running, shoes, marathon" maxlength="200">
+                    <label class="form-label">Tags</label>
+                    <input type="text" class="form-control" name="tags" placeholder="e.g. running, shoes">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Image (optional)</label>
-                    <input type="file" class="form-control" name="image" accept="image/*">
+                    <input type="file" class="form-control" name="image">
                   </div>
-                  <button type="submit" class="btn btn-dark">
-                    <i class="fa-solid fa-paper-plane me-2"></i>Post Discussion
-                  </button>
+                  <button type="submit" class="btn btn-dark">Post Thread</button>
                 </form>
               </div>
             </div>
             <% } %>
 
-            <!-- Filter Controls (Collapsible) -->
-            <div class="collapse mb-4" id="filterCollapse">
-              <div class="card card-body">
-                <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
-                  <input id="threadSearch" class="form-control w-auto" style="min-width:200px" type="text" placeholder="Search discussions...">
-                  <select id="threadSort" class="form-select w-auto">
-                    <option value="date-desc">Newest</option>
-                    <option value="date-asc">Oldest</option>
-                    <option value="comments-desc">Most Comments</option>
-                    <option value="comments-asc">Least Comments</option>
-                  </select>
-                  <select id="threadFilter" class="form-select w-auto">
-                    <option value="all">All Categories</option>
-                    <option value="running">Running</option>
-                    <option value="basketball">Basketball</option>
-                    <option value="football">Football</option>
-                    <option value="training">Training</option>
-                  </select>
+            <!-- Thread List -->
+            <div class="row g-4">
+              <% if (threads && threads.length > 0) { %>
+                <% threads.forEach(function(thread) { %>
+                  <div class="col-md-6 col-lg-4">
+                    <div class="card h-100">
+                      <img src="<%= thread.image || '/img/placeholder.png' %>" class="card-img-top" alt="Thread" style="height:180px;object-fit:cover;">
+                      <div class="card-body">
+                        <% if (thread.tags && thread.tags.length > 0) { %>
+                          <div class="mb-2">
+                            <% thread.tags.forEach(function(tag) { %>
+                              <span class="badge bg-secondary me-1"><%= tag %></span>
+                            <% }); %>
+                          </div>
+                        <% } %>
+                        <h6 class="fw-bold mb-1"><%= thread.title %></h6>
+                        <p class="text-muted small mb-2"><%= thread.meta || 'By Community' %></p>
+                        <p class="mb-2"><%= (thread.excerpt || thread.body || '').substring(0, 80) %>...</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <small class="text-muted">
+                            <i class="fa-solid fa-comment"></i> <%= thread.comments ? thread.comments.length : 0 %>
+                          </small>
+                          <a href="/forum/threads/<%= thread._id %>" class="btn btn-sm btn-outline-dark">Read</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <div class="col-12">
+                  <div class="alert alert-info text-center">
+                    No discussions yet. Be the first to start one!
+                  </div>
                 </div>
-              </div>
+              <% } %>
             </div>
-
-            <!-- Thread List/Detail Container -->
-            <div id="threadList" class="row g-4"></div>
-            <div id="threadDetail" class="d-none"></div>
           </div>
 
           <!-- GUIDELINES TAB -->
@@ -270,19 +238,13 @@
             <div class="card">
               <div class="card-body">
                 <h6 class="fw-bold">Be Respectful</h6>
-                <p>Treat all community members with respect. No harassment, hate speech, or personal attacks.</p>
+                <p>Treat everyone with respect.</p>
                 
                 <h6 class="fw-bold mt-3">Stay On Topic</h6>
-                <p>Keep discussions relevant to sports equipment, training, and related topics.</p>
+                <p>Keep discussions relevant to sports.</p>
                 
-                <h6 class="fw-bold mt-3">No Spam or Self-Promotion</h6>
-                <p>Don't spam the forum with advertisements or excessive self-promotion.</p>
-                
-                <h6 class="fw-bold mt-3">Use Clear Titles</h6>
-                <p>Create descriptive thread titles that accurately represent your question or topic.</p>
-                
-                <h6 class="fw-bold mt-3">Search Before Posting</h6>
-                <p>Check if your question has already been answered before creating a new thread.</p>
+                <h6 class="fw-bold mt-3">No Spam</h6>
+                <p>Don't spam the forum.</p>
               </div>
             </div>
           </div>
@@ -302,14 +264,12 @@
           %>
             <div class="col-6 col-md-3">
               <div class="card h-100">
-                <img src="<%= thread.image || '/img/placeholder.png' %>" class="card-img-top" alt="Thread Image" style="height: 180px; object-fit: cover;">
+                <img src="<%= thread.image || '/img/placeholder.png' %>" class="card-img-top" alt="Thread" style="height: 150px; object-fit: cover;">
                 <div class="card-body">
-                  <h6 class="card-title"><%= thread.title.substring(0, 50) %><%= thread.title.length > 50 ? '...' : '' %></h6>
-                  <div class="mb-2">
-                    <span class="text-muted small">
-                      <i class="fa-solid fa-comment"></i> <%= thread.comments ? thread.comments.length : 0 %>
-                    </span>
-                  </div>
+                  <h6 class="card-title small"><%= thread.title.substring(0, 40) %><%= thread.title.length > 40 ? '...' : '' %></h6>
+                  <small class="text-muted d-block mb-2">
+                    <i class="fa-solid fa-comment"></i> <%= thread.comments ? thread.comments.length : 0 %>
+                  </small>
                   <a href="/forum/threads/<%= thread._id %>" class="btn btn-sm btn-outline-dark w-100">View</a>
                 </div>
               </div>
@@ -319,7 +279,7 @@
           } else {
           %>
             <div class="col-12">
-              <p class="text-muted text-center">No trending discussions yet.</p>
+              <p class="text-muted text-center">No threads yet.</p>
             </div>
           <% } %>
         </div>
@@ -330,7 +290,6 @@
     <footer class="bg-light pt-5 mt-5">
       <div class="container">
         <div class="row">
-          <!-- Column 1: Logo + Social -->
           <div class="col-md-3 mb-4">
             <div class="d-flex align-items-center gap-2 mb-2">
               <div class="p-2 border rounded"><i class="fa-solid fa-store fs-3"></i></div>
@@ -343,7 +302,6 @@
               <i class="fab fa-youtube fs-5"></i>
             </div>
           </div>
-          <!-- Column 2: Shop -->
           <div class="col-md-2 mb-4">
             <h6 class="text-muted">SHOP</h6>
             <ul class="list-unstyled mt-2">
@@ -352,7 +310,6 @@
               <li><a href="/cart" class="text-decoration-none text-dark">Cart</a></li>
             </ul>
           </div>
-          <!-- Column 3: Company -->
           <div class="col-md-2 mb-4">
             <h6 class="text-muted">COMPANY</h6>
             <ul class="list-unstyled mt-2">
@@ -361,7 +318,6 @@
               <li><a href="/careers" class="text-decoration-none text-dark">Careers</a></li>
             </ul>
           </div>
-          <!-- Column 4: Support -->
           <div class="col-md-2 mb-4">
             <h6 class="text-muted">SUPPORT</h6>
             <ul class="list-unstyled mt-2">
@@ -370,7 +326,6 @@
               <li><a href="/privacy" class="text-decoration-none text-dark">Privacy Policy</a></li>
             </ul>
           </div>
-          <!-- Column 5: Payments -->
           <div class="col-md-3 mb-4">
             <h6 class="text-muted">ACCEPTED PAYMENTS</h6>
             <div class="d-flex gap-2 mt-2">
@@ -389,120 +344,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script id="threadsData" type="application/json"><%- JSON.stringify(threads || []) %></script>
-
-    <script>
-    // --- Thread Data (from server) ---
-    const threads = JSON.parse(document.getElementById('threadsData')?.textContent || '[]');
-
-    // --- Render Functions ---
-    function renderTags(tags) {
-      if (!tags || tags.length === 0) return '';
-      let html = '<div class="mb-2">';
-      tags.forEach(tag => {
-        html += `<span class="badge bg-secondary me-1">${tag}</span>`;
-      });
-      html += '</div>';
-      return html;
-    }
-
-    function renderThreadList(list) {
-      const container = document.getElementById('threadList');
-      container.innerHTML = '';
-      if (!list.length) {
-        container.innerHTML = '<div class="col-12 text-center text-muted">No discussions found.</div>';
-        return;
-      }
-      list.forEach(t => {
-        const commentCount = t.comments ? t.comments.length : 0;
-        container.innerHTML += `
-          <div class="col-md-6 col-lg-4">
-            <div class="card h-100 thread-preview" data-id="${t._id}" style="cursor:pointer;">
-              <img src="${t.image || '/img/placeholder.png'}" class="card-img-top" alt="Thread Image" style="height:180px;object-fit:cover;">
-              <div class="card-body">
-                ${renderTags(t.tags)}
-                <h6 class="fw-bold mb-1">${t.title}</h6>
-                <p class="text-muted small mb-1">${t.meta || 'By Community'}</p>
-                <p class="mb-2">${(t.excerpt || t.body || '').substring(0, 100)}...</p>
-                <div class="d-flex align-items-center justify-content-between">
-                  <small class="text-muted">
-                    <i class="fa-solid fa-comment"></i> ${commentCount} comments
-                  </small>
-                  <small class="text-muted">${new Date(t.createdAt || t.created).toLocaleDateString()}</small>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-      // Add click event for detail view (redirect to thread page)
-      container.querySelectorAll('.thread-preview').forEach(card => {
-        card.addEventListener('click', function() {
-          const id = this.getAttribute('data-id');
-          window.location.href = '/forum/threads/' + id;
-        });
-      });
-    }
-
-    // --- Sort, Filter, Search ---
-    function getFilteredSortedThreads() {
-      let list = [...threads];
-      
-      // Search
-      const searchVal = document.getElementById('threadSearch')?.value.trim().toLowerCase();
-      if (searchVal) {
-        list = list.filter(t =>
-          t.title.toLowerCase().includes(searchVal) ||
-          (t.body || '').toLowerCase().includes(searchVal) ||
-          (t.tags || []).some(tag => tag.toLowerCase().includes(searchVal))
-        );
-      }
-      
-      // Filter by category
-      const filterVal = document.getElementById('threadFilter')?.value;
-      if (filterVal && filterVal !== 'all') {
-        list = list.filter(t => 
-          (t.tags || []).some(tag => tag.toLowerCase().includes(filterVal.toLowerCase()))
-        );
-      }
-      
-      // Sort
-      const sortVal = document.getElementById('threadSort')?.value || 'date-desc';
-      if (sortVal === 'date-desc') {
-        list.sort((a,b) => new Date(b.createdAt || b.created) - new Date(a.createdAt || a.created));
-      } else if (sortVal === 'date-asc') {
-        list.sort((a,b) => new Date(a.createdAt || a.created) - new Date(b.createdAt || b.created));
-      } else if (sortVal === 'comments-desc') {
-        list.sort((a,b) => (b.comments?.length || 0) - (a.comments?.length || 0));
-      } else if (sortVal === 'comments-asc') {
-        list.sort((a,b) => (a.comments?.length || 0) - (b.comments?.length || 0));
-      }
-      
-      return list;
-    }
-
-    function updateThreadList() {
-      renderThreadList(getFilteredSortedThreads());
-      document.getElementById('threadDetail').classList.add('d-none');
-      document.getElementById('threadList').classList.remove('d-none');
-    }
-
-    // --- Event Listeners ---
-    document.addEventListener('DOMContentLoaded', function() {
-      // Initial render
-      updateThreadList();
-      
-      // Controls
-      const threadSearch = document.getElementById('threadSearch');
-      const threadSort = document.getElementById('threadSort');
-      const threadFilter = document.getElementById('threadFilter');
-      
-      if (threadSearch) threadSearch.addEventListener('input', updateThreadList);
-      if (threadSort) threadSort.addEventListener('change', updateThreadList);
-      if (threadFilter) threadFilter.addEventListener('change', updateThreadList);
-    });
-    </script>
-  </div> <!-- End prl-wrapper -->
+  </div>
 </body>
 </html>
