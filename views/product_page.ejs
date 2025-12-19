@@ -86,8 +86,8 @@
       <form class="d-flex me-3">
         <input class="form-control" type="search" placeholder="Search products">
       </form>
-      <i class="fa-solid fa-bag-shopping fs-5 me-3"></i>
-      <i class="fa-regular fa-user fs-5"></i>
+      <a href="#" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
+      <a href="register"><i class="fa-regular fa-user fs-5"></i></a>
     </div>
   </div>
 </nav>
@@ -381,49 +381,11 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+  <script id="reviewsData" type="application/json"><%- JSON.stringify(reviews || []) %></script>
+
   <script>
-  // --- Review Data (static for now) ---
-  const reviews = [
-    {
-      id: 1,
-      title: "Great Everyday Shoe",
-      summary: "Great product! Really comfortable and fits well.",
-      content: "Great product! Really comfortable and fits well. I wear them every day and they still look new. Highly recommend for anyone looking for comfort and style.",
-      name: "John Doe",
-      date: "2022-06-07",
-      rating: 4,
-      verified: true,
-      thumbnail: "img/Review-1.jpg",
-      color: "White",
-      size: "41"
-    },
-    {
-      id: 2,
-      title: "Super Comfortable",
-      summary: "Ridiculously comfortable—like walking on well-trained marshmallows. Easily my new daily pair.",
-      content: "Ridiculously comfortable—like walking on well-trained marshmallows. Easily my new daily pair. The fit is perfect and the cushioning is amazing.",
-      name: "Jane Doe",
-      date: "2022-06-05",
-      rating: 5,
-      verified: true,
-      thumbnail: "img/Review-2.jpg",
-      color: "Mint Green",
-      size: "40"
-    },
-    {
-      id: 3,
-      title: "Supportive & Stylish",
-      summary: "Great support and looks sharp, just needed a tiny bit of break-in time.",
-      content: "Great support and looks sharp, just needed a tiny bit of break-in time. After a week, they felt perfect. Would buy again!",
-      name: "Jean D'Arc",
-      date: "2023-01-19",
-      rating: 4,
-      verified: true,
-      thumbnail: "img/Review-3.jpg",
-      color: "Orange - Black Satin",
-      size: "42"
-    }
-  ];
+  // --- Review Data (from server) ---
+  const reviews = JSON.parse(document.getElementById('reviewsData')?.textContent || '[]');
 
   // --- Render Functions ---
   function renderStars(rating) {
