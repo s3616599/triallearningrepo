@@ -78,7 +78,7 @@
     <div id="navMenu" class="collapse navbar-collapse">
       <ul class="navbar-nav me-auto ms-4 gap-3">
         <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Shop</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/shop">Shop</a></li>
         <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
         <li class="nav-item"><a class="nav-link" href="forum.html">Forum</a></li>
         <li class="nav-item"><a class="nav-link" href="sitemap.html">Sitemap</a></li>
@@ -86,7 +86,7 @@
       <form class="d-flex me-3">
         <input class="form-control" type="search" placeholder="Search products">
       </form>
-      <a href="#" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
+      <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
       <a href="register"><i class="fa-regular fa-user fs-5"></i></a>
     </div>
   </div>
@@ -97,7 +97,7 @@
     <div class="container">
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+        <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
         <li class="breadcrumb-item active">Nike Air Force 1 High By You</li>
       </ol>
     </div>
@@ -158,7 +158,7 @@
               <button type="button" class="btn btn-dark w-100">
                 <i class="fa-solid fa-cart-plus me-2"></i>Add to Cart
               </button>
-            </div>
+            </div> 
           </form>
         </div>
       </div>
@@ -188,7 +188,6 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4 class="mb-0">All Reviews <span class="text-muted">(451)</span></h4>
           <div>
-            <button class="btn btn-outline-secondary btn-sm me-2">Filter</button>
             <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm" aria-expanded="false" aria-controls="reviewForm">
               Write a Review
             </button>
@@ -391,7 +390,11 @@
   function renderStars(rating) {
     let html = '';
     for (let i = 1; i <= 5; i++) {
-      html += `<i class="fa-star fa${i <= rating ? 's' : 'r'} fa-solid text-warning"></i>`;
+      if (i <= rating) {
+        html += `<i class="fa-solid fa-star text-warning"></i>`;
+      } else {
+        html += `<i class="fa-regular fa-star text-warning"></i>`;
+      }
     }
     return html;
   }

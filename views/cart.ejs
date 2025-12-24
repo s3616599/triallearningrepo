@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="css/globals.css" />
+    <link rel="stylesheet" href="css/styleguide.css" />
+    <link rel="stylesheet" href="css/style.css" />
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
+
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="navMenu" class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto ms-4 gap-3">
+                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+
+                <li class="nav-item">
+                  <a class="nav-link active" href="/">Shop</a>
+                </li>
+
+                <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Forum</a></li>
+                <li class="nav-item"><a class="nav-link" href="sitemap.html">Site Map</a></li>
+            </ul>
+
+            <form class="d-flex me-3">
+                <input class="form-control" type="search" placeholder="Search products">
+            </form>
+
+            <a href="/cart" class="text-dark">
+    <i class="fa-solid fa-bag-shopping fs-5 me-3"></i>
+</a>
+            <a href="register"><i class="fa-regular fa-user fs-5"></i></a>
+        </div>
+    </div>
+</nav>
+
+      <nav class="bg-light py-2 border-bottom">
+  <div class="container">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-muted">Ecommerce</a></li>
+      <li class="breadcrumb-item active text-dark fw-bold">Cart</li>
+    </ol>
+  </div>
+</nav>
+
+<div class="container py-5">
+    <h4 class="fw-bold mb-4">Your cart</h4>
+    <div class="row g-5">
+        
+        <div class="col-lg-8">
+            <% if (cartItems.length === 0) { %>
+                <div class="alert alert-info py-4 text-center">
+                    <h5>Your cart is empty.</h5>
+                    <a href="/" class="btn btn-dark mt-2">Go Shopping</a>
+                </div>
+            <% } else { %>
+                <% cartItems.forEach(function(item) { %>
+                    <div class="d-flex align-items-center gap-4 border-bottom pb-4 mb-4">
+                        <img src="<%= item.product.image %>" alt="Product" class="rounded" style="width: 80px; height: 80px; object-fit: cover; background-color: #f4f4f4;">
+                        
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="fw-bold mb-1"><%= item.product.name %></h6>
+                                    <div class="text-muted small">Price: $<%= item.product.price %></div>
+                                </div>
+                                <div class="fw-bold">$<%= item.product.price %></div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="custom-qty-box border rounded px-2 py-1">
+                                    <span class="small">Qty: <%= item.quantity %></span>
+                                </div>
+
+                                <form action="/remove-from-cart" method="POST" style="margin:0;">
+                                    <input type="hidden" name="cartId" value="<%= item.id %>">
+                                    <button type="submit" class="btn btn-light rounded border d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                        <i class="fa-solid fa-xmark text-secondary"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="border rounded p-4 shadow-sm bg-white">
+                <h5 class="fw-bold mb-4">Order Summary</h5>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-secondary">Subtotal</span>
+                    <span class="fw-bold">$<%= subtotal %></span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-secondary">Tax (10%)</span>
+                    <span class="text-secondary">$<%= tax %></span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-4">
+                    <span class="fw-bold">Total</span>
+                    <span class="fw-bold fs-5">$<%= total %></span>
+                </div>
+
+                <a href="/checkout" class="btn btn-dark w-100 py-2 fw-bold">Checkout</a>
+                <div class="text-center mt-3">
+                    <a href="/" class="text-decoration-underline text-dark small fw-bold">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+     <!-- FOOTER -->
+<footer class="bg-light pt-5 mt-5">
+  <div class="container">
+
+    <div class="row">
+      <!-- Column 1: Logo + Social -->
+      <div class="col-md-3 mb-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <div class="p-2 border rounded"><i class="fa-solid fa-store fs-3"></i></div>
+          <span class="fw-bold fs-5">Ecommerce</span>
+        </div>
+        <p class="text-muted small">DevCut is a YouTube channel for practical project-based learning.</p>
+        <div class="d-flex gap-2 mt-2">
+            <i class="fab fa-github fs-5"></i>
+            <i class="fab fa-instagram fs-5"></i>
+            <i class="fab fa-youtube fs-5"></i>
+        </div>
+      </div>
+        
+
+      <!-- Column 2: Shop -->
+      <div class="col-md-2 mb-4">
+        <h6 class="text-muted">SHOP</h6>
+        <ul class="list-unstyled mt-2">
+          <li><a href="#" class="text-decoration-none text-dark">My Account</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Checkout</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Cart</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: Company -->
+      <div class="col-md-2 mb-4">
+        <h6 class="text-muted">COMPANY</h6>
+        <ul class="list-unstyled mt-2">
+          <li><a href="#" class="text-decoration-none text-dark">About us</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Contact</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Careers</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 4: Support -->
+      <div class="col-md-2 mb-4">
+        <h6 class="text-muted">SUPPORT</h6>
+        <ul class="list-unstyled mt-2">
+          <li><a href="#" class="text-decoration-none text-dark">FAQ</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Terms of use</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 5: Payments -->
+        <div class="col-md-3 mb-4">
+            <h6 class="text-muted">ACCEPTED PAYMENTS</h6>
+            <div class="d-flex gap-2 mt-2">
+                <i class="fa-brands fa-cc-visa fs-3"></i>
+                <i class="fa-brands fa-cc-mastercard fs-3"></i>
+                <i class="fa-brands fa-cc-amex fs-3"></i>
+                <i class="fa-brands fa-cc-paypal fs-3"></i>
+            </div>
+        </div>
+      
+    </div>
+
+    
+
+    <hr class="mt-4">
+
+    <!-- Copyright -->
+    <div class="text-center pb-3 small text-muted">
+      © 2023 DevCut. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -9,6 +9,13 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const REVIEWS_PATH = path.join(__dirname, '../data/reviews.json');
+const BLOGS_PATH = path.join(__dirname, '../data/blogs.json');
+
+// LOAD PRODUCTS
+const products = require('../data/products.json');
+// IN-MEMORY CART (Temporary Database)
+let cartItems = []; 
+let nextCartId = 1;
 
 // ====== MIDDLEWARE ======
 app.use(express.json());
@@ -27,6 +34,15 @@ async function readReviews() {
   const raw = await fs.readFile(REVIEWS_PATH, 'utf8');
   const parsed = JSON.parse(raw);
   return Array.isArray(parsed) ? parsed : [];
+}
+
+async function readBlogs() {
+  const raw = await fs.readFile(BLOGS_PATH, 'utf8');
+  return JSON.parse(raw);
+}
+
+async function writeBlogs(blogs) {
+  await fs.writeFile(BLOGS_PATH, JSON.stringify(blogs, null, 2));
 }
 
 async function writeReviews(nextReviews) {
@@ -105,11 +121,79 @@ app.get('/', (req, res) => {
 
 app.get('/test', (req, res) => {
   res.render('test');
-});
+}); 
 
 app.get('/product', async (req, res) => {
   const reviews = await readReviews();
   res.render('product_page', { reviews });
+});
+
+app.get('/blogs', async (req, res) => {
+  const blogs = await readBlogs();
+  res.render('blogs', { blogs });
+});
+
+app.get('/blogs/:id', async (req, res) => {
+  const blogs = await readBlogs();
+  const blog = blogs.find(b => b.id == req.params.id);
+
+  if (!blog) {
+    return res.status(404).send('Blog not found');
+  }
+
+  res.render('blog_detail', { blog });
+});
+
+app.get('/blogs/add', (req, res) => {
+  res.render('blog_add');
+});
+
+app.post('/blogs/add', async (req, res) => {
+  const blogs = await readBlogs();
+
+  const newBlog = {
+    id: blogs.length ? blogs[blogs.length - 1].id + 1 : 1,
+    title: req.body.title,
+    heroImage: req.body.heroImage,
+    authorName: req.body.authorName,
+    authorRole: req.body.authorRole,
+    tags: req.body.tags.split(',').map(t => t.trim()),
+    content: req.body.content,
+    createdAt: new Date().toISOString().split('T')[0]
+  };
+
+  blogs.push(newBlog);
+  await writeBlogs(blogs);
+
+  res.redirect('/blogs');
+});
+
+
+app.get('/blogs/edit/:id', async (req, res) => {
+  const blogs = await readBlogs();
+  const blog = blogs.find(b => b.id == req.params.id);
+
+  res.render('blog_edit', { blog });
+});
+
+app.post('/blogs/edit/:id', async (req, res) => {
+  const blogs = await readBlogs();
+  const index = blogs.findIndex(b => b.id == req.params.id);
+
+  blogs[index].title = req.body.title;
+  blogs[index].authorName = req.body.authorName;
+  blogs[index].content = req.body.content;
+
+  await writeBlogs(blogs);
+  res.redirect('/blogs/' + req.params.id);
+});
+
+app.post('/blogs/delete/:id', async (req, res) => {
+  let blogs = await readBlogs();
+  blogs = blogs.filter(b => b.id != req.params.id);
+
+  await writeBlogs(blogs);
+  res.redirect('/blogs');
 });
 
 
@@ -128,11 +212,6 @@ app.get('/forgot_password', (req, res) => {
   res.render('forgot_password');
 });
 
-// Legacy URL support (in case a page/browser still requests the old .html URL)
-app.get('/forgot_password.html', (req, res) => {
-  res.redirect(301, '/forgot_password');
-});
-
 // Reset Password
 app.get('/reset_password', (req, res) => {
   res.render('reset_password');
@@ -141,6 +220,88 @@ app.get('/reset_password', (req, res) => {
 // Legacy URL support
 app.get('/reset_password.html', (req, res) => {
   res.redirect(301, '/reset_password');
+});
+
+// --- SHOP (Home) ---
+app.get('/', (req, res) => res.redirect('/shop'));
+
+app.get('/shop', (req, res) => {
+    res.render('shop', { products: products });
+});
+
+// --- CART PAGE ---
+app.get('/cart', (req, res) => {
+    const userId = 1; 
+    const userCart = cartItems.filter(item => item.userId === userId);
+
+    let subtotal = 0;
+    userCart.forEach(item => {
+        subtotal += (item.product.price * item.quantity);
+    });
+
+    const tax = subtotal * 0.10;
+    const finalTotal = subtotal + tax;
+
+    res.render('cart', { 
+        cartItems: userCart, 
+        subtotal: subtotal.toFixed(2),
+        tax: tax.toFixed(2),
+        total: finalTotal.toFixed(2) 
+    });
+});
+
+// --- CHECKOUT PAGE ---
+app.get('/checkout', (req, res) => {
+    const userId = 1;
+    const userCart = cartItems.filter(item => item.userId === userId);
+
+    let subtotal = 0;
+    userCart.forEach(item => {
+        subtotal += (item.product.price * item.quantity);
+    });
+    
+    const tax = subtotal * 0.10;
+    const finalTotal = subtotal + tax;
+
+    res.render('checkout', { 
+        cartItems: userCart, 
+        subtotal: subtotal.toFixed(2), 
+        tax: tax.toFixed(2), 
+        total: finalTotal.toFixed(2) 
+    });
+});
+
+// --- ADD TO CART ---
+app.post('/add-to-cart', (req, res) => {
+    const productId = parseInt(req.body.productId);
+    // This works now because 'products' is an Array, not a string path
+    const productToAdd = products.find(p => p.id === productId);
+
+    if (productToAdd) {
+        cartItems.push({
+            id: nextCartId++,
+            userId: 1, 
+            product: productToAdd,
+            quantity: 1
+        });
+        res.json({ success: true, message: "Item added to cart!" });
+    } else {
+        res.status(404).json({ success: false, message: "Product not found" });
+    }
+});
+
+// --- REMOVE FROM CART ---
+app.post('/remove-from-cart', (req, res) => {
+    const cartIdToDelete = parseInt(req.body.cartId);
+    cartItems = cartItems.filter(item => item.id !== cartIdToDelete);
+    res.redirect('/cart'); 
+});
+
+// --- PLACE ORDER ---
+app.post('/place-order', (req, res) => {
+    const customerName = req.body.fullname || "Customer";
+    cartItems = []; // Clear Cart
+    res.render('order', { name: customerName });
 });
 
 // ====== API ROUTES ======
