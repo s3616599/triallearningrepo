@@ -38,8 +38,8 @@
                     <a class="nav-link" href="/shop" >Shop</a>
                 </li>
 
-                <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Forum</a></li>
+                <li class="nav-item"><a class="nav-link" href="/blogs">Blogs</a></li>
+                <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
                 <li class="nav-item"><a class="nav-link" href="sitemap.html">Site Map</a></li>
             </ul>
 
@@ -61,7 +61,7 @@
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
   <div class="card shadow-sm p-4" style="width: 400px;">
     <h3 class="text-center mb-4">Login</h3>
-    <form id="loginForm" novalidate>
+    <form id="loginForm" method="POST" action="/login" novalidate>
       <div class="mb-3">
         <label for="username" class="form-label">Username or Email</label>
         <input type="text" class="form-control" id="username" name="identifier" placeholder="Enter username or email" autocomplete="username">

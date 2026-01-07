@@ -73,25 +73,25 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2 class="fw-bold mb-0"><%= blog.title %></h2>
 
-      <div>
-        <!-- EDIT -->
-        <button
-          class="btn btn-outline-secondary me-2"
-          data-bs-toggle="modal"
-          data-bs-target="#editBlogModal"
-        >
-          <i class="fa-solid fa-pen"></i> Edit
-        </button>
+      <% if (user && blog.userId === user.id) { %>
+        <div>
+          <button
+            class="btn btn-outline-secondary me-2"
+            data-bs-toggle="modal"
+            data-bs-target="#editBlogModal"
+          >
+            <i class="fa-solid fa-pen"></i> Edit
+          </button>
 
-        <!-- DELETE -->
-        <button
-          class="btn btn-outline-danger"
-          data-bs-toggle="modal"
-          data-bs-target="#deleteBlogModal"
-        >
-          <i class="fa-solid fa-trash"></i> Delete
-        </button>
-      </div>
+          <button
+            class="btn btn-outline-danger"
+            data-bs-toggle="modal"
+            data-bs-target="#deleteBlogModal"
+          >
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        </div>
+      <% } %>
     </div>
 
     <!-- Tags -->

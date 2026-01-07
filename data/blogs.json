@@ -7,8 +7,13 @@
     "authorName": "Nike",
     "authorRole": "Boxing Athlete",
     "createdAt": "2023-09-07",
-    "tags": ["Boxing", "Refugee Team", "Athlete Story"],
-    "content": "<p><strong>Discipline:</strong> Boxing</p><p><strong>Country of Origin:</strong> Cameroon</p><p><strong>Born:</strong> 09/07/1998</p><blockquote class='blockquote my-4 p-3 border-start border-3 border-dark'><p>\"Boxing is my family, my best friend, my sibling, my partner. In the ring, you're alone, you can't hide. You have to be your own coach.\"</p></blockquote><p>Doubt fuels Cindy's fire. She punches back at skeptics, turning doubt into her power in the ring.</p><h4 class='fw-bold mt-5'>IOC Refugee Olympic Team</h4><p>We’re proud to be the official kit supplier to the IOC Refugee Olympic Team.</p><h4 class='fw-bold mt-5'>Terrains d’Avenir</h4><p>The Olympic Refuge Foundation and Nike support the refugee and migrant community in Paris.</p>"
+    "tags": [
+      "Boxing",
+      "Refugee Team",
+      "Athlete Story"
+    ],
+    "content": "<p><strong>Discipline:</strong> Boxing</p><p><strong>Country of Origin:</strong> Cameroon</p><p><strong>Born:</strong> 09/07/1998</p><blockquote class='blockquote my-4 p-3 border-start border-3 border-dark'><p>\"Boxing is my family, my best friend, my sibling, my partner. In the ring, you're alone, you can't hide. You have to be your own coach.\"</p></blockquote><p>Doubt fuels Cindy's fire. She punches back at skeptics, turning doubt into her power in the ring.</p><h4 class='fw-bold mt-5'>IOC Refugee Olympic Team</h4><p>We’re proud to be the official kit supplier to the IOC Refugee Olympic Team.</p><h4 class='fw-bold mt-5'>Terrains d’Avenir</h4><p>The Olympic Refuge Foundation and Nike support the refugee and migrant community in Paris.</p>",
+    "userId": 1
   },
   {
     "id": 2,
@@ -18,8 +23,13 @@
     "authorName": "Nike",
     "authorRole": "Footballer",
     "createdAt": "2023-10-31",
-    "tags": ["Football", "Community", "Inspiration"],
-    "content": "<p><strong>Nationality:</strong> English</p><p><strong>Born:</strong> 31/10/1997</p><p>Born with desire. To score, to win, to sweat, to strive. To get better every single day and lead by example.</p><blockquote class='blockquote my-4 p-3 border-start border-3 border-dark'><p>\"When you believe in yourself, incredible things can happen.\"</p></blockquote><p>The Marcus Rashford Collection is made for a new generation.</p><h4 class='fw-bold mt-5'>Play Forward By Marcus Rashford</h4><p>Play Forward encourages the next generation to dream big on and off the pitch.</p><h4 class='fw-bold mt-5'>The Mission</h4><p>Play Forward leverages the power of football to help young people find their superpowers.</p><blockquote class='blockquote my-4 p-3 border-start border-3 border-dark'><p>\"At first, I thought Play Forward was just another after-school club...\"</p><footer class='blockquote-footer'>Luca, 12</footer></blockquote><blockquote class='blockquote my-4 p-3 border-start border-3 border-dark'><p>\"Before Play Forward, my behavior wasn't very good...\"</p><footer class='blockquote-footer'>Adnaan, 12</footer></blockquote>"
+    "tags": [
+      "Football",
+      "Community",
+      "Inspiration"
+    ],
+    "content": "<p><strong>Nationality:</strong> English</p><p><strong>Born:</strong> 31/10/1997</p><p>Born with desire. To score, to win, to sweat, to strive. To get better every single day and lead by example.</p><blockquote class='blockquote my-4 p-3 border-start border-3 border-dark'><p>\"When you believe in yourself, incredible things can happen.\"</p></blockquote><p>The Marcus Rashford Collection is made for a new generation.</p><h4 class='fw-bold mt-5'>Play Forward By Marcus Rashford</h4><p>Play Forward encourages the next generation to dream big on and off the pitch.</p><h4 class='fw-bold mt-5'>The Mission</h4><p>Play Forward leverages the power of football to help young people find their superpowers.</p><blockquote class='blockquote my-4 p-3 border-start border-3 border-dark'><p>\"At first, I thought Play Forward was just another after-school club...\"</p><footer class='blockquote-footer'>Luca, 12</footer></blockquote><blockquote class='blockquote my-4 p-3 border-start border-3 border-dark'><p>\"Before Play Forward, my behavior wasn't very good...\"</p><footer class='blockquote-footer'>Adnaan, 12</footer></blockquote>",
+    "userId": 2
   },
   {
     "id": 3,
@@ -29,7 +39,12 @@
     "authorName": "Nike",
     "authorRole": "Yoga Teacher",
     "createdAt": "2023-11-15",
-    "tags": ["Podcast", "Mindfulness", "Yoga"],
-    "content": "<p><strong>Discipline:</strong> Coaching</p><p>Nike yoga teacher Fabian Domenech has taught all over the world.</p><p>Over the past decade, yoga participation in the United States has nearly tripled.</p><p>Thanks to yoga, meditation, and travel, Fabian learned self-love and detachment.</p><blockquote class='blockquote my-4 p-3 border-start border-3 border-dark'><p>\"I think we need yoga in our lives somehow, just to be centered, to improve as humans.\"</p><footer class='blockquote-footer'>Fabian Domenech</footer></blockquote>"
+    "tags": [
+      "Podcast",
+      "Mindfulness",
+      "Yoga"
+    ],
+    "content": "<p><strong>Discipline:</strong> Coaching</p><p>Nike yoga teacher Fabian Domenech has taught all over the world.</p><p>Over the past decade, yoga participation in the United States has nearly tripled.</p><p>Thanks to yoga, meditation, and travel, Fabian learned self-love and detachment.</p><blockquote class='blockquote my-4 p-3 border-start border-3 border-dark'><p>\"I think we need yoga in our lives somehow, just to be centered, to improve as humans.\"</p><footer class='blockquote-footer'>Fabian Domenech</footer></blockquote>",
+    "userId": 3
   }
 ]
