@@ -178,10 +178,25 @@ function validateReviewPayload(body, { partial = false } = {}) {
   return { ok: errors.length === 0, errors, normalized };
 }
 
+// ====== AUTHENTICATION MIDDLEWARE ======
 function requireLogin(req, res, next) {
   if (!req.session.user) {
     req.session.returnTo = req.originalUrl;
     return res.redirect('/login');
+  }
+  next();
+}
+
+function requireAdmin(req, res, next) {
+  if (!req.session.user) {
+    req.session.returnTo = req.originalUrl;
+    return res.redirect('/login');
+  }
+  if (req.session.user.role !== 'admin') {
+    return res.status(403).render('error', { 
+      message: 'Access Denied', 
+      error: 'You do not have permission to access this page.' 
+    });
   }
   next();
 }
@@ -474,10 +489,10 @@ app.post('/forgot_password', async (req, res) => {
     user.resetTokenExpiry = resetTokenExpiry;
     await writeUsers(users);
 
-    // In a real app, send email here. For now, show token for testing
+    // In production, send email here. For now, just show success message.
+    // The token is stored in the database and would be sent via email
     res.render('forgot_password', {
-      message: 'Password reset link has been sent to your email (Token: ' + resetToken + ')',
-      resetToken: resetToken
+      message: 'If an account exists with that email, a password reset link has been sent. Please check your email.'
     });
   } catch (err) {
     console.error('Forgot password error:', err);
@@ -712,6 +727,153 @@ app.post('/profile/delete-account', requireLogin, async (req, res) => {
   } catch (err) {
     console.error('Delete account error:', err);
     res.status(500).render('delete_account', { user: req.session.user, errors: ['An error occurred'] });
+  }
+});
+
+// ====== ADMIN ROUTES ======
+
+// Admin Dashboard
+app.get('/admin', requireAdmin, async (req, res) => {
+  try {
+    const users = await readUsers();
+    const blogs = await readBlogs();
+    const threads = await readForum();
+    
+    res.render('admin', { 
+      users: users.map(u => ({ ...u, password: undefined })), // Don't expose passwords
+      blogs,
+      threads,
+      user: req.session.user
+    });
+  } catch (err) {
+    console.error('Admin dashboard error:', err);
+    res.status(500).send('Error loading admin dashboard');
+  }
+});
+
+// Admin - Lock/Unlock User
+app.post('/admin/users/:id/toggle-lock', requireAdmin, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const users = await readUsers();
+    const userIndex = users.findIndex(u => u.id === userId);
+    
+    if (userIndex === -1) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Don't allow locking yourself
+    if (userId === req.session.user.id) {
+      return res.status(400).json({ error: 'Cannot lock your own account' });
+    }
+    
+    // Toggle locked status
+    users[userIndex].locked = !users[userIndex].locked;
+    await writeUsers(users);
+    
+    res.json({ success: true, locked: users[userIndex].locked });
+  } catch (err) {
+    console.error('Toggle lock error:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+// Admin - Delete User
+app.post('/admin/users/:id/delete', requireAdmin, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const users = await readUsers();
+    
+    // Don't allow deleting yourself
+    if (userId === req.session.user.id) {
+      return res.status(400).json({ error: 'Cannot delete your own account' });
+    }
+    
+    const updatedUsers = users.filter(u => u.id !== userId);
+    
+    if (updatedUsers.length === users.length) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    await writeUsers(updatedUsers);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete user error:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+// Admin - Change User Role
+app.post('/admin/users/:id/role', requireAdmin, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const { role } = req.body;
+    
+    if (!['user', 'admin'].includes(role)) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+    
+    const users = await readUsers();
+    const userIndex = users.findIndex(u => u.id === userId);
+    
+    if (userIndex === -1) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Don't allow changing your own role
+    if (userId === req.session.user.id) {
+      return res.status(400).json({ error: 'Cannot change your own role' });
+    }
+    
+    users[userIndex].role = role;
+    await writeUsers(users);
+    
+    res.json({ success: true, role: users[userIndex].role });
+  } catch (err) {
+    console.error('Change role error:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+// Admin - Delete Blog
+app.post('/admin/blogs/:id/delete', requireAdmin, async (req, res) => {
+  try {
+    const blogId = parseInt(req.params.id);
+    let blogs = await readBlogs();
+    
+    const originalLength = blogs.length;
+    blogs = blogs.filter(b => b.id !== blogId);
+    
+    if (blogs.length === originalLength) {
+      return res.status(404).json({ error: 'Blog not found' });
+    }
+    
+    await writeBlogs(blogs);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete blog error:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+// Admin - Delete Forum Thread
+app.post('/admin/forum/:id/delete', requireAdmin, async (req, res) => {
+  try {
+    const threadId = parseInt(req.params.id);
+    let threads = await readForum();
+    
+    const originalLength = threads.length;
+    threads = threads.filter(t => t.id !== threadId);
+    
+    if (threads.length === originalLength) {
+      return res.status(404).json({ error: 'Thread not found' });
+    }
+    
+    await writeForum(threads);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete thread error:', err);
+    res.status(500).json({ error: 'An error occurred' });
   }
 });
 
