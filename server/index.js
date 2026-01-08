@@ -201,6 +201,37 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+// ====== LOCKED USER MIDDLEWARE ======
+// Middleware to check if user account is locked - BLOCKS ALL OPERATIONS
+async function checkUserLocked(req, res, next) {
+  if (!req.session.user) {
+    return next(); // Not logged in, let other middleware handle it
+  }
+  
+  try {
+    const users = await readUsers();
+    const user = users.find(u => u.id === req.session.user.id);
+    
+    if (user && user.locked) {
+      // User is locked - destroy session and show error
+      req.session.destroy((err) => {
+        if (err) console.error('Session destroy error:', err);
+      });
+      return res.status(403).render('error', {
+        message: 'Account Locked',
+        error: 'Your account has been locked by an administrator. You cannot perform any operations. Please contact support for assistance.'
+      });
+    }
+    next();
+  } catch (err) {
+    console.error('Error checking user lock status:', err);
+    next();
+  }
+}
+
+// Apply the locked user check to all routes after session is established
+app.use(checkUserLocked);
+
 
 // ====== PAGE ROUTES ======
 
@@ -365,6 +396,7 @@ app.post('/register', async (req, res) => {
       description: description ? description.trim() : '',
       profilePicture: 'https://via.placeholder.com/150',
       role: 'user',
+      locked: false,
       createdAt: new Date().toISOString(),
       resetToken: null,
       resetTokenExpiry: null
@@ -413,6 +445,11 @@ app.post('/login', async (req, res) => {
 
     if (!user) {
       return res.render('login', { errors: ['Invalid username or password'] });
+    }
+
+    // Check if user is locked
+    if (user.locked) {
+      return res.render('login', { errors: ['Your account has been locked. Please contact support for assistance.'] });
     }
 
     // Check password
@@ -877,12 +914,101 @@ app.post('/admin/forum/:id/delete', requireAdmin, async (req, res) => {
   }
 });
 
-// Forum routes
+// ====== ARCHIVE FUNCTIONALITY FOR ADMIN ======
 
-// forum main page to list all threads
-app.get('/forum', requireLogin, async (req, res) => {
+// Admin - Archive/Unarchive Thread
+app.post('/admin/forum/:id/archive', requireAdmin, async (req, res) => {
+  try {
+    const threadId = parseInt(req.params.id);
+    let threads = await readForum();
+    
+    const threadIndex = threads.findIndex(t => t.id === threadId);
+    
+    if (threadIndex === -1) {
+      return res.status(404).json({ error: 'Thread not found' });
+    }
+    
+    // Toggle archived status
+    threads[threadIndex].archived = !threads[threadIndex].archived;
+    threads[threadIndex].archivedAt = threads[threadIndex].archived ? new Date().toISOString() : null;
+    threads[threadIndex].archivedBy = threads[threadIndex].archived ? req.session.user.id : null;
+    
+    await writeForum(threads);
+    res.json({ 
+      success: true, 
+      archived: threads[threadIndex].archived,
+      message: threads[threadIndex].archived ? 'Thread archived successfully' : 'Thread unarchived successfully'
+    });
+  } catch (err) {
+    console.error('Archive thread error:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+// Admin - Archive/Unarchive Post (Comment)
+app.post('/admin/forum/:threadId/posts/:postId/archive', requireAdmin, async (req, res) => {
+  try {
+    const threadId = parseInt(req.params.threadId);
+    const postId = parseInt(req.params.postId);
+    let threads = await readForum();
+    
+    const threadIndex = threads.findIndex(t => t.id === threadId);
+    
+    if (threadIndex === -1) {
+      return res.status(404).json({ error: 'Thread not found' });
+    }
+    
+    if (!threads[threadIndex].comments) {
+      return res.status(404).json({ error: 'No comments in this thread' });
+    }
+    
+    const postIndex = threads[threadIndex].comments.findIndex(c => c.id === postId);
+    
+    if (postIndex === -1) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    
+    // Toggle archived status for the post
+    threads[threadIndex].comments[postIndex].archived = !threads[threadIndex].comments[postIndex].archived;
+    threads[threadIndex].comments[postIndex].archivedAt = threads[threadIndex].comments[postIndex].archived ? new Date().toISOString() : null;
+    threads[threadIndex].comments[postIndex].archivedBy = threads[threadIndex].comments[postIndex].archived ? req.session.user.id : null;
+    
+    await writeForum(threads);
+    res.json({ 
+      success: true, 
+      archived: threads[threadIndex].comments[postIndex].archived,
+      message: threads[threadIndex].comments[postIndex].archived ? 'Post archived successfully' : 'Post unarchived successfully'
+    });
+  } catch (err) {
+    console.error('Archive post error:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+// Admin - Get archived threads
+app.get('/admin/forum/archived', requireAdmin, async (req, res) => {
   try {
     const threads = await readForum();
+    const archivedThreads = threads.filter(t => t.archived === true);
+    res.json({ success: true, threads: archivedThreads });
+  } catch (err) {
+    console.error('Get archived threads error:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+// Forum routes
+
+// forum main page to list all threads (excluding archived for regular users)
+app.get('/forum', requireLogin, async (req, res) => {
+  try {
+    let threads = await readForum();
+    
+    // Filter out archived threads for non-admin users
+    if (req.session.user.role !== 'admin') {
+      threads = threads.filter(t => !t.archived);
+    }
+    
     // Sort by created date (newest first)
     threads.sort((a, b) => new Date(b.created) - new Date(a.created));
     res.render('forum', { threads, user: req.session.user });
@@ -925,6 +1051,7 @@ app.post('/forum/threads', requireLogin, async (req, res) => {
       image: req.body.image || 'img/placeholder.png',
       created: new Date().toISOString(),
       userId: req.session.user.id,
+      archived: false,
       comments: []
     };
 
@@ -946,6 +1073,11 @@ app.post('/forum/threads/:id', requireLogin, async (req, res) => {
 
     if (threadIndex === -1) {
       return res.status(404).json({ error: 'Thread not found' });
+    }
+
+    // Check if thread is archived
+    if (threads[threadIndex].archived) {
+      return res.status(403).json({ error: 'Cannot edit archived thread' });
     }
 
     // Check if user is thread author
@@ -993,6 +1125,11 @@ app.post('/forum/threads/:id/comments', requireLogin, async (req, res) => {
       return res.status(404).json({ error: 'Thread not found' });
     }
 
+    // Check if thread is archived
+    if (threads[threadIndex].archived) {
+      return res.status(403).json({ error: 'Cannot comment on archived thread' });
+    }
+
     if (!req.body.text || req.body.text.trim().length === 0) {
       return res.status(400).json({ error: 'Comment cannot be empty' });
     }
@@ -1012,7 +1149,8 @@ app.post('/forum/threads/:id/comments', requireLogin, async (req, res) => {
       author: req.session.user.fullname || req.session.user.username,
       text: req.body.text,
       created: new Date().toISOString(),
-      userId: req.session.user.id
+      userId: req.session.user.id,
+      archived: false
     };
 
     threads[threadIndex].comments.push(newComment);
