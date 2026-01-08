@@ -17,7 +17,7 @@
  <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
+        <a class="navbar-brand fw-bold" href="/">Ecommerce</a>
 
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
@@ -25,25 +25,27 @@
 
         <div id="navMenu" class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto ms-4 gap-3">
-                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
 
                 <li class="nav-item ">
-                    <a class="nav-link active" href="index.html">Shop</a>
+                    <a class="nav-link active" href="/shop">Shop</a>
                 </li>
 
-                <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Forum</a></li>
-                <li class="nav-item"><a class="nav-link" href="sitemap.html">Site Map</a></li>
+                <li class="nav-item"><a class="nav-link" href="/blogs">Blogs</a></li>
+                <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
+                <li class="nav-item"><a class="nav-link" href="/sitemap">Site Map</a></li>
             </ul>
 
             <form class="d-flex me-3">
                 <input class="form-control" type="search" placeholder="Search products">
             </form>
 
-            <a href="/cart" class="text-dark">
-    <i class="fa-solid fa-bag-shopping fs-5 me-3"></i>
-</a>
-            <a href="register"><i class="fa-regular fa-user fs-5"></i></a>
+            <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
+            <% if (user) { %>
+              <a href="/profile"><i class="fa-solid fa-user fs-5"></i></a>
+            <% } else { %>
+              <a href="/login"><i class="fa-regular fa-user fs-5"></i></a>
+            <% } %>
         </div>
     </div>
 </nav>
@@ -51,7 +53,7 @@
 <nav class="bg-light py-2 border-bottom">
     <div class="container">
         <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="#">Ecommerce</a></li>
+            <li class="breadcrumb-item"><a href="/">Ecommerce</a></li>
             <li class="breadcrumb-item active">Shop</li>
         </ol>
     </div>
@@ -275,9 +277,9 @@
       <div class="col-md-2 mb-4">
         <h6 class="text-muted">SHOP</h6>
         <ul class="list-unstyled mt-2">
-          <li><a href="#" class="text-decoration-none text-dark">My Account</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Checkout</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Cart</a></li>
+          <li><a href="/profile" class="text-decoration-none text-dark">My Account</a></li>
+          <li><a href="/checkout" class="text-decoration-none text-dark">Checkout</a></li>
+          <li><a href="/cart" class="text-decoration-none text-dark">Cart</a></li>
         </ul>
       </div>
 

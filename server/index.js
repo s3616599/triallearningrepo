@@ -6,10 +6,13 @@ require('dotenv').config();
 const express = require('express');
 const fs = require('fs/promises');
 const path = require('path');
+const bcrypt = require('bcrypt');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const REVIEWS_PATH = path.join(__dirname, '../data/reviews.json');
 const BLOGS_PATH = path.join(__dirname, '../data/blogs.json');
+const USERS_PATH = path.join(__dirname, '../data/users.json');
+const FORUM_PATH = path.join(__dirname, '../data/forum.json');
 
 // LOAD PRODUCTS
 const products = require('../data/products.json');
@@ -81,6 +84,36 @@ async function writeForum(threads) {
   const tmpPath = path.join(dir, `forum.tmp.${Date.now()}.json`);
   await fs.writeFile(tmpPath, JSON.stringify(threads, null, 2), 'utf8');
   await fs.rename(tmpPath, FORUM_PATH);
+}
+
+// ====== USER MANAGEMENT FUNCTIONS ======
+async function readUsers() {
+  try {
+    const raw = await fs.readFile(USERS_PATH, 'utf8');
+    return JSON.parse(raw);
+  } catch (err) {
+    console.error('Error reading users data:', err);
+    return [];
+  }
+}
+
+async function writeUsers(users) {
+  const dir = path.dirname(USERS_PATH);
+  const tmpPath = path.join(dir, `users.tmp.${Date.now()}.json`);
+  await fs.writeFile(tmpPath, JSON.stringify(users, null, 2), 'utf8');
+  await fs.rename(tmpPath, USERS_PATH);
+}
+
+async function hashPassword(password) {
+  return await bcrypt.hash(password, 10);
+}
+
+async function comparePassword(password, hash) {
+  return await bcrypt.compare(password, hash);
+}
+
+function generateResetToken() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
 function normalizeRating(value) {
@@ -159,6 +192,10 @@ function requireLogin(req, res, next) {
 app.get('/test', (req, res) => {
   res.render('test');
 }); 
+
+app.get('/sitemap', (req, res) => {
+  res.sendFile(path.join(__dirname, '../sitemap.html'));
+});
 
 app.get('/product', async (req, res) => {
   const reviews = await readReviews();
@@ -266,33 +303,231 @@ app.get('/register', (req, res) => {
   res.render('register');
 });
 
-// Login page
+// Register POST - Create new user
+app.post('/register', async (req, res) => {
+  try {
+    const { username, email, password, confirmPassword, fullname, description } = req.body;
+    const errors = [];
 
+    // Validation
+    if (!username || username.trim().length < 3) {
+      errors.push('Username must be at least 3 characters long');
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push('Please enter a valid email address');
+    }
+    if (!password || password.length < 6) {
+      errors.push('Password must be at least 6 characters long');
+    }
+    if (password !== confirmPassword) {
+      errors.push('Passwords do not match');
+    }
+    if (!fullname || fullname.trim().length < 2) {
+      errors.push('Please enter your full name');
+    }
+    if (description && description.length > 200) {
+      errors.push('Description must be less than 200 characters');
+    }
+
+    // Check if user already exists
+    const users = await readUsers();
+    if (users.some(u => u.username === username || u.email === email)) {
+      errors.push('Username or email already exists');
+    }
+
+    if (errors.length > 0) {
+      return res.render('register', { errors, formData: { username, email, fullname, description } });
+    }
+
+    // Create new user
+    const hashedPassword = await hashPassword(password);
+    const newUser = {
+      id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+      username: username.trim(),
+      email: email.trim(),
+      password: hashedPassword,
+      fullname: fullname.trim(),
+      description: description ? description.trim() : '',
+      profilePicture: 'https://via.placeholder.com/150',
+      role: 'user',
+      createdAt: new Date().toISOString(),
+      resetToken: null,
+      resetTokenExpiry: null
+    };
+
+    users.push(newUser);
+    await writeUsers(users);
+
+    // Set session and redirect
+    req.session.user = {
+      id: newUser.id,
+      username: newUser.username,
+      email: newUser.email,
+      fullname: newUser.fullname,
+      role: newUser.role
+    };
+
+    res.redirect('/blogs');
+  } catch (err) {
+    console.error('Registration error:', err);
+    res.status(500).render('register', { errors: ['An error occurred during registration'] });
+  }
+});
+
+// Login page
 app.get('/login', (req, res) => {
   res.render('login');
 });
 
-app.post('/login', (req, res) => {
-  req.session.user = {
-    id: 1,
-    username: 'nam',
-    role: 'user'
-  };
+// Login POST - Authenticate user
+app.post('/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const errors = [];
 
-  const redirectTo = req.session.returnTo || '/blogs';
-  delete req.session.returnTo;
+    if (!username) errors.push('Username is required');
+    if (!password) errors.push('Password is required');
 
-  res.redirect(redirectTo);
+    if (errors.length > 0) {
+      return res.render('login', { errors });
+    }
+
+    // Find user
+    const users = await readUsers();
+    const user = users.find(u => u.username === username);
+
+    if (!user) {
+      return res.render('login', { errors: ['Invalid username or password'] });
+    }
+
+    // Check password
+    const passwordMatch = await comparePassword(password, user.password);
+    if (!passwordMatch) {
+      return res.render('login', { errors: ['Invalid username or password'] });
+    }
+
+    // Set session
+    req.session.user = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      fullname: user.fullname,
+      role: user.role
+    };
+
+    const redirectTo = req.session.returnTo || '/blogs';
+    delete req.session.returnTo;
+
+    res.redirect(redirectTo);
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).render('login', { errors: ['An error occurred during login'] });
+  }
 });
 
-// Forgot Password
+// Logout
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Logout error:', err);
+      return res.status(500).send('Error logging out');
+    }
+    res.redirect('/shop');
+  });
+});
+
+// Forgot Password - Show form
 app.get('/forgot_password', (req, res) => {
   res.render('forgot_password');
 });
 
-// Reset Password
+// Forgot Password - Send reset email/token
+app.post('/forgot_password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const errors = [];
+
+    if (!email) {
+      errors.push('Email is required');
+    }
+
+    if (errors.length > 0) {
+      return res.render('forgot_password', { errors });
+    }
+
+    const users = await readUsers();
+    const user = users.find(u => u.email === email);
+
+    if (!user) {
+      // Don't reveal if email exists for security
+      return res.render('forgot_password', { 
+        message: 'If an account exists with that email, a reset link has been sent.'
+      });
+    }
+
+    // Generate reset token
+    const resetToken = generateResetToken();
+    const resetTokenExpiry = Date.now() + 3600000; // 1 hour
+
+    // Update user with reset token
+    user.resetToken = resetToken;
+    user.resetTokenExpiry = resetTokenExpiry;
+    await writeUsers(users);
+
+    // In a real app, send email here. For now, show token for testing
+    res.render('forgot_password', {
+      message: 'Password reset link has been sent to your email (Token: ' + resetToken + ')',
+      resetToken: resetToken
+    });
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    res.status(500).render('forgot_password', { errors: ['An error occurred'] });
+  }
+});
+
+// Reset Password - Show form
 app.get('/reset_password', (req, res) => {
-  res.render('reset_password');
+  const { token } = req.query;
+  res.render('reset_password', { token: token || '' });
+});
+
+// Reset Password - Update password
+app.post('/reset_password', async (req, res) => {
+  try {
+    const { token, password, confirmPassword } = req.body;
+    const errors = [];
+
+    if (!token) errors.push('Reset token is required');
+    if (!password) errors.push('Password is required');
+    if (password && password.length < 6) errors.push('Password must be at least 6 characters');
+    if (password !== confirmPassword) errors.push('Passwords do not match');
+
+    if (errors.length > 0) {
+      return res.render('reset_password', { errors, token });
+    }
+
+    // Find user with valid token
+    const users = await readUsers();
+    const user = users.find(u => u.resetToken === token && u.resetTokenExpiry > Date.now());
+
+    if (!user) {
+      return res.render('reset_password', { errors: ['Invalid or expired reset token'], token });
+    }
+
+    // Update password
+    user.password = await hashPassword(password);
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
+    await writeUsers(users);
+
+    res.render('reset_password', { 
+      message: 'Password has been reset successfully. Please login with your new password.',
+      redirectUrl: '/login'
+    });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).render('reset_password', { errors: ['An error occurred'], token: req.body.token });
+  }
 });
 
 // Legacy URL support
@@ -300,87 +535,307 @@ app.get('/reset_password.html', (req, res) => {
   res.redirect(301, '/reset_password');
 });
 
+// ====== USER PROFILE ROUTES ======
+
+// Account alias (redirect to profile)
+app.get('/account', requireLogin, (req, res) => {
+  res.redirect('/profile');
+});
+
+// View user profile
+app.get('/profile', requireLogin, async (req, res) => {
+  try {
+    const users = await readUsers();
+    const user = users.find(u => u.id === req.session.user.id);
+    
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    res.render('profile', { user });
+  } catch (err) {
+    console.error('Profile view error:', err);
+    res.status(500).send('Error loading profile');
+  }
+});
+
+// Edit profile page
+app.get('/profile/edit', requireLogin, async (req, res) => {
+  try {
+    const users = await readUsers();
+    const user = users.find(u => u.id === req.session.user.id);
+    
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    res.render('profile_edit', { user });
+  } catch (err) {
+    console.error('Profile edit page error:', err);
+    res.status(500).send('Error loading profile edit page');
+  }
+});
+
+// Update profile
+app.post('/profile/edit', requireLogin, async (req, res) => {
+  try {
+    const { fullname, email, description, profilePicture } = req.body;
+    const errors = [];
+
+    // Validation
+    if (!fullname || fullname.trim().length < 2) {
+      errors.push('Full name must be at least 2 characters');
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push('Please enter a valid email address');
+    }
+    if (description && description.length > 200) {
+      errors.push('Description must be less than 200 characters');
+    }
+
+    // Check if email is already used by another user
+    const users = await readUsers();
+    const emailExists = users.find(u => u.email === email && u.id !== req.session.user.id);
+    if (emailExists) {
+      errors.push('This email is already in use');
+    }
+
+    if (errors.length > 0) {
+      const user = users.find(u => u.id === req.session.user.id);
+      return res.render('profile_edit', { user, errors });
+    }
+
+    // Update user
+    const userIndex = users.findIndex(u => u.id === req.session.user.id);
+    users[userIndex].fullname = fullname.trim();
+    users[userIndex].email = email.trim();
+    users[userIndex].description = description ? description.trim() : '';
+    users[userIndex].profilePicture = profilePicture ? profilePicture.trim() : 'https://via.placeholder.com/150';
+
+    await writeUsers(users);
+
+    // Update session
+    req.session.user.fullname = users[userIndex].fullname;
+    req.session.user.email = users[userIndex].email;
+
+    res.render('profile_edit', { user: users[userIndex], message: 'Profile updated successfully!' });
+  } catch (err) {
+    console.error('Profile update error:', err);
+    res.status(500).send('Error updating profile');
+  }
+});
+
+// Change password page
+app.get('/profile/change-password', requireLogin, (req, res) => {
+  res.render('change_password', { user: req.session.user });
+});
+
+// Update password
+app.post('/profile/change-password', requireLogin, async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const errors = [];
+
+    // Validation
+    if (!currentPassword) errors.push('Current password is required');
+    if (!newPassword) errors.push('New password is required');
+    if (newPassword && newPassword.length < 6) errors.push('New password must be at least 6 characters');
+    if (newPassword !== confirmPassword) errors.push('Passwords do not match');
+
+    if (errors.length > 0) {
+      return res.render('change_password', { user: req.session.user, errors });
+    }
+
+    // Verify current password
+    const users = await readUsers();
+    const user = users.find(u => u.id === req.session.user.id);
+
+    const passwordMatch = await comparePassword(currentPassword, user.password);
+    if (!passwordMatch) {
+      return res.render('change_password', { user: req.session.user, errors: ['Current password is incorrect'] });
+    }
+
+    // Update password
+    const hashedPassword = await hashPassword(newPassword);
+    user.password = hashedPassword;
+    await writeUsers(users);
+
+    res.render('change_password', { user: req.session.user, message: 'Password changed successfully!' });
+  } catch (err) {
+    console.error('Change password error:', err);
+    res.status(500).render('change_password', { user: req.session.user, errors: ['An error occurred'] });
+  }
+});
+
+// Delete account page
+app.get('/profile/delete-account', requireLogin, (req, res) => {
+  res.render('delete_account', { user: req.session.user });
+});
+
+// Delete account
+app.post('/profile/delete-account', requireLogin, async (req, res) => {
+  try {
+    const { password, confirm } = req.body;
+    const errors = [];
+
+    if (!password) {
+      errors.push('Password is required');
+    }
+    if (!confirm) {
+      errors.push('You must confirm the deletion');
+    }
+
+    if (errors.length > 0) {
+      return res.render('delete_account', { user: req.session.user, errors });
+    }
+
+    // Verify password
+    const users = await readUsers();
+    const user = users.find(u => u.id === req.session.user.id);
+
+    const passwordMatch = await comparePassword(password, user.password);
+    if (!passwordMatch) {
+      return res.render('delete_account', { user: req.session.user, errors: ['Invalid password'] });
+    }
+
+    // Delete user
+    const updatedUsers = users.filter(u => u.id !== req.session.user.id);
+    await writeUsers(updatedUsers);
+
+    // Destroy session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Session destroy error:', err);
+      }
+      res.redirect('/shop');
+    });
+  } catch (err) {
+    console.error('Delete account error:', err);
+    res.status(500).render('delete_account', { user: req.session.user, errors: ['An error occurred'] });
+  }
+});
+
 // Forum routes
 
 // forum main page to list all threads
-app.get('/forum', async (req, res) => {
+app.get('/forum', requireLogin, async (req, res) => {
   try {
     const threads = await readForum();
     // Sort by created date (newest first)
     threads.sort((a, b) => new Date(b.created) - new Date(a.created));
-    // For now, user is null (no auth implemented)
-    res.render('forum', { threads, user: null });
+    res.render('forum', { threads, user: req.session.user });
   } catch (err) {
     console.error('Error loading forum:', err);
     res.status(500).send('Error loading forum');
   }
 });
 
-//Create new thread
-app.post('/forum/threads', async (req, res) => {
+// Create new thread (AJAX)
+app.post('/forum/threads', requireLogin, async (req, res) => {
   try {
     const threads = await readForum();
 
-    //tags from , seperated string
+    // tags from comma separated string
     let tags = [];
     if (req.body.tags) {
       tags = req.body.tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
     }
 
-    // Generate new ID
-   const maxId = threads.reduce((max, t) => Math.max(max, t.id || 0), 0);
+    // Validate inputs
+    if (!req.body.title || req.body.title.trim().length < 10) {
+      return res.status(400).json({ error: 'Title must be at least 10 characters' });
+    }
+    if (!req.body.body || req.body.body.trim().length < 20) {
+      return res.status(400).json({ error: 'Message must be at least 20 characters' });
+    }
 
-   const newThread = {
+    // Generate new ID
+    const maxId = threads.reduce((max, t) => Math.max(max, t.id || 0), 0);
+
+    const newThread = {
       id: maxId + 1,
-      title: req.body.title || 'Untitled Thread',
-      author: req.body.author || 'Anonymous',
-      meta: `By ${req.body.author || 'Anonymous'} • Community`,
+      title: req.body.title,
+      author: req.session.user.fullname || req.session.user.username,
+      meta: `By ${req.session.user.fullname || req.session.user.username} • Community`,
       tags: tags,
-      excerpt: (req.body.body || '').substring(0, 100),
-      body: req.body.body || '',
+      excerpt: req.body.body.substring(0, 100),
+      body: req.body.body,
       image: req.body.image || 'img/placeholder.png',
       created: new Date().toISOString(),
+      userId: req.session.user.id,
       comments: []
     };
 
-    threads.unshift(newThread); 
+    threads.unshift(newThread);
     await writeForum(threads);
 
-    res.redirect('/forum');
+    res.json({ thread: newThread });
   } catch (err) {
     console.error('Error creating thread:', err);
-    res.status(500).send('Error creating thread');
+    res.status(500).json({ error: 'Error creating thread' });
   }
 });
 
-// View single thread
-app.get('/forum/threads/:id', async (req, res) => {
-  try {
-    const threads = await readForum();
-    const thread = threads.find(t => t.id == req.params.id);
-
-    if (!thread) {
-      return res.status(404).send('Thread not found');
-    }
-
-    res.render('forum_thread', { thread, user: null });
-  } catch (err) {
-    console.error('Error loading thread:', err);
-    res.status(500).send('Error loading thread');
-  }
-});
-
-// Add comment to thread
-app.post('/forum/threads/:id/comments', async (req, res) => {
+// Update thread (AJAX)
+app.post('/forum/threads/:id', requireLogin, async (req, res) => {
   try {
     const threads = await readForum();
     const threadIndex = threads.findIndex(t => t.id == req.params.id);
 
     if (threadIndex === -1) {
-      return res.status(404).send('Thread not found');
+      return res.status(404).json({ error: 'Thread not found' });
     }
 
-    // to initialize comments array if it doesn't exist
+    // Check if user is thread author
+    if (threads[threadIndex].userId !== req.session.user.id) {
+      return res.status(403).json({ error: 'You can only edit your own threads' });
+    }
+
+    // Validate inputs
+    if (!req.body.title || req.body.title.trim().length < 10) {
+      return res.status(400).json({ error: 'Title must be at least 10 characters' });
+    }
+    if (!req.body.body || req.body.body.trim().length < 20) {
+      return res.status(400).json({ error: 'Message must be at least 20 characters' });
+    }
+
+    // Update thread
+    let tags = [];
+    if (req.body.tags) {
+      tags = req.body.tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
+    }
+
+    threads[threadIndex].title = req.body.title;
+    threads[threadIndex].body = req.body.body;
+    threads[threadIndex].excerpt = req.body.body.substring(0, 100);
+    threads[threadIndex].tags = tags;
+    if (req.body.image && req.body.image !== 'img/placeholder.png') {
+      threads[threadIndex].image = req.body.image;
+    }
+
+    await writeForum(threads);
+    res.json({ thread: threads[threadIndex] });
+  } catch (err) {
+    console.error('Error updating thread:', err);
+    res.status(500).json({ error: 'Error updating thread' });
+  }
+});
+
+// Add comment to thread (AJAX)
+app.post('/forum/threads/:id/comments', requireLogin, async (req, res) => {
+  try {
+    const threads = await readForum();
+    const threadIndex = threads.findIndex(t => t.id == req.params.id);
+
+    if (threadIndex === -1) {
+      return res.status(404).json({ error: 'Thread not found' });
+    }
+
+    if (!req.body.text || req.body.text.trim().length === 0) {
+      return res.status(400).json({ error: 'Comment cannot be empty' });
+    }
+
+    // Initialize comments array if it doesn't exist
     if (!threads[threadIndex].comments) {
       threads[threadIndex].comments = [];
     }
@@ -392,31 +847,78 @@ app.post('/forum/threads/:id/comments', async (req, res) => {
 
     const newComment = {
       id: maxCommentId + 1,
-      author: req.body.author || 'Anonymous',
-      text: req.body.text || '',
-      created: new Date().toISOString()
+      author: req.session.user.fullname || req.session.user.username,
+      text: req.body.text,
+      created: new Date().toISOString(),
+      userId: req.session.user.id
     };
 
     threads[threadIndex].comments.push(newComment);
     await writeForum(threads);
 
-    res.redirect(`/forum/threads/${req.params.id}`);
+    res.json({ comment: newComment });
   } catch (err) {
     console.error('Error adding comment:', err);
-    res.status(500).send('Error adding comment');
+    res.status(500).json({ error: 'Error adding comment' });
   }
 });
 
-// Delete thread
-app.post('/forum/threads/:id/delete', async (req, res) => {
+// Delete comment from thread (AJAX)
+app.post('/forum/threads/:id/comments/:commentId', requireLogin, async (req, res) => {
+  try {
+    const threads = await readForum();
+    const threadIndex = threads.findIndex(t => t.id == req.params.id);
+
+    if (threadIndex === -1) {
+      return res.status(404).json({ error: 'Thread not found' });
+    }
+
+    if (!threads[threadIndex].comments) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    const commentIndex = threads[threadIndex].comments.findIndex(c => c.id == req.params.commentId);
+    if (commentIndex === -1) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    // Check if user is comment author
+    const comment = threads[threadIndex].comments[commentIndex];
+    if (comment.userId !== req.session.user.id) {
+      return res.status(403).json({ error: 'You can only delete your own comments' });
+    }
+
+    threads[threadIndex].comments.splice(commentIndex, 1);
+    await writeForum(threads);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error deleting comment:', err);
+    res.status(500).json({ error: 'Error deleting comment' });
+  }
+});
+
+// Delete thread (AJAX)
+app.post('/forum/threads/:id/delete', requireLogin, async (req, res) => {
   try {
     let threads = await readForum();
-    threads = threads.filter(t => t.id != req.params.id);
+    const threadIndex = threads.findIndex(t => t.id == req.params.id);
+
+    if (threadIndex === -1) {
+      return res.status(404).json({ error: 'Thread not found' });
+    }
+
+    // Check if user is thread author
+    if (threads[threadIndex].userId !== req.session.user.id) {
+      return res.status(403).json({ error: 'You can only delete your own threads' });
+    }
+
+    threads.splice(threadIndex, 1);
     await writeForum(threads);
-    res.redirect('/forum');
+    res.json({ success: true });
   } catch (err) {
     console.error('Error deleting thread:', err);
-    res.status(500).send('Error deleting thread');
+    res.status(500).json({ error: 'Error deleting thread' });
   }
 });
 
@@ -428,8 +930,8 @@ app.get('/shop', (req, res) => {
 });
 
 // --- CART PAGE ---
-app.get('/cart', (req, res) => {
-    const userId = 1; 
+app.get('/cart', requireLogin, (req, res) => {
+    const userId = req.session.user.id; 
     const userCart = cartItems.filter(item => item.userId === userId);
 
     let subtotal = 0;
@@ -449,8 +951,8 @@ app.get('/cart', (req, res) => {
 });
 
 // --- CHECKOUT PAGE ---
-app.get('/checkout', (req, res) => {
-    const userId = 1;
+app.get('/checkout', requireLogin, (req, res) => {
+    const userId = req.session.user.id;
     const userCart = cartItems.filter(item => item.userId === userId);
 
     let subtotal = 0;
@@ -470,7 +972,7 @@ app.get('/checkout', (req, res) => {
 });
 
 // --- ADD TO CART ---
-app.post('/add-to-cart', (req, res) => {
+app.post('/add-to-cart', requireLogin, (req, res) => {
     const productId = parseInt(req.body.productId);
     // This works now because 'products' is an Array, not a string path
     const productToAdd = products.find(p => p.id === productId);
@@ -478,7 +980,7 @@ app.post('/add-to-cart', (req, res) => {
     if (productToAdd) {
         cartItems.push({
             id: nextCartId++,
-            userId: 1, 
+            userId: req.session.user.id, 
             product: productToAdd,
             quantity: 1
         });
@@ -489,14 +991,14 @@ app.post('/add-to-cart', (req, res) => {
 });
 
 // --- REMOVE FROM CART ---
-app.post('/remove-from-cart', (req, res) => {
+app.post('/remove-from-cart', requireLogin, (req, res) => {
     const cartIdToDelete = parseInt(req.body.cartId);
     cartItems = cartItems.filter(item => item.id !== cartIdToDelete);
     res.redirect('/cart'); 
 });
 
 // --- PLACE ORDER ---
-app.post('/place-order', (req, res) => {
+app.post('/place-order', requireLogin, (req, res) => {
     const customerName = req.body.fullname || "Customer";
     cartItems = []; // Clear Cart
     res.render('order', { name: customerName });
@@ -518,8 +1020,8 @@ app.get('/api/reviews/:id', async (req, res) => {
   res.json(review);
 });
 
-// 2) Dynamic creation of data (no logged-in user yet)
-app.post('/api/reviews', async (req, res) => {
+// 2) Dynamic creation of data (requires login)
+app.post('/api/reviews', requireLogin, async (req, res) => {
   const { ok, errors, normalized } = validateReviewPayload(req.body, { partial: false });
   if (!ok) return res.status(400).json({ errors });
   const reviews = await readReviews();
@@ -535,8 +1037,8 @@ app.post('/api/reviews', async (req, res) => {
   res.status(201).json(created);
 });
 
-// 3) Dynamic editing/updating (no ownership checks yet)
-app.put('/api/reviews/:id', async (req, res) => {
+// 3) Dynamic editing/updating (requires login)
+app.put('/api/reviews/:id', requireLogin, async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) return res.status(400).json({ error: 'Invalid review id.' });
   const { ok, errors, normalized } = validateReviewPayload(req.body, { partial: true });

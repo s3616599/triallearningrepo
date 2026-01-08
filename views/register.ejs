@@ -24,7 +24,7 @@
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
+        <a class="navbar-brand fw-bold" href="/">Ecommerce</a>
 
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
@@ -32,15 +32,15 @@
 
         <div id="navMenu" class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto ms-4 gap-3">
-                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
 
                 <li class="nav-item ">
                     <a class="nav-link" href="/shop">Shop</a>
                 </li>
 
-                <li class="nav-item"><a class="nav-link" href="blogs.html">Blogs</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Forum</a></li>
-                <li class="nav-item"><a class="nav-link" href="sitemap.html">Site Map</a></li>
+                <li class="nav-item"><a class="nav-link" href="/blogs">Blogs</a></li>
+                <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
+                <li class="nav-item"><a class="nav-link" href="/sitemap">Site Map</a></li>
             </ul>
 
             <!-- Search -->
@@ -48,8 +48,12 @@
                 <input class="form-control" type="search" placeholder="Search products">
             </form>
 
-            <a href="#" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
-            <a href="register"><i class="fa-regular fa-user fs-5"></i></a>
+            <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
+            <% if (user) { %>
+              <a href="/profile"><i class="fa-regular fa-user fs-5"></i></a>
+            <% } else { %>
+              <a href="/login"><i class="fa-regular fa-user fs-5"></i></a>
+            <% } %>
 
         </div>
     </div>
@@ -61,18 +65,39 @@
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
   <div class="card shadow-sm p-4" style="width: 450px;">
     <h3 class="text-center mb-4">Sign up</h3>
-    <form>
+    <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <% errors.forEach(error => { %>
+          <div><%= error %></div>
+        <% }); %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    <% } %>
+    <form method="POST" action="/register">
+      <div class="mb-3">
+        <label for="fullname" class="form-label">Full Name</label>
+        <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter your full name" value="<%= (typeof formData !== 'undefined' && formData.fullname) ? formData.fullname : '' %>" required>
+      </div>
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="username" placeholder="Enter username">
+        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" value="<%= (typeof formData !== 'undefined' && formData.username) ? formData.username : '' %>" required>
       </div>
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" placeholder="Enter email">
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" value="<%= (typeof formData !== 'undefined' && formData.email) ? formData.email : '' %>" required>
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Short Description</label>
+        <textarea class="form-control" id="description" name="description" rows="2" placeholder="Tell us about yourself (optional)"><%= (typeof formData !== 'undefined' && formData.description) ? formData.description : '' %></textarea>
+        <small class="text-muted">Max 200 characters</small>
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" placeholder="Enter password">
+        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password (min 6 characters)" required>
+      </div>
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
       </div>
       <button type="submit" class="btn btn-dark w-100 mb-3">Create account</button>
       <div class="text-center">
@@ -107,9 +132,9 @@
       <div class="col-md-2 mb-4">
         <h6 class="text-muted">SHOP</h6>
         <ul class="list-unstyled mt-2">
-          <li><a href="#" class="text-decoration-none text-dark">My Account</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Checkout</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Cart</a></li>
+          <li><a href="/profile" class="text-decoration-none text-dark">My Account</a></li>
+          <li><a href="/checkout" class="text-decoration-none text-dark">Checkout</a></li>
+          <li><a href="/cart" class="text-decoration-none text-dark">Cart</a></li>
         </ul>
       </div>
 

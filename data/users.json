@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "username": "nam",
+    "email": "nam@example.com",
+    "password": "$2b$10$N9qo8uLOickgx2ZMRZoMye8BhP4vAKZeIJME8Ju6EWz5n0FQDHBnm",
+    "fullname": "Nam Nguyen",
+    "description": "Nike enthusiast and shoe collector",
+    "profilePicture": "https://via.placeholder.com/150",
+    "role": "user",
+    "createdAt": "2025-01-01T00:00:00Z",
+    "resetToken": null,
+    "resetTokenExpiry": null
+  },
+  {
+    "id": 2,
+    "username": "admin",
+    "email": "admin@example.com",
+    "password": "$2b$10$EIX19k6Yx/xHJEwLWQOIFujRnLsLwPxbJvZGTqDgDLBmwajVVyKpS",
+    "fullname": "Admin User",
+    "description": "System administrator",
+    "profilePicture": "https://via.placeholder.com/150",
+    "role": "admin",
+    "createdAt": "2025-01-01T00:00:00Z",
+    "resetToken": null,
+    "resetTokenExpiry": null
+  },
+  {
+    "id": 3,
+    "username": "user",
+    "email": "user@gmail.com",
+    "password": "$2b$10$1L3D3Vt3NXjNEdmQto220uToBTuCKYr23zKYSH5HOm7XgmS5WV2lS",
+    "fullname": "irfan",
+    "description": "Web developer and designer",
+    "profilePicture": "https://via.placeholder.com/150",
+    "role": "user",
+    "createdAt": "2026-01-07T11:41:03.101Z",
+    "resetToken": null,
+    "resetTokenExpiry": null
+  }
+]
