@@ -16,7 +16,7 @@
     "id": 2,
     "username": "admin",
     "email": "admin@example.com",
-    "password": "$2b$10$EIX19k6Yx/xHJEwLWQOIFujRnLsLwPxbJvZGTqDgDLBmwajVVyKpS",
+    "password": "$2b$10$1L3D3Vt3NXjNEdmQto220uToBTuCKYr23zKYSH5HOm7XgmS5WV2lS",
     "fullname": "Admin User",
     "description": "System administrator",
     "profilePicture": "https://via.placeholder.com/150",

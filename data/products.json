@@ -3,24 +3,27 @@
         "id": 1, 
         "name": "Nike Air Force 1", 
         "price": 199.99, 
-        "category": "running",
         "image": "/img/Nike_Air_Force_High.avif", 
-        "stock": "In Stock" 
+        "stock": "In Stock",
+        "color": "green",  
+        "sizes": [39, 40, 42]
     },
     { 
         "id": 2, 
         "name": "Nike Air Max 1", 
-        "price": 150.00, 
-        "category": "football",
+        "price": 50.00, 
         "image": "/img/Nike_Air_Max_1_Black.avif", 
-        "stock": "In Stock" 
+        "stock": "In Stock",
+        "color": "gray",
+        "sizes": [40, 41, 43] 
     },
     { 
         "id": 3, 
         "name": "Nike Dunk High", 
-        "price": 210.00, 
-        "category": "basketball",
+        "price": 80.00, 
         "image": "/img/Nike_Dunk_High_By_You.avif", 
-        "stock": "In Stock" 
+        "stock": "In Stock",
+        "color": "blue",
+        "sizes": [39, 41, 42] 
     }
 ]

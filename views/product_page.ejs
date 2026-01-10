@@ -1,52 +1,3 @@
-  <script>
-  // --- Web Storage API for Review Form Persistence ---
-  document.addEventListener('DOMContentLoaded', function() {
-    const reviewForm = document.querySelector('#reviewForm form');
-    if (!reviewForm) return;
-
-    const STORAGE_KEY = 'reviewFormDraft';
-
-    // Save form data to localStorage
-    function saveFormData() {
-      const data = {};
-      Array.from(reviewForm.elements).forEach(el => {
-        if (el.name || el.type === 'file') {
-          if (el.type === 'file') return; // Don't store files
-          data[el.name || el.previousElementSibling?.textContent.trim()] = el.value;
-        }
-      });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-
-    // Load form data from localStorage
-    function loadFormData() {
-      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      Array.from(reviewForm.elements).forEach(el => {
-        if (el.name || el.type === 'file') {
-          if (el.type === 'file') return;
-          const key = el.name || el.previousElementSibling?.textContent.trim();
-          if (data[key]) el.value = data[key];
-        }
-      });
-    }
-
-    // Clear form data from localStorage on submit
-    reviewForm.addEventListener('submit', function(e) {
-      localStorage.removeItem(STORAGE_KEY);
-    });
-
-    // Save on input/change
-    Array.from(reviewForm.elements).forEach(el => {
-      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
-        el.addEventListener('input', saveFormData);
-        el.addEventListener('change', saveFormData);
-      }
-    });
-
-    // Load on page load
-    loadFormData();
-  });
-  </script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,9 +11,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/globals.css" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/styleguide.css" />
+  <link rel="stylesheet" href="/css/globals.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/styleguide.css" />
 
   <title>Product Review List</title>
 </head>
@@ -71,13 +22,13 @@
     <!-- HEADER (NAVBAR) -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="/">Ecommerce</a>
+    <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
     <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div id="navMenu" class="collapse navbar-collapse">
       <ul class="navbar-nav me-auto ms-4 gap-3">
-        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
         <li class="nav-item"><a class="nav-link active" href="/shop">Shop</a></li>
         <li class="nav-item"><a class="nav-link" href="/blogs">Blogs</a></li>
         <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
@@ -87,11 +38,7 @@
         <input class="form-control" type="search" placeholder="Search products">
       </form>
       <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
-      <% if (user) { %>
-        <a href="/profile"><i class="fa-regular fa-user fs-5"></i></a>
-      <% } else { %>
-        <a href="/login"><i class="fa-regular fa-user fs-5"></i></a>
-      <% } %>
+      <a href="/register"><i class="fa-regular fa-user fs-5"></i></a>
     </div>
   </div>
 </nav>
@@ -114,7 +61,7 @@
         <!-- Product Images -->
         <div class="col-md-5">
           <div class="card">
-            <img src="img/Nike_Air_Force_High.avif" class="card-img-top" alt="Product Image" style="height: 420px; object-fit: contain;">
+            <img src="/img/Nike_Air_Force_High.avif" class="card-img-top" alt="Product Image" style="height: 420px; object-fit: contain;">
           </div>
         </div>
         <!-- Product Info -->
@@ -135,8 +82,7 @@
             <span class="text-muted text-decoration-line-through ms-2">$269.99</span>
             <span class="badge bg-success ms-2">25% OFF</span>
           </div>
-          <p class="mb-4">Short product description goes here. Highlight key features and selling points.</p>
-          <form class="row g-3 mb-4">
+          <!-- <form class="row g-3 mb-4">
             <div class="col-6">
               <label class="form-label">Color</label>
               <select class="form-select">
@@ -163,7 +109,35 @@
                 <i class="fa-solid fa-cart-plus me-2"></i>Add to Cart
               </button>
             </div> 
-          </form>
+          </form> -->
+          <form class="row g-3 mb-4" action="/add-to-cart" method="POST">
+  
+  <input type="hidden" name="productId" value="1"> 
+
+  <div class="col-6">
+    <label class="form-label">Color</label>
+    <select class="form-select" name="color"> <option>Grey</option>
+      <option>Blue</option>
+      <option>Black</option>
+    </select>
+  </div>
+  <div class="col-6">
+    <label class="form-label">Size</label>
+    <select class="form-select" name="size"> <option>39</option>
+      <option>40</option>
+      <option>41</option>
+      <option>42</option>
+    </select>
+  </div>
+  <div class="col-6">
+    <label class="form-label">Quantity</label>
+    <input type="number" class="form-control" name="quantity" value="1" min="1"> </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-dark w-100">
+      <i class="fa-solid fa-cart-plus me-2"></i>Add to Cart
+    </button>
+  </div> 
+</form>
         </div>
       </div>
     </div>
@@ -178,9 +152,6 @@
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Rating & Reviews</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="faqs-tab" data-bs-toggle="tab" data-bs-target="#faqs" type="button" role="tab">FAQs</button>
       </li>
     </ul>
     <div class="tab-content" id="productTabContent">
@@ -260,9 +231,6 @@
         <div id="reviewList" class="row g-4"></div>
         <div id="reviewDetail" class="d-none"></div>
       </div>
-      <div class="tab-pane fade" id="faqs" role="tabpanel">
-        <p>FAQs content goes here.</p>
-      </div>
     </div>
   </div>
 </section>
@@ -274,7 +242,7 @@
     <div class="row g-4">
       <div class="col-6 col-md-3">
         <div class="card h-100">
-          <img src="img/Nike_Air_Max_1_Black.avif" class="card-img-top" alt="Related Product">
+          <img src="/img/Nike_Air_Max_1_Black.avif" class="card-img-top" alt="Related Product">
           <div class="card-body">
             <h6 class="card-title">Nike Air Max 1 Black</h6>
             <div class="mb-2">
@@ -296,7 +264,7 @@
       </div>
       <div class="col-6 col-md-3">
         <div class="card h-100">
-          <img src="img/Nike_Dunk_High_By_You.avif" class="card-img-top" alt="Related Product">
+          <img src="/img/Nike_Dunk_High_By_You.avif" class="card-img-top" alt="Related Product">
           <div class="card-body">
             <h6 class="card-title">Nike Dunk High By You</h6>
             <div class="mb-2">
@@ -383,6 +351,56 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  // --- Web Storage API for Review Form Persistence ---
+  document.addEventListener('DOMContentLoaded', function() {
+    const reviewForm = document.querySelector('#reviewForm form');
+    if (!reviewForm) return;
+
+    const STORAGE_KEY = 'reviewFormDraft';
+
+    // Save form data to localStorage
+    function saveFormData() {
+      const data = {};
+      Array.from(reviewForm.elements).forEach(el => {
+        if (el.name || el.type === 'file') {
+          if (el.type === 'file') return; // Don't store files
+          data[el.name || el.previousElementSibling?.textContent.trim()] = el.value;
+        }
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // Load form data from localStorage
+    function loadFormData() {
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      Array.from(reviewForm.elements).forEach(el => {
+        if (el.name || el.type === 'file') {
+          if (el.type === 'file') return;
+          const key = el.name || el.previousElementSibling?.textContent.trim();
+          if (data[key]) el.value = data[key];
+        }
+      });
+    }
+
+    // Clear form data from localStorage on submit
+    reviewForm.addEventListener('submit', function() {
+      localStorage.removeItem(STORAGE_KEY);
+    });
+
+    // Save on input/change
+    Array.from(reviewForm.elements).forEach(el => {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+        el.addEventListener('input', saveFormData);
+        el.addEventListener('change', saveFormData);
+      }
+    });
+
+    // Load on page load
+    loadFormData();
+  });
+  </script>
 
   <script id="reviewsData" type="application/json"><%- JSON.stringify(reviews || []) %></script>
 
@@ -605,6 +623,59 @@
     });
   });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // 1. Find every "Add to Cart" form on the page
+    const allForms = document.querySelectorAll('form[action="/add-to-cart"]');
+
+    // 2. Loop through them and add a "Listener"
+    allForms.forEach(form => {
+        form.addEventListener('submit', async function(event) {
+            
+            // STOP the page from reloading
+            event.preventDefault();
+
+            // Gather the data (Product ID) from the form
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                // Send the data to the server silently (AJAX)
+                const response = await fetch('/add-to-cart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // SHOW THE POPUP!
+                    Swal.fire({
+                        title: 'Added to Cart!',
+                        text: 'What would you like to do next?',
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonColor: '#212529', // Black button
+                        cancelButtonColor: '#d33',     // Red button
+                        confirmButtonText: 'Go to Cart',
+                        cancelButtonText: 'Continue Shopping'
+                    }).then((result) => {
+                        // If they click "Go to Cart", take them there
+                        if (result.isConfirmed) {
+                            window.location.href = '/cart';
+                        }
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Something went wrong!', 'error');
+            }
+        });
+    });
+</script>
   </div> <!-- End prl-wrapper -->
 </body>
 </html>

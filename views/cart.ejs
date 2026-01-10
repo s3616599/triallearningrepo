@@ -18,7 +18,7 @@
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/">Ecommerce</a>
+        <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
 
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
@@ -26,15 +26,14 @@
 
         <div id="navMenu" class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto ms-4 gap-3">
-                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/shop">Home</a></li>
 
                 <li class="nav-item">
-                  <a class="nav-link" href="/shop">Shop</a>
+                  <a class="nav-link active" href="/shop">Shop</a>
                 </li>
 
                 <li class="nav-item"><a class="nav-link" href="/blogs">Blogs</a></li>
                 <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/cart">Cart</a></li>
                 <li class="nav-item"><a class="nav-link" href="/sitemap">Site Map</a></li>
             </ul>
 
@@ -42,12 +41,8 @@
                 <input class="form-control" type="search" placeholder="Search products">
             </form>
 
-            <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
-            <% if (user) { %>
-              <a href="/profile"><i class="fa-solid fa-user fs-5"></i></a>
-            <% } else { %>
-              <a href="/login"><i class="fa-regular fa-user fs-5"></i></a>
-            <% } %>
+          <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
+          <a href="/login"><i class="fa-regular fa-user fs-5"></i></a>
         </div>
     </div>
 </nav>
@@ -55,7 +50,7 @@
       <nav class="bg-light py-2 border-bottom">
   <div class="container">
     <ol class="breadcrumb mb-0">
-      <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Ecommerce</a></li>
+      <li class="breadcrumb-item"><a href="/shop" class="text-decoration-none text-muted">Ecommerce</a></li>
       <li class="breadcrumb-item active text-dark fw-bold">Cart</li>
     </ol>
   </div>
@@ -80,7 +75,35 @@
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div>
                                     <h6 class="fw-bold mb-1"><%= item.product.name %></h6>
-                                    <div class="text-muted small">Price: $<%= item.product.price %></div>
+<div class="d-flex align-items-center gap-3 my-2">
+    <% if (item.size) { %>
+        <span class="badge bg-light text-dark border fw-normal">
+            Size: <strong><%= item.size %></strong>
+        </span>
+    <% } %>
+
+   <% if (item.color) { %>
+    <div class="d-flex align-items-center gap-1 small text-muted">
+        
+        <% if (item.color === 'green') { %>
+            <span class="d-inline-block border rounded-circle" 
+                  style="width: 12px; height: 12px; background-color: #4CAF50;"></span>
+
+        <% } else if (item.color === 'blue') { %>
+            <span class="d-inline-block border rounded-circle" 
+                  style="width: 12px; height: 12px; background-color: #0d6efd;"></span>
+
+        <% } else { %>
+            <span class="d-inline-block border rounded-circle" 
+                  style="width: 12px; height: 12px; background-color: #808080;"></span>
+        <% } %>
+
+        <span class="text-capitalize"><%= item.color %></span>
+    </div>
+<% } %>
+
+</div>
+<div class="text-muted small">Price: $<%= item.product.price %></div>
                                 </div>
                                 <div class="fw-bold">$<%= item.product.price %></div>
                             </div>
@@ -154,9 +177,9 @@
       <div class="col-md-2 mb-4">
         <h6 class="text-muted">SHOP</h6>
         <ul class="list-unstyled mt-2">
-          <li><a href="/profile" class="text-decoration-none text-dark">My Account</a></li>
-          <li><a href="/checkout" class="text-decoration-none text-dark">Checkout</a></li>
-          <li><a href="/cart" class="text-decoration-none text-dark">Cart</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">My Account</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Checkout</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Cart</a></li>
         </ul>
       </div>
 

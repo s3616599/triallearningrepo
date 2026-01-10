@@ -17,7 +17,7 @@
  <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/">Ecommerce</a>
+        <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
 
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
@@ -25,7 +25,7 @@
 
         <div id="navMenu" class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto ms-4 gap-3">
-                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/shop">Home</a></li>
 
                 <li class="nav-item ">
                     <a class="nav-link active" href="/shop">Shop</a>
@@ -40,12 +40,8 @@
                 <input class="form-control" type="search" placeholder="Search products">
             </form>
 
-            <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
-            <% if (user) { %>
-              <a href="/profile"><i class="fa-solid fa-user fs-5"></i></a>
-            <% } else { %>
-              <a href="/login"><i class="fa-regular fa-user fs-5"></i></a>
-            <% } %>
+          <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
+          <a href="/login"><i class="fa-regular fa-user fs-5"></i></a>
         </div>
     </div>
 </nav>
@@ -53,7 +49,7 @@
 <nav class="bg-light py-2 border-bottom">
     <div class="container">
         <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="/">Ecommerce</a></li>
+            <li class="breadcrumb-item"><a href="#">Ecommerce</a></li>
             <li class="breadcrumb-item active">Shop</li>
         </ol>
     </div>
@@ -65,91 +61,57 @@
   
   <aside class="filter-sidebar">
     
-    <div class="filter-section">
-      <h6 class="fw-bold mb-3">Categories</h6>
-      <div class="d-flex flex-column gap-2">
-        <label class="category-option">
-          <input type="checkbox" name="category" checked> 
-          <span>Running</span>
-        </label>
-        <label class="category-option">
-          <input type="checkbox" name="category"> 
-          <span>Basketball</span>
-        </label>
-        <label class="category-option">
-          <input type="checkbox" name="category"> 
-          <span>Football</span>
-        </label>
-        <label class="category-option">
-          <input type="checkbox" name="category"> 
-          <span>Comfort</span>
-        </label>
-        <label class="category-option">
-          <input type="checkbox" name="category"> 
-          <span>Sandals & Slides</span>
-        </label>
-      </div>
-    </div>
-
     <div class="filter-section mt-4 pt-4 border-top">
       <h6 class="fw-bold mb-3">Color</h6>
       <div class="d-flex gap-2 flex-wrap">
+        
         <label class="color-option">
-          <input type="radio" name="color-filter" checked>
-          <span class="swatch" style="background-color: #A3BEF8;"></span> </label>
+          <input type="radio" name="color-filter" value="green">
+          <span class="swatch" style="background-color: #4CAF50;"></span> 
+        </label>
+
         <label class="color-option">
-          <input type="radio" name="color-filter">
-          <span class="swatch" style="background-color: #FFD54F;"></span> </label>
+          <input type="radio" name="color-filter" value="gray">
+          <span class="swatch" style="background-color: #808080;"></span> 
+        </label>
+
         <label class="color-option">
-          <input type="radio" name="color-filter">
-          <span class="swatch" style="background-color: #EF5350;"></span> </label>
-        <label class="color-option">
-          <input type="radio" name="color-filter">
-          <span class="swatch" style="background-color: #212121;"></span> </label>
+          <input type="radio" name="color-filter" value="blue">
+          <span class="swatch" style="background-color: #0d6efd;"></span> 
+        </label>
+        
+        <a href="/shop" class="text-muted small text-decoration-none ms-2 align-self-center">Clear</a>
       </div>
     </div>
 
     <div class="filter-section mt-4 pt-4 border-top">
       <h6 class="fw-bold mb-3">Size</h6>
       <div class="d-flex gap-2 flex-wrap">
-        <label class="size-option">
-          <input type="radio" name="size-filter">
-          <span class="box">39</span>
-        </label>
-        <label class="size-option">
-          <input type="radio" name="size-filter">
-          <span class="box">40</span>
-        </label>
-        <label class="size-option">
-          <input type="radio" name="size-filter" checked>
-          <span class="box">41</span>
-        </label>
-        <label class="size-option">
-          <input type="radio" name="size-filter">
-          <span class="box">42</span>
-        </label>
-         <label class="size-option">
-          <input type="radio" name="size-filter">
-          <span class="box">43</span>
-        </label>
+        <label class="size-option"><input type="radio" name="size-filter" value="39"><span class="box">39</span></label>
+        <label class="size-option"><input type="radio" name="size-filter" value="40"><span class="box">40</span></label>
+        <label class="size-option"><input type="radio" name="size-filter" value="41"><span class="box">41</span></label>
+        <label class="size-option"><input type="radio" name="size-filter" value="42"><span class="box">42</span></label>
+        <label class="size-option"><input type="radio" name="size-filter" value="43"><span class="box">43</span></label>
       </div>
     </div>
 
     <div class="filter-section mt-4 pt-4 border-top">
-      <h6 class="fw-bold mb-3">Price</h6>
-      <label class="form-label small text-muted">$0 - $200</label>
-      <input type="range" class="form-range" min="0" max="200">
+      <h6 class="fw-bold mb-3">Max Price</h6>
+      <label class="form-label small text-muted">Up to: $<span id="priceValue">300</span></label>
+      <input type="range" class="form-range" id="priceRange" min="0" max="300" value="300">
     </div>
 
-  </aside>
+</aside>
 
   <div class="result-count-sort">
     <span class="text-secondary small fw-bold">Showing 1-3 Of 3 Results.</span>
-    <div class="dropdown">
-      <button class="btn btn-sm btn-outline-secondary dropdown-toggle border-0 fw-bold" type="button">
-        SORT BY
-      </button>
-    </div>
+
+   <select id="sortSelect" class="form-select form-select-sm border-0 fw-bold" style="width: auto; cursor: pointer;">
+    <option value="default">Sort By</option>
+    <option value="price_low">Price: Low to High</option>
+    <option value="price_high">Price: High to Low</option>
+    <option value="name_asc">Name: A to Z</option>
+</select> 
   </div>
 
   <div class="applied-filters">
@@ -162,37 +124,6 @@
     </span>
   </div>
 
-
-  <!-- <div class="div-2">
-  <% products.forEach(function(product) { %>
-
-    <div class="product-card-wrapper" 
-         data-name="<%= product.name.toLowerCase() %>" 
-         data-price="<%= product.price %>"
-         data-category="<%= product.category %>">
-
-      <form action="/add-to-cart" method="POST" class="product-link">
-        
-        <input type="hidden" name="productId" value="<%= product.id %>">
-
-        <div class="product-card">
-          <img class="image" src="<%= product.image %>" alt="<%= product.name %>" />
-          <div class="detail">
-            <h6 class="fw-bold mb-1"><%= product.name %></h6>
-            <div class="d-flex align-items-center gap-2">
-              <span class="badge rounded-pill border fw-normal text-dark"><%= product.stock %></span>
-              <span class="text-secondary small">$<%= product.price %></span>
-            </div>
-            
-            <button type="submit" class="btn btn-sm btn-dark w-100 mt-2">Add to Cart</button>
-          </div>
-        </div>
-
-      </form>
-    </div>
-
-  <% }); %>
-</div> -->
 
 <div class="div-2">
   <% products.forEach(function(product) { %>
@@ -219,7 +150,8 @@
               <span class="text-secondary small">$<%= product.price %></span>
             </div>
             
-            <form action="/add-to-cart" method="POST" class="mt-2">
+            <form action="/add-to-cart" method="POST" class="mt-2" 
+      data-sizes="<%= (product.sizes || [39,40,41,42,43]).join(',') %>">
                 <input type="hidden" name="productId" value="<%= product.id %>">
                 <button type="submit" class="btn btn-sm btn-dark w-100">Add to Cart</button>
             </form>
@@ -277,9 +209,9 @@
       <div class="col-md-2 mb-4">
         <h6 class="text-muted">SHOP</h6>
         <ul class="list-unstyled mt-2">
-          <li><a href="/profile" class="text-decoration-none text-dark">My Account</a></li>
-          <li><a href="/checkout" class="text-decoration-none text-dark">Checkout</a></li>
-          <li><a href="/cart" class="text-decoration-none text-dark">Cart</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">My Account</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Checkout</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Cart</a></li>
         </ul>
       </div>
 
@@ -370,55 +302,147 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    // 1. Find every "Add to Cart" form on the page
+    // 1. Find every "Add to Cart" form
     const allForms = document.querySelectorAll('form[action="/add-to-cart"]');
 
-    // 2. Loop through them and add a "Listener"
     allForms.forEach(form => {
         form.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Stop page reload
+
+            // Get the available sizes for THIS specific product
+            const sizesAttr = form.getAttribute('data-sizes');
+            const sizes = sizesAttr ? sizesAttr.split(',') : ['39','40','41','42','43'];
             
-            // STOP the page from reloading
-            event.preventDefault();
+            // Generate the HTML for the Size Dropdown options
+            const sizeOptions = sizes.map(s => `<option value="${s}">${s}</option>`).join('');
 
-            // Gather the data (Product ID) from the form
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
+            // STEP 1: ASK FOR SIZE & QUANTITY
+            const { value: formValues } = await Swal.fire({
+                title: 'Select Options',
+                html: `
+                    <div style="text-align: left;">
+                        <label class="fw-bold">Size:</label>
+                        <select id="swal-size" class="form-select mb-3">
+                            ${sizeOptions}
+                        </select>
 
-            try {
-                // Send the data to the server silently (AJAX)
-                const response = await fetch('/add-to-cart', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams(data)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    // SHOW THE POPUP!
-                    Swal.fire({
-                        title: 'Added to Cart!',
-                        text: 'What would you like to do next?',
-                        icon: 'success',
-                        showCancelButton: true,
-                        confirmButtonColor: '#212529', // Black button
-                        cancelButtonColor: '#d33',     // Red button
-                        confirmButtonText: 'Go to Cart',
-                        cancelButtonText: 'Continue Shopping'
-                    }).then((result) => {
-                        // If they click "Go to Cart", take them there
-                        if (result.isConfirmed) {
-                            window.location.href = '/cart';
-                        }
-                    });
+                        <label class="fw-bold">Quantity:</label>
+                        <input id="swal-qty" type="number" class="form-control" value="1" min="1">
+                    </div>
+                `,
+                focusConfirm: false,
+                confirmButtonText: 'Add to Cart',
+                confirmButtonColor: '#212529',
+                showCancelButton: true,
+                preConfirm: () => {
+                    return {
+                        size: document.getElementById('swal-size').value,
+                        quantity: document.getElementById('swal-qty').value
+                    }
                 }
+            });
 
-            } catch (error) {
-                console.error('Error:', error);
-                Swal.fire('Error', 'Something went wrong!', 'error');
+            // If user clicked "Add to Cart" (and didn't cancel)
+            if (formValues) {
+                
+                // Prepare the data to send
+                const formData = new FormData(form);
+                formData.append('size', formValues.size);
+                formData.append('quantity', formValues.quantity);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+                    // STEP 2: SEND TO SERVER
+                    const response = await fetch('/add-to-cart', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // STEP 3: SHOW SUCCESS POPUP
+                        Swal.fire({
+                            title: 'Added to Cart!',
+                            text: `Added Size ${formValues.size} (Qty: ${formValues.quantity})`,
+                            icon: 'success',
+                            showCancelButton: true,
+                            confirmButtonColor: '#212529',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Go to Cart',
+                            cancelButtonText: 'Continue Shopping'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '/cart';
+                            }
+                        });
+                    } else {
+                        Swal.fire('Error', result.message, 'error');
+                    }
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Something went wrong!', 'error');
+                }
             }
         });
     });
 </script>
+
+<script>
+        const sortSelect = document.getElementById('sortSelect');
+        const priceRange = document.getElementById('priceRange');
+        const priceValue = document.getElementById('priceValue');
+        
+        // Select all radio buttons for color and size
+        const colorInputs = document.querySelectorAll('input[name="color-filter"]');
+        const sizeInputs = document.querySelectorAll('input[name="size-filter"]');
+
+        function updateFilters() {
+            const sort = sortSelect.value;
+            const maxPrice = priceRange.value;
+
+            // Find which Color and Size are checked
+            const selectedColor = document.querySelector('input[name="color-filter"]:checked')?.value;
+            const selectedSize = document.querySelector('input[name="size-filter"]:checked')?.value;
+
+            // Build the URL
+            let url = `/shop?sort=${sort}&maxPrice=${maxPrice}`;
+            if (selectedColor) url += `&color=${selectedColor}`;
+            if (selectedSize) url += `&size=${selectedSize}`;
+
+            window.location.href = url;
+        }
+
+        // Add Listeners
+        sortSelect.addEventListener('change', updateFilters);
+        priceRange.addEventListener('change', updateFilters);
+        
+        // Add listeners to every Color and Size button
+        colorInputs.forEach(input => input.addEventListener('change', updateFilters));
+        sizeInputs.forEach(input => input.addEventListener('change', updateFilters));
+
+        // Visual update for slider
+        priceRange.addEventListener('input', () => { priceValue.textContent = priceRange.value; });
+
+        // Restore State on Reload (Keep buttons checked)
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.has('sort')) sortSelect.value = urlParams.get('sort');
+        if (urlParams.has('maxPrice')) {
+            priceRange.value = urlParams.get('maxPrice');
+            priceValue.textContent = urlParams.get('maxPrice');
+        }
+        // Re-check the color/size boxes based on URL
+        if (urlParams.has('color')) {
+            const colorBtn = document.querySelector(`input[value="${urlParams.get('color')}"]`);
+            if (colorBtn) colorBtn.checked = true;
+        }
+        if (urlParams.has('size')) {
+            const sizeBtn = document.querySelector(`input[value="${urlParams.get('size')}"]`);
+            if (sizeBtn) sizeBtn.checked = true;
+        }
+    </script>
 </body>
 </html>

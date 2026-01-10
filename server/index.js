@@ -239,10 +239,6 @@ app.get('/test', (req, res) => {
   res.render('test');
 }); 
 
-app.get('/sitemap', (req, res) => {
-  res.sendFile(path.join(__dirname, '../sitemap.html'));
-});
-
 app.get('/product', async (req, res) => {
   const reviews = await readReviews();
   res.render('product_page', { reviews });
@@ -1065,6 +1061,28 @@ app.post('/forum/threads', requireLogin, async (req, res) => {
   }
 });
 
+// View single thread
+app.get('/forum/threads/:id', requireLogin, async (req, res) => {
+  try {
+    const threads = await readForum();
+    const thread = threads.find(t => t.id == req.params.id);
+
+    if (!thread) {
+      return res.status(404).send('Thread not found');
+    }
+
+    // Hide archived threads from non-admin users
+    if (thread.archived && req.session.user.role !== 'admin') {
+      return res.status(404).send('Thread not found');
+    }
+
+    res.render('forum_thread', { thread, user: req.session.user });
+  } catch (err) {
+    console.error('Error loading thread:', err);
+    res.status(500).send('Error loading thread');
+  }
+});
+
 // Update thread (AJAX)
 app.post('/forum/threads/:id', requireLogin, async (req, res) => {
   try {
@@ -1226,7 +1244,42 @@ app.post('/forum/threads/:id/delete', requireLogin, async (req, res) => {
 app.get('/', (req, res) => res.redirect('/shop'));
 
 app.get('/shop', (req, res) => {
-    res.render('shop', { products: products });
+    let filteredProducts = [...products]; // Create a copy of products to modify
+
+    // 1. Filter by Color
+    if (req.query.color) {
+        filteredProducts = filteredProducts.filter(p => p.color === req.query.color);
+    }
+
+    // 2. Filter by Size
+    if (req.query.size) {
+        const selectedSize = parseInt(req.query.size);
+        // Checks if the product's size array includes the number
+        filteredProducts = filteredProducts.filter(p => p.sizes.includes(selectedSize));
+    }
+
+    // 3. Handle Sorting (Low-High, High-Low, A-Z)
+    if (req.query.sort) {
+        if (req.query.sort === 'price_low') {
+            filteredProducts.sort((a, b) => a.price - b.price);
+        } else if (req.query.sort === 'price_high') {
+            filteredProducts.sort((a, b) => b.price - a.price);
+        } else if (req.query.sort === 'name_asc') {
+            filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+        }
+    }
+
+    // 4. Handle Price Filter (Slider)
+    if (req.query.maxPrice) {
+        const maxPrice = parseInt(req.query.maxPrice);
+        filteredProducts = filteredProducts.filter(p => p.price <= maxPrice);
+    }
+
+    // 5. Render with the filtered list
+    res.render('shop', { 
+        products: filteredProducts,
+        query: req.query // Pass the query back so the frontend remembers the settings
+    });
 });
 
 // --- CART PAGE ---
@@ -1272,7 +1325,7 @@ app.get('/checkout', requireLogin, (req, res) => {
 });
 
 // --- ADD TO CART ---
-app.post('/add-to-cart', requireLogin, (req, res) => {
+/* app.post('/add-to-cart', (req, res) => {
     const productId = parseInt(req.body.productId);
     // This works now because 'products' is an Array, not a string path
     const productToAdd = products.find(p => p.id === productId);
@@ -1280,12 +1333,52 @@ app.post('/add-to-cart', requireLogin, (req, res) => {
     if (productToAdd) {
         cartItems.push({
             id: nextCartId++,
-            userId: req.session.user.id, 
+            userId: 1, 
             product: productToAdd,
             quantity: 1
         });
         res.json({ success: true, message: "Item added to cart!" });
     } else {
+        res.status(404).json({ success: false, message: "Product not found" });
+    }
+}); */
+// Global arrays (Make sure these exist at the top of your file)
+// const products = [ ... your product list ... ];
+// let cartItems = []; 
+// let nextCartId = 1;
+
+app.post('/add-to-cart', requireLogin, (req, res) => {
+    // 1. Capture all the data from the HTML form
+    const productId = parseInt(req.body.productId);
+    const quantity = parseInt(req.body.quantity) || 1; // Default to 1 if empty
+    const color = req.body.color || 'Default';
+    const size = req.body.size || 'Default';
+
+    if (quantity < 1) {
+        return res.status(400).json({ success: false, message: "Quantity must be at least 1" });
+    }
+
+    // 2. Find the product details from your hardcoded 'products' array
+    const productToAdd = products.find(p => p.id === productId);
+
+    if (productToAdd) {
+        // 3. Add to the temporary "cartItems" array
+        // We push a new object with the specific size/color selected
+        cartItems.push({
+            id: nextCartId++,           // unique ID for this cart row
+            userId: req.session.user.id, // user's session ID
+            product: productToAdd,       // save the full product info
+            quantity: quantity,          // save the specific quantity
+            color: color,                // save the selected color
+            size: size                   // save the selected size
+        });
+
+        console.log("Current Cart:", cartItems); // Optional: Check your terminal to see it working
+
+        // 4. Send JSON "Success" signal to trigger the SweetAlert popup
+        res.json({ success: true, message: "Item added to cart!" });
+    } else {
+        // 5. Send JSON "Error" signal if product id is wrong
         res.status(404).json({ success: false, message: "Product not found" });
     }
 });
@@ -1302,6 +1395,11 @@ app.post('/place-order', requireLogin, (req, res) => {
     const customerName = req.body.fullname || "Customer";
     cartItems = []; // Clear Cart
     res.render('order', { name: customerName });
+});
+
+// --- SITE MAP PAGE ---
+app.get('/sitemap', (req, res) => {
+    res.render('sitemap');
 });
 
 // ====== API ROUTES ======
