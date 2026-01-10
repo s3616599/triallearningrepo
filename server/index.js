@@ -1,30 +1,31 @@
-
 // ====== ENVIRONMENT SETUP ======
 require('dotenv').config();
 
 // ====== IMPORTS & APP INIT ======
 const express = require('express');
-const fs = require('fs/promises');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const REVIEWS_PATH = path.join(__dirname, '../data/reviews.json');
-const BLOGS_PATH = path.join(__dirname, '../data/blogs.json');
-const USERS_PATH = path.join(__dirname, '../data/users.json');
-const FORUM_PATH = path.join(__dirname, '../data/forum.json');
 
-// mongoose and MongoDB setup
+// ====== MONGOOSE SETUP ======
 const mongoose = require('mongoose');
 
 mongoose.connect('mongodb+srv://s3616599_db_user:sxkBZC4PTrDkjSUI@clusterwebg7.boellnf.mongodb.net/EcommerceStore?appName=ClusterWebG7')
-.then(() => console.log('Connected to MongoDB Atlas'))
-.catch((error) => console.log(error.message));
+  .then(() => console.log('✅ Connected to MongoDB Atlas'))
+  .catch((error) => console.log('❌ MongoDB connection error:', error.message));
 
-// LOAD PRODUCTS
-const products = require('../data/products.json');
+// ====== IMPORT MODELS ======
+const User = require('./models/User');
+const Review = require('./models/Reviews');
+const Thread = require('./models/Thread');
+const Product = require('./models/Product');
+const Cart = require('./models/Cart');
+const Order = require('./models/Order');
 
+// ====== SESSION SETUP ======
 const session = require('express-session');
 
 app.use(session({
@@ -32,25 +33,23 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }));
+
 app.use((req, res, next) => {
   res.locals.user = req.session.user;
   next();
 });
 
 // ====== EMAIL CONFIGURATION ======
-// Create reusable transporter object using SMTP transport
 const createEmailTransporter = () => {
-  // Check if email configuration exists
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.warn('⚠️  Email configuration not found. Password reset emails will not be sent.');
-    console.warn('   Please configure EMAIL_USER and EMAIL_PASS in your .env file.');
     return null;
   }
 
   return nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.EMAIL_PORT) || 587,
-    secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
+    secure: process.env.EMAIL_SECURE === 'true',
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
@@ -58,10 +57,8 @@ const createEmailTransporter = () => {
   });
 };
 
-// Initialize email transporter
 let emailTransporter = createEmailTransporter();
 
-// Function to send password reset email
 async function sendPasswordResetEmail(userEmail, userName, resetToken) {
   if (!emailTransporter) {
     console.log('📧 Email transporter not configured. Reset token:', resetToken);
@@ -88,14 +85,11 @@ async function sendPasswordResetEmail(userEmail, userName, resetToken) {
           <tr>
             <td style="padding: 40px 0; text-align: center; background-color: #f4f4f4;">
               <table role="presentation" style="width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <!-- Header -->
                 <tr>
                   <td style="padding: 40px 40px 20px; text-align: center; background-color: #212529;">
                     <h1 style="margin: 0; color: #ffffff; font-size: 28px;">🛒 Ecommerce Store</h1>
                   </td>
                 </tr>
-                
-                <!-- Content -->
                 <tr>
                   <td style="padding: 40px;">
                     <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px;">Password Reset Request</h2>
@@ -103,10 +97,8 @@ async function sendPasswordResetEmail(userEmail, userName, resetToken) {
                       Hello <strong>${userName || 'there'}</strong>,
                     </p>
                     <p style="margin: 0 0 25px; color: #666666; font-size: 16px; line-height: 1.6;">
-                      We received a request to reset your password for your Ecommerce Store account. Click the button below to create a new password:
+                      We received a request to reset your password. Click the button below to create a new password:
                     </p>
-                    
-                    <!-- Button -->
                     <table role="presentation" style="margin: 30px auto;">
                       <tr>
                         <td style="border-radius: 4px; background-color: #212529;">
@@ -116,29 +108,19 @@ async function sendPasswordResetEmail(userEmail, userName, resetToken) {
                         </td>
                       </tr>
                     </table>
-                    
                     <p style="margin: 25px 0 15px; color: #666666; font-size: 14px; line-height: 1.6;">
                       Or copy and paste this link into your browser:
                     </p>
                     <p style="margin: 0 0 25px; padding: 15px; background-color: #f8f9fa; border-radius: 4px; word-break: break-all;">
                       <a href="${resetLink}" style="color: #007bff; text-decoration: none; font-size: 14px;">${resetLink}</a>
                     </p>
-                    
                     <p style="margin: 0 0 15px; color: #666666; font-size: 14px; line-height: 1.6;">
                       <strong>This link will expire in 1 hour.</strong>
                     </p>
-                    <p style="margin: 0; color: #999999; font-size: 14px; line-height: 1.6;">
-                      If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
-                    </p>
                   </td>
                 </tr>
-                
-                <!-- Footer -->
                 <tr>
                   <td style="padding: 30px 40px; text-align: center; background-color: #f8f9fa; border-top: 1px solid #eeeeee;">
-                    <p style="margin: 0 0 10px; color: #999999; font-size: 14px;">
-                      This is an automated message from Ecommerce Store.
-                    </p>
                     <p style="margin: 0; color: #999999; font-size: 12px;">
                       © 2025 Ecommerce Store. All rights reserved.
                     </p>
@@ -151,22 +133,7 @@ async function sendPasswordResetEmail(userEmail, userName, resetToken) {
       </body>
       </html>
     `,
-    text: `
-      Password Reset Request
-      
-      Hello ${userName || 'there'},
-      
-      We received a request to reset your password for your Ecommerce Store account.
-      
-      Click the link below to reset your password:
-      ${resetLink}
-      
-      This link will expire in 1 hour.
-      
-      If you didn't request a password reset, you can safely ignore this email.
-      
-      - Ecommerce Store Team
-    `
+    text: `Password Reset Request\n\nHello ${userName || 'there'},\n\nClick the link below to reset your password:\n${resetLink}\n\nThis link will expire in 1 hour.`
   };
 
   try {
@@ -179,12 +146,8 @@ async function sendPasswordResetEmail(userEmail, userName, resetToken) {
   }
 }
 
-// Function to verify email configuration
 async function verifyEmailConfiguration() {
-  if (!emailTransporter) {
-    return false;
-  }
-
+  if (!emailTransporter) return false;
   try {
     await emailTransporter.verify();
     console.log('✅ Email server is ready to send messages');
@@ -195,12 +158,7 @@ async function verifyEmailConfiguration() {
   }
 }
 
-// Verify email configuration on startup
 verifyEmailConfiguration();
-
-// IN-MEMORY CART (Temporary Database)
-let cartItems = []; 
-let nextCartId = 1;
 
 // ====== MIDDLEWARE ======
 app.use(express.json());
@@ -215,62 +173,6 @@ app.use('/img', express.static(path.join(__dirname, '../img')));
 app.use('/css', express.static(path.join(__dirname, '../css')));
 
 // ====== UTILITY FUNCTIONS ======
-async function readReviews() {
-  const raw = await fs.readFile(REVIEWS_PATH, 'utf8');
-  const parsed = JSON.parse(raw);
-  return Array.isArray(parsed) ? parsed : [];
-}
-
-async function readBlogs() {
-  const raw = await fs.readFile(BLOGS_PATH, 'utf8');
-  return JSON.parse(raw);
-}
-
-async function writeBlogs(blogs) {
-  await fs.writeFile(BLOGS_PATH, JSON.stringify(blogs, null, 2));
-}
-
-async function writeReviews(nextReviews) {
-  await fs.writeFile(REVIEWS_PATH, JSON.stringify(nextReviews, null, 2), 'utf8');
-}
-
-// Forum module functions
-async function readForum() {
-  try {
-    const raw = await fs.readFile(FORUM_PATH, 'utf8');
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (err) {
-    console.error('Error reading forum data:', err);
-    return [];
-  }
-}
-
-async function writeForum(threads) {
-  const dir = path.dirname(FORUM_PATH);
-  const tmpPath = path.join(dir, `forum.tmp.${Date.now()}.json`);
-  await fs.writeFile(tmpPath, JSON.stringify(threads, null, 2), 'utf8');
-  await fs.rename(tmpPath, FORUM_PATH);
-}
-
-// ====== USER MANAGEMENT FUNCTIONS ======
-async function readUsers() {
-  try {
-    const raw = await fs.readFile(USERS_PATH, 'utf8');
-    return JSON.parse(raw);
-  } catch (err) {
-    console.error('Error reading users data:', err);
-    return [];
-  }
-}
-
-async function writeUsers(users) {
-  const dir = path.dirname(USERS_PATH);
-  const tmpPath = path.join(dir, `users.tmp.${Date.now()}.json`);
-  await fs.writeFile(tmpPath, JSON.stringify(users, null, 2), 'utf8');
-  await fs.rename(tmpPath, USERS_PATH);
-}
-
 async function hashPassword(password) {
   return await bcrypt.hash(password, 10);
 }
@@ -280,8 +182,6 @@ async function comparePassword(password, hash) {
 }
 
 function generateResetToken() {
-  // Generate a more secure random token
-  const crypto = require('crypto');
   return crypto.randomBytes(32).toString('hex');
 }
 
@@ -303,6 +203,7 @@ function validateReviewPayload(body, { partial = false } = {}) {
   const size = typeof body.size === 'string' ? body.size.trim() : '';
   const thumbnail = typeof body.thumbnail === 'string' ? body.thumbnail.trim() : '';
   const mergedContent = content || description;
+
   if (!partial || 'title' in body) {
     if (!title) errors.push('Title is required.');
     else if (title.length < 5) errors.push('Title must be at least 5 characters.');
@@ -348,7 +249,6 @@ function validateReviewPayload(body, { partial = false } = {}) {
     size
   };
 
-  // Optional image path/url. If omitted, no thumbnail property is stored.
   if (thumbnail) normalized.thumbnail = thumbnail;
 
   return { ok: errors.length === 0, errors, normalized };
@@ -376,33 +276,30 @@ function requireAdmin(req, res, next) {
     return res.redirect('/login');
   }
   if (req.session.user.role !== 'admin') {
-    return res.status(403).render('error', { 
-      message: 'Access Denied', 
-      error: 'You do not have permission to access this page.' 
+    return res.status(403).render('error', {
+      message: 'Access Denied',
+      error: 'You do not have permission to access this page.'
     });
   }
   next();
 }
 
 // ====== LOCKED USER MIDDLEWARE ======
-// Middleware to check if user account is locked - BLOCKS ALL OPERATIONS
 async function checkUserLocked(req, res, next) {
   if (!req.session.user) {
-    return next(); // Not logged in, let other middleware handle it
+    return next();
   }
-  
+
   try {
-    const users = await readUsers();
-    const user = users.find(u => u.id === req.session.user.id);
-    
+    const user = await User.findById(req.session.user.id);
+
     if (user && user.locked) {
-      // User is locked - destroy session and show error
       req.session.destroy((err) => {
         if (err) console.error('Session destroy error:', err);
       });
       return res.status(403).render('error', {
         message: 'Account Locked',
-        error: 'Your account has been locked by an administrator. You cannot perform any operations. Please contact support for assistance.'
+        error: 'Your account has been locked by an administrator. Please contact support for assistance.'
       });
     }
     next();
@@ -412,129 +309,40 @@ async function checkUserLocked(req, res, next) {
   }
 }
 
-// Apply the locked user check to all routes after session is established
 app.use(checkUserLocked);
-
 
 // ====== PAGE ROUTES ======
 
 app.get('/test', (req, res) => {
   res.render('test');
-}); 
+});
 
 app.get('/product', async (req, res) => {
-  const reviews = await readReviews();
-  res.render('product_page', { reviews });
-});
-
-app.get('/blogs', async (req, res) => {
-  const blogs = await readBlogs();
-  res.render('blogs', {
-    blogs,
-    user: req.session.user
-  });
-});
-
-app.get('/blogs/add', requireLogin, (req, res) => {
-  res.render('blog_add');
-});
-
-app.post('/blogs/add', requireLogin, async (req, res) => {
-  const blogs = await readBlogs();
-
-  const newBlog = {
-    id: blogs.length ? blogs[blogs.length - 1].id + 1 : 1,
-    title: req.body.title,
-    heroImage: req.body.heroImage,
-    authorName: req.body.authorName,
-    authorRole: req.body.authorRole,
-    tags: req.body.tags ? req.body.tags.split(',').map(t => t.trim()) : [],
-    content: req.body.content,
-    createdAt: new Date().toISOString().split('T')[0],
-    userId: req.session.user.id
-  };
-
-  blogs.push(newBlog);
-  await writeBlogs(blogs);
-
-  res.redirect('/blogs');
-});
-
-app.get('/blogs/edit/:id', requireLogin, async (req, res) => {
-  const blogs = await readBlogs();
-  const blog = blogs.find(b => b.id == req.params.id);
-
-  if (!blog) {
-    return res.status(404).send('Blog not found');
+  try {
+    const reviews = await Review.find().lean();
+    // Transform MongoDB _id to id for frontend compatibility
+    const transformedReviews = reviews.map(r => ({
+      ...r,
+      id: r._id.toString(),
+      userId: r.userId?.toString()
+    }));
+    res.render('product_page', { reviews: transformedReviews });
+  } catch (err) {
+    console.error('Error fetching reviews:', err);
+    res.render('product_page', { reviews: [] });
   }
-
-  if (blog.userId !== req.session.user.id) {
-    return res.status(403).send('Forbidden');
-  }
-
-  res.render('blog_edit', { blog });
 });
 
-app.post('/blogs/edit/:id', requireLogin, async (req, res) => {
-  const blogs = await readBlogs();
-  const index = blogs.findIndex(b => b.id == req.params.id);
-
-  if (blogs[index].userId !== req.session.user.id) {
-    return res.status(403).send('Forbidden');
-  }
-
-  blogs[index].title = req.body.title;
-  blogs[index].content = req.body.content;
-  blogs[index].authorName = req.body.authorName;
-  blogs[index].authorRole = req.body.authorRole;
-
-  await writeBlogs(blogs);
-  res.redirect('/blogs/' + req.params.id);
-});
-
-
-app.get('/blogs/:id', async (req, res) => {
-  const blogs = await readBlogs();
-  const blog = blogs.find(b => b.id == req.params.id);
-
-  if (!blog) {
-    return res.status(404).send('Blog not found');
-  }
-
-  res.render('blog_detail', {
-    blog,
-    user: req.session.user
-  });
-});
-
-
-
-app.post('/blogs/delete/:id', requireLogin, async (req, res) => {
-  let blogs = await readBlogs();
-  const blog = blogs.find(b => b.id == req.params.id);
-
-  if (blog.userId !== req.session.user.id) {
-    return res.status(403).send('Forbidden');
-  }
-
-  blogs = blogs.filter(b => b.id != req.params.id);
-  await writeBlogs(blogs);
-  res.redirect('/blogs');
-});
-
-
-// Register page
+// ====== REGISTER ROUTES ======
 app.get('/register', (req, res) => {
   res.render('register', { user: req.session.user });
 });
 
-// Register POST - Create new user
 app.post('/register', async (req, res) => {
   try {
     const { username, email, password, confirmPassword, fullname, description } = req.body;
     const errors = [];
 
-    // Validation
     if (!username || username.trim().length < 3) {
       errors.push('Username must be at least 3 characters long');
     }
@@ -555,8 +363,11 @@ app.post('/register', async (req, res) => {
     }
 
     // Check if user already exists
-    const users = await readUsers();
-    if (users.some(u => u.username === username || u.email === email)) {
+    const existingUser = await User.findOne({
+      $or: [{ username }, { email }]
+    });
+
+    if (existingUser) {
       errors.push('Username or email already exists');
     }
 
@@ -564,10 +375,8 @@ app.post('/register', async (req, res) => {
       return res.render('register', { errors, formData: { username, email, fullname, description } });
     }
 
-    // Create new user
     const hashedPassword = await hashPassword(password);
-    const newUser = {
-      id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+    const newUser = new User({
       username: username.trim(),
       email: email.trim(),
       password: hashedPassword,
@@ -575,37 +384,31 @@ app.post('/register', async (req, res) => {
       description: description ? description.trim() : '',
       profilePicture: 'https://via.placeholder.com/150',
       role: 'user',
-      locked: false,
-      createdAt: new Date().toISOString(),
-      resetToken: null,
-      resetTokenExpiry: null
-    };
+      locked: false
+    });
 
-    users.push(newUser);
-    await writeUsers(users);
+    await newUser.save();
 
-    // Set session and redirect
     req.session.user = {
-      id: newUser.id,
+      id: newUser._id.toString(),
       username: newUser.username,
       email: newUser.email,
       fullname: newUser.fullname,
       role: newUser.role
     };
 
-    res.redirect('/blogs');
+    res.redirect('/shop');
   } catch (err) {
     console.error('Registration error:', err);
     res.status(500).render('register', { errors: ['An error occurred during registration'] });
   }
 });
 
-// Login page
+// ====== LOGIN ROUTES ======
 app.get('/login', (req, res) => {
   res.render('login');
 });
 
-// Login POST - Authenticate user
 app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -618,35 +421,30 @@ app.post('/login', async (req, res) => {
       return res.render('login', { errors });
     }
 
-    // Find user
-    const users = await readUsers();
-    const user = users.find(u => u.username === username);
+    const user = await User.findOne({ username });
 
     if (!user) {
       return res.render('login', { errors: ['Invalid username or password'] });
     }
 
-    // Check if user is locked
     if (user.locked) {
       return res.render('login', { errors: ['Your account has been locked. Please contact support for assistance.'] });
     }
 
-    // Check password
     const passwordMatch = await comparePassword(password, user.password);
     if (!passwordMatch) {
       return res.render('login', { errors: ['Invalid username or password'] });
     }
 
-    // Set session
     req.session.user = {
-      id: user.id,
+      id: user._id.toString(),
       username: user.username,
       email: user.email,
       fullname: user.fullname,
       role: user.role
     };
 
-    const redirectTo = req.session.returnTo || '/blogs';
+    const redirectTo = req.session.returnTo || '/shop';
     delete req.session.returnTo;
 
     res.redirect(redirectTo);
@@ -656,7 +454,6 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Logout
 app.get('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -667,38 +464,32 @@ app.get('/logout', (req, res) => {
   });
 });
 
-// Forgot Password - Show form
+// ====== FORGOT PASSWORD ROUTES ======
 app.get('/forgot_password', (req, res) => {
   res.render('forgot_password', { errors: null, message: null });
 });
 
-// Forgot Password - Send reset email
 app.post('/forgot_password', async (req, res) => {
   try {
     const { email } = req.body;
 
-    // Validate email
     if (!email || !email.trim()) {
-      return res.render('forgot_password', { 
-        errors: ['Email address is required'], 
-        message: null 
+      return res.render('forgot_password', {
+        errors: ['Email address is required'],
+        message: null
       });
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
-      return res.render('forgot_password', { 
-        errors: ['Please enter a valid email address'], 
-        message: null 
+      return res.render('forgot_password', {
+        errors: ['Please enter a valid email address'],
+        message: null
       });
     }
 
-    const users = await readUsers();
-    const user = users.find(u => u.email === email.trim());
+    const user = await User.findOne({ email: email.trim() });
 
-    // For security, always show success message even if user not found
-    // This prevents email enumeration attacks
     if (!user) {
       return res.render('forgot_password', {
         errors: null,
@@ -706,7 +497,6 @@ app.post('/forgot_password', async (req, res) => {
       });
     }
 
-    // Check if user is locked
     if (user.locked) {
       return res.render('forgot_password', {
         errors: ['This account has been locked. Please contact support for assistance.'],
@@ -714,16 +504,13 @@ app.post('/forgot_password', async (req, res) => {
       });
     }
 
-    // Generate secure reset token
     const resetToken = generateResetToken();
-    const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
+    const resetTokenExpiry = Date.now() + 3600000; // 1 hour
 
-    // Update user with reset token
     user.resetToken = resetToken;
     user.resetTokenExpiry = resetTokenExpiry;
-    await writeUsers(users);
+    await user.save();
 
-    // Send password reset email
     const emailResult = await sendPasswordResetEmail(
       user.email,
       user.fullname || user.username,
@@ -733,41 +520,36 @@ app.post('/forgot_password', async (req, res) => {
     if (emailResult.success) {
       return res.render('forgot_password', {
         errors: null,
-        message: 'A password reset link has been sent to your email address. Please check your inbox (and spam folder) and follow the instructions.'
+        message: 'A password reset link has been sent to your email address.'
       });
     } else {
-      // Email failed to send - but don't expose this to prevent enumeration
-      console.error('Failed to send reset email:', emailResult.error);
-      
-      // Check if email service is not configured
       if (emailResult.error === 'Email service not configured') {
         return res.render('forgot_password', {
           errors: ['Email service is not configured. Please contact the administrator or use this token manually: ' + resetToken],
           message: null
         });
       }
-      
+
       return res.render('forgot_password', {
-        errors: ['Unable to send reset email. Please try again later or contact support.'],
+        errors: ['Unable to send reset email. Please try again later.'],
         message: null
       });
     }
   } catch (err) {
     console.error('Forgot password error:', err);
-    res.status(500).render('forgot_password', { 
+    res.status(500).render('forgot_password', {
       errors: ['An unexpected error occurred. Please try again later.'],
       message: null
     });
   }
 });
 
-// Reset Password - Show form
+// ====== RESET PASSWORD ROUTES ======
 app.get('/reset_password', (req, res) => {
   const { token } = req.query;
   res.render('reset_password', { token: token || '', errors: null, message: null });
 });
 
-// Reset Password - Update password
 app.post('/reset_password', async (req, res) => {
   try {
     const { token, password, confirmPassword } = req.body;
@@ -790,23 +572,19 @@ app.post('/reset_password', async (req, res) => {
       return res.render('reset_password', { errors, token, message: null });
     }
 
-    // Find user with valid token
-    const users = await readUsers();
-    const user = users.find(u => 
-      u.resetToken === token.trim() && 
-      u.resetTokenExpiry && 
-      u.resetTokenExpiry > Date.now()
-    );
+    const user = await User.findOne({
+      resetToken: token.trim(),
+      resetTokenExpiry: { $gt: Date.now() }
+    });
 
     if (!user) {
-      return res.render('reset_password', { 
-        errors: ['Invalid or expired reset token. Please request a new password reset.'], 
+      return res.render('reset_password', {
+        errors: ['Invalid or expired reset token. Please request a new password reset.'],
         token,
         message: null
       });
     }
 
-    // Check if user is locked
     if (user.locked) {
       return res.render('reset_password', {
         errors: ['This account has been locked. Please contact support for assistance.'],
@@ -815,13 +593,12 @@ app.post('/reset_password', async (req, res) => {
       });
     }
 
-    // Update password and clear reset token
     user.password = await hashPassword(password);
     user.resetToken = null;
     user.resetTokenExpiry = null;
-    await writeUsers(users);
+    await user.save();
 
-    res.render('reset_password', { 
+    res.render('reset_password', {
       errors: null,
       token: '',
       message: 'Your password has been reset successfully! You can now login with your new password.',
@@ -829,67 +606,58 @@ app.post('/reset_password', async (req, res) => {
     });
   } catch (err) {
     console.error('Reset password error:', err);
-    res.status(500).render('reset_password', { 
-      errors: ['An unexpected error occurred. Please try again.'], 
+    res.status(500).render('reset_password', {
+      errors: ['An unexpected error occurred. Please try again.'],
       token: req.body.token || '',
       message: null
     });
   }
 });
 
-// Legacy URL support
 app.get('/reset_password.html', (req, res) => {
   res.redirect(301, '/reset_password');
 });
 
 // ====== USER PROFILE ROUTES ======
-
-// Account alias (redirect to profile)
 app.get('/account', requireLogin, (req, res) => {
   res.redirect('/profile');
 });
 
-// View user profile
 app.get('/profile', requireLogin, async (req, res) => {
   try {
-    const users = await readUsers();
-    const user = users.find(u => u.id === req.session.user.id);
-    
+    const user = await User.findById(req.session.user.id).lean();
+
     if (!user) {
       return res.status(404).send('User not found');
     }
 
-    res.render('profile', { user });
+    res.render('profile', { user: { ...user, id: user._id.toString() } });
   } catch (err) {
     console.error('Profile view error:', err);
     res.status(500).send('Error loading profile');
   }
 });
 
-// Edit profile page
 app.get('/profile/edit', requireLogin, async (req, res) => {
   try {
-    const users = await readUsers();
-    const user = users.find(u => u.id === req.session.user.id);
-    
+    const user = await User.findById(req.session.user.id).lean();
+
     if (!user) {
       return res.status(404).send('User not found');
     }
 
-    res.render('profile_edit', { user });
+    res.render('profile_edit', { user: { ...user, id: user._id.toString() } });
   } catch (err) {
     console.error('Profile edit page error:', err);
     res.status(500).send('Error loading profile edit page');
   }
 });
 
-// Update profile
 app.post('/profile/edit', requireLogin, async (req, res) => {
   try {
     const { fullname, email, description, profilePicture } = req.body;
     const errors = [];
 
-    // Validation
     if (!fullname || fullname.trim().length < 2) {
       errors.push('Full name must be at least 2 characters');
     }
@@ -900,50 +668,46 @@ app.post('/profile/edit', requireLogin, async (req, res) => {
       errors.push('Description must be less than 200 characters');
     }
 
-    // Check if email is already used by another user
-    const users = await readUsers();
-    const emailExists = users.find(u => u.email === email && u.id !== req.session.user.id);
+    const emailExists = await User.findOne({
+      email,
+      _id: { $ne: req.session.user.id }
+    });
+
     if (emailExists) {
       errors.push('This email is already in use');
     }
 
+    const user = await User.findById(req.session.user.id);
+
     if (errors.length > 0) {
-      const user = users.find(u => u.id === req.session.user.id);
-      return res.render('profile_edit', { user, errors });
+      return res.render('profile_edit', { user: { ...user.toObject(), id: user._id.toString() }, errors });
     }
 
-    // Update user
-    const userIndex = users.findIndex(u => u.id === req.session.user.id);
-    users[userIndex].fullname = fullname.trim();
-    users[userIndex].email = email.trim();
-    users[userIndex].description = description ? description.trim() : '';
-    users[userIndex].profilePicture = profilePicture ? profilePicture.trim() : 'https://via.placeholder.com/150';
+    user.fullname = fullname.trim();
+    user.email = email.trim();
+    user.description = description ? description.trim() : '';
+    user.profilePicture = profilePicture ? profilePicture.trim() : 'https://via.placeholder.com/150';
+    await user.save();
 
-    await writeUsers(users);
+    req.session.user.fullname = user.fullname;
+    req.session.user.email = user.email;
 
-    // Update session
-    req.session.user.fullname = users[userIndex].fullname;
-    req.session.user.email = users[userIndex].email;
-
-    res.render('profile_edit', { user: users[userIndex], message: 'Profile updated successfully!' });
+    res.render('profile_edit', { user: { ...user.toObject(), id: user._id.toString() }, message: 'Profile updated successfully!' });
   } catch (err) {
     console.error('Profile update error:', err);
     res.status(500).send('Error updating profile');
   }
 });
 
-// Change password page
 app.get('/profile/change-password', requireLogin, (req, res) => {
   res.render('change_password', { user: req.session.user });
 });
 
-// Update password
 app.post('/profile/change-password', requireLogin, async (req, res) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
     const errors = [];
 
-    // Validation
     if (!currentPassword) errors.push('Current password is required');
     if (!newPassword) errors.push('New password is required');
     if (newPassword && newPassword.length < 6) errors.push('New password must be at least 6 characters');
@@ -953,19 +717,15 @@ app.post('/profile/change-password', requireLogin, async (req, res) => {
       return res.render('change_password', { user: req.session.user, errors });
     }
 
-    // Verify current password
-    const users = await readUsers();
-    const user = users.find(u => u.id === req.session.user.id);
+    const user = await User.findById(req.session.user.id);
 
     const passwordMatch = await comparePassword(currentPassword, user.password);
     if (!passwordMatch) {
       return res.render('change_password', { user: req.session.user, errors: ['Current password is incorrect'] });
     }
 
-    // Update password
-    const hashedPassword = await hashPassword(newPassword);
-    user.password = hashedPassword;
-    await writeUsers(users);
+    user.password = await hashPassword(newPassword);
+    await user.save();
 
     res.render('change_password', { user: req.session.user, message: 'Password changed successfully!' });
   } catch (err) {
@@ -974,12 +734,10 @@ app.post('/profile/change-password', requireLogin, async (req, res) => {
   }
 });
 
-// Delete account page
 app.get('/profile/delete-account', requireLogin, (req, res) => {
   res.render('delete_account', { user: req.session.user });
 });
 
-// Delete account
 app.post('/profile/delete-account', requireLogin, async (req, res) => {
   try {
     const { password, confirm } = req.body;
@@ -996,20 +754,15 @@ app.post('/profile/delete-account', requireLogin, async (req, res) => {
       return res.render('delete_account', { user: req.session.user, errors });
     }
 
-    // Verify password
-    const users = await readUsers();
-    const user = users.find(u => u.id === req.session.user.id);
+    const user = await User.findById(req.session.user.id);
 
     const passwordMatch = await comparePassword(password, user.password);
     if (!passwordMatch) {
       return res.render('delete_account', { user: req.session.user, errors: ['Invalid password'] });
     }
 
-    // Delete user
-    const updatedUsers = users.filter(u => u.id !== req.session.user.id);
-    await writeUsers(updatedUsers);
+    await User.findByIdAndDelete(req.session.user.id);
 
-    // Destroy session
     req.session.destroy((err) => {
       if (err) {
         console.error('Session destroy error:', err);
@@ -1023,18 +776,19 @@ app.post('/profile/delete-account', requireLogin, async (req, res) => {
 });
 
 // ====== ADMIN ROUTES ======
-
-// Admin Dashboard
 app.get('/admin', requireAdmin, async (req, res) => {
   try {
-    const users = await readUsers();
-    const blogs = await readBlogs();
-    const threads = await readForum();
-    
-    res.render('admin', { 
-      users: users.map(u => ({ ...u, password: undefined })), // Don't expose passwords
-      blogs,
-      threads,
+    const users = await User.find().select('-password').lean();
+    const threads = await Thread.find().lean();
+
+    // Transform MongoDB _id to id
+    const transformedUsers = users.map(u => ({ ...u, id: u._id.toString() }));
+    const transformedThreads = threads.map(t => ({ ...t, id: t._id.toString() }));
+
+    res.render('admin', {
+      users: transformedUsers,
+      blogs: [], // Blogs not implemented with MongoDB
+      threads: transformedThreads,
       user: req.session.user
     });
   } catch (err) {
@@ -1043,51 +797,43 @@ app.get('/admin', requireAdmin, async (req, res) => {
   }
 });
 
-// Admin - Lock/Unlock User
 app.post('/admin/users/:id/toggle-lock', requireAdmin, async (req, res) => {
   try {
-    const userId = parseInt(req.params.id);
-    const users = await readUsers();
-    const userIndex = users.findIndex(u => u.id === userId);
-    
-    if (userIndex === -1) {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    
-    // Don't allow locking yourself
+
     if (userId === req.session.user.id) {
       return res.status(400).json({ error: 'Cannot lock your own account' });
     }
-    
-    // Toggle locked status
-    users[userIndex].locked = !users[userIndex].locked;
-    await writeUsers(users);
-    
-    res.json({ success: true, locked: users[userIndex].locked });
+
+    user.locked = !user.locked;
+    await user.save();
+
+    res.json({ success: true, locked: user.locked });
   } catch (err) {
     console.error('Toggle lock error:', err);
     res.status(500).json({ error: 'An error occurred' });
   }
 });
 
-// Admin - Delete User
 app.post('/admin/users/:id/delete', requireAdmin, async (req, res) => {
   try {
-    const userId = parseInt(req.params.id);
-    const users = await readUsers();
-    
-    // Don't allow deleting yourself
+    const userId = req.params.id;
+
     if (userId === req.session.user.id) {
       return res.status(400).json({ error: 'Cannot delete your own account' });
     }
-    
-    const updatedUsers = users.filter(u => u.id !== userId);
-    
-    if (updatedUsers.length === users.length) {
+
+    const result = await User.findByIdAndDelete(userId);
+
+    if (!result) {
       return res.status(404).json({ error: 'User not found' });
     }
-    
-    await writeUsers(updatedUsers);
+
     res.json({ success: true });
   } catch (err) {
     console.error('Delete user error:', err);
@@ -1095,196 +841,72 @@ app.post('/admin/users/:id/delete', requireAdmin, async (req, res) => {
   }
 });
 
-// Admin - Change User Role
 app.post('/admin/users/:id/role', requireAdmin, async (req, res) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = req.params.id;
     const { role } = req.body;
-    
+
     if (!['user', 'admin'].includes(role)) {
       return res.status(400).json({ error: 'Invalid role' });
     }
-    
-    const users = await readUsers();
-    const userIndex = users.findIndex(u => u.id === userId);
-    
-    if (userIndex === -1) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    // Don't allow changing your own role
+
     if (userId === req.session.user.id) {
       return res.status(400).json({ error: 'Cannot change your own role' });
     }
-    
-    users[userIndex].role = role;
-    await writeUsers(users);
-    
-    res.json({ success: true, role: users[userIndex].role });
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.role = role;
+    await user.save();
+
+    res.json({ success: true, role: user.role });
   } catch (err) {
     console.error('Change role error:', err);
     res.status(500).json({ error: 'An error occurred' });
   }
 });
 
-// Admin - Delete Blog
-app.post('/admin/blogs/:id/delete', requireAdmin, async (req, res) => {
-  try {
-    const blogId = parseInt(req.params.id);
-    let blogs = await readBlogs();
-    
-    const originalLength = blogs.length;
-    blogs = blogs.filter(b => b.id !== blogId);
-    
-    if (blogs.length === originalLength) {
-      return res.status(404).json({ error: 'Blog not found' });
-    }
-    
-    await writeBlogs(blogs);
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Delete blog error:', err);
-    res.status(500).json({ error: 'An error occurred' });
-  }
-});
-
-// Admin - Delete Forum Thread
-app.post('/admin/forum/:id/delete', requireAdmin, async (req, res) => {
-  try {
-    const threadId = parseInt(req.params.id);
-    let threads = await readForum();
-    
-    const originalLength = threads.length;
-    threads = threads.filter(t => t.id !== threadId);
-    
-    if (threads.length === originalLength) {
-      return res.status(404).json({ error: 'Thread not found' });
-    }
-    
-    await writeForum(threads);
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Delete thread error:', err);
-    res.status(500).json({ error: 'An error occurred' });
-  }
-});
-
-// ====== ARCHIVE FUNCTIONALITY FOR ADMIN ======
-
-// Admin - Archive/Unarchive Thread
-app.post('/admin/forum/:id/archive', requireAdmin, async (req, res) => {
-  try {
-    const threadId = parseInt(req.params.id);
-    let threads = await readForum();
-    
-    const threadIndex = threads.findIndex(t => t.id === threadId);
-    
-    if (threadIndex === -1) {
-      return res.status(404).json({ error: 'Thread not found' });
-    }
-    
-    // Toggle archived status
-    threads[threadIndex].archived = !threads[threadIndex].archived;
-    threads[threadIndex].archivedAt = threads[threadIndex].archived ? new Date().toISOString() : null;
-    threads[threadIndex].archivedBy = threads[threadIndex].archived ? req.session.user.id : null;
-    
-    await writeForum(threads);
-    res.json({ 
-      success: true, 
-      archived: threads[threadIndex].archived,
-      message: threads[threadIndex].archived ? 'Thread archived successfully' : 'Thread unarchived successfully'
-    });
-  } catch (err) {
-    console.error('Archive thread error:', err);
-    res.status(500).json({ error: 'An error occurred' });
-  }
-});
-
-// Admin - Archive/Unarchive Post (Comment)
-app.post('/admin/forum/:threadId/posts/:postId/archive', requireAdmin, async (req, res) => {
-  try {
-    const threadId = parseInt(req.params.threadId);
-    const postId = parseInt(req.params.postId);
-    let threads = await readForum();
-    
-    const threadIndex = threads.findIndex(t => t.id === threadId);
-    
-    if (threadIndex === -1) {
-      return res.status(404).json({ error: 'Thread not found' });
-    }
-    
-    if (!threads[threadIndex].comments) {
-      return res.status(404).json({ error: 'No comments in this thread' });
-    }
-    
-    const postIndex = threads[threadIndex].comments.findIndex(c => c.id === postId);
-    
-    if (postIndex === -1) {
-      return res.status(404).json({ error: 'Post not found' });
-    }
-    
-    // Toggle archived status for the post
-    threads[threadIndex].comments[postIndex].archived = !threads[threadIndex].comments[postIndex].archived;
-    threads[threadIndex].comments[postIndex].archivedAt = threads[threadIndex].comments[postIndex].archived ? new Date().toISOString() : null;
-    threads[threadIndex].comments[postIndex].archivedBy = threads[threadIndex].comments[postIndex].archived ? req.session.user.id : null;
-    
-    await writeForum(threads);
-    res.json({ 
-      success: true, 
-      archived: threads[threadIndex].comments[postIndex].archived,
-      message: threads[threadIndex].comments[postIndex].archived ? 'Post archived successfully' : 'Post unarchived successfully'
-    });
-  } catch (err) {
-    console.error('Archive post error:', err);
-    res.status(500).json({ error: 'An error occurred' });
-  }
-});
-
-// Admin - Get archived threads
-app.get('/admin/forum/archived', requireAdmin, async (req, res) => {
-  try {
-    const threads = await readForum();
-    const archivedThreads = threads.filter(t => t.archived === true);
-    res.json({ success: true, threads: archivedThreads });
-  } catch (err) {
-    console.error('Get archived threads error:', err);
-    res.status(500).json({ error: 'An error occurred' });
-  }
-});
-
-// Forum routes
-
-// forum main page to list all threads (excluding archived for regular users)
+// ====== FORUM ROUTES ======
 app.get('/forum', requireLogin, async (req, res) => {
   try {
-    let threads = await readForum();
-    
-    // Filter out archived threads for non-admin users
+    let query = {};
     if (req.session.user.role !== 'admin') {
-      threads = threads.filter(t => !t.archived);
+      query.archived = { $ne: true };
     }
-    
-    // Sort by created date (newest first)
-    threads.sort((a, b) => new Date(b.created) - new Date(a.created));
-    res.render('forum', { threads, user: req.session.user });
+
+    const threads = await Thread.find(query).sort({ createdAt: -1 }).lean();
+
+    const transformedThreads = threads.map(t => ({
+      ...t,
+      id: t._id.toString(),
+      created: t.createdAt,
+      userId: t.userId?.toString(),
+      comments: t.comments?.map(c => ({
+        ...c,
+        id: c._id.toString(),
+        userId: c.userId?.toString(),
+        created: c.createdAt
+      }))
+    }));
+
+    res.render('forum', { threads: transformedThreads, user: req.session.user });
   } catch (err) {
     console.error('Error loading forum:', err);
     res.status(500).send('Error loading forum');
   }
 });
 
-// Create new thread (AJAX)
 app.post('/forum/threads', requireLogin, async (req, res) => {
   try {
-    const threads = await readForum();
-
-    // tags from comma separated string
     let tags = [];
     if (req.body.tags) {
       tags = req.body.tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
     }
 
-    // Validate inputs
     if (!req.body.title || req.body.title.trim().length < 10) {
       return res.status(400).json({ error: 'Title must be at least 10 characters' });
     }
@@ -1292,11 +914,7 @@ app.post('/forum/threads', requireLogin, async (req, res) => {
       return res.status(400).json({ error: 'Message must be at least 20 characters' });
     }
 
-    // Generate new ID
-    const maxId = threads.reduce((max, t) => Math.max(max, t.id || 0), 0);
-
-    const newThread = {
-      id: maxId + 1,
+    const newThread = new Thread({
       title: req.body.title,
       author: req.session.user.fullname || req.session.user.username,
       meta: `By ${req.session.user.fullname || req.session.user.username} • Community`,
@@ -1304,65 +922,78 @@ app.post('/forum/threads', requireLogin, async (req, res) => {
       excerpt: req.body.body.substring(0, 100),
       body: req.body.body,
       image: req.body.image || 'img/placeholder.png',
-      created: new Date().toISOString(),
-      userId: req.session.user.id,
+      userId: new mongoose.Types.ObjectId(req.session.user.id),
       archived: false,
       comments: []
-    };
+    });
 
-    threads.unshift(newThread);
-    await writeForum(threads);
+    await newThread.save();
 
-    res.json({ thread: newThread });
+    res.json({
+      thread: {
+        ...newThread.toObject(),
+        id: newThread._id.toString(),
+        created: newThread.createdAt
+      }
+    });
   } catch (err) {
     console.error('Error creating thread:', err);
     res.status(500).json({ error: 'Error creating thread' });
   }
 });
 
-// View single thread
 app.get('/forum/threads/:id', requireLogin, async (req, res) => {
   try {
-    const threads = await readForum();
-    const thread = threads.find(t => t.id == req.params.id);
+    const thread = await Thread.findById(req.params.id).lean();
 
     if (!thread) {
       return res.status(404).send('Thread not found');
     }
 
-    // Hide archived threads from non-admin users
     if (thread.archived && req.session.user.role !== 'admin') {
       return res.status(404).send('Thread not found');
     }
 
-    res.render('forum_thread', { thread, user: req.session.user });
+    const transformedThread = {
+      ...thread,
+      id: thread._id.toString(),
+      created: thread.createdAt,
+      userId: thread.userId?.toString(),
+      comments: thread.comments?.map(c => ({
+        ...c,
+        id: c._id.toString(),
+        userId: c.userId?.toString(),
+        created: c.createdAt
+      }))
+    };
+
+    res.render('forum_thread', { thread: transformedThread, user: req.session.user });
   } catch (err) {
     console.error('Error loading thread:', err);
     res.status(500).send('Error loading thread');
   }
 });
 
-// Update thread (AJAX)
 app.post('/forum/threads/:id', requireLogin, async (req, res) => {
   try {
-    const threads = await readForum();
-    const threadIndex = threads.findIndex(t => t.id == req.params.id);
+    const thread = await Thread.findById(req.params.id);
 
-    if (threadIndex === -1) {
+    if (!thread) {
       return res.status(404).json({ error: 'Thread not found' });
     }
 
-    // Check if thread is archived
-    if (threads[threadIndex].archived) {
+    if (thread.archived) {
       return res.status(403).json({ error: 'Cannot edit archived thread' });
     }
 
-    // Check if user is thread author
-    if (threads[threadIndex].userId !== req.session.user.id) {
+    // Allow admin to edit any thread, or user to edit their own
+    const isAdmin = req.session.user.role === 'admin';
+    const isOwner = thread.userId && thread.userId.toString() === req.session.user.id;
+    
+    if (!isAdmin && !isOwner) {
       return res.status(403).json({ error: 'You can only edit your own threads' });
     }
 
-    // Validate inputs
     if (!req.body.title || req.body.title.trim().length < 10) {
       return res.status(400).json({ error: 'Title must be at least 10 characters' });
     }
@@ -1370,40 +1001,43 @@ app.post('/forum/threads/:id', requireLogin, async (req, res) => {
       return res.status(400).json({ error: 'Message must be at least 20 characters' });
     }
 
-    // Update thread
     let tags = [];
     if (req.body.tags) {
       tags = req.body.tags.split(',').map(t => t.trim()).filter(t => t.length > 0);
     }
 
-    threads[threadIndex].title = req.body.title;
-    threads[threadIndex].body = req.body.body;
-    threads[threadIndex].excerpt = req.body.body.substring(0, 100);
-    threads[threadIndex].tags = tags;
+    thread.title = req.body.title;
+    thread.body = req.body.body;
+    thread.excerpt = req.body.body.substring(0, 100);
+    thread.tags = tags;
     if (req.body.image && req.body.image !== 'img/placeholder.png') {
-      threads[threadIndex].image = req.body.image;
+      thread.image = req.body.image;
     }
 
-    await writeForum(threads);
-    res.json({ thread: threads[threadIndex] });
+    await thread.save();
+
+    res.json({
+      thread: {
+        ...thread.toObject(),
+        id: thread._id.toString(),
+        created: thread.createdAt
+      }
+    });
   } catch (err) {
     console.error('Error updating thread:', err);
     res.status(500).json({ error: 'Error updating thread' });
   }
 });
 
-// Add comment to thread (AJAX)
 app.post('/forum/threads/:id/comments', requireLogin, async (req, res) => {
   try {
-    const threads = await readForum();
-    const threadIndex = threads.findIndex(t => t.id == req.params.id);
+    const thread = await Thread.findById(req.params.id);
 
-    if (threadIndex === -1) {
+    if (!thread) {
       return res.status(404).json({ error: 'Thread not found' });
     }
 
-    // Check if thread is archived
-    if (threads[threadIndex].archived) {
+    if (thread.archived) {
       return res.status(403).json({ error: 'Cannot comment on archived thread' });
     }
 
@@ -1411,62 +1045,55 @@ app.post('/forum/threads/:id/comments', requireLogin, async (req, res) => {
       return res.status(400).json({ error: 'Comment cannot be empty' });
     }
 
-    // Initialize comments array if it doesn't exist
-    if (!threads[threadIndex].comments) {
-      threads[threadIndex].comments = [];
-    }
-
-    // Generate comment ID
-    const maxCommentId = threads[threadIndex].comments.reduce(
-      (max, c) => Math.max(max, c.id || 0), 0
-    );
-
     const newComment = {
-      id: maxCommentId + 1,
       author: req.session.user.fullname || req.session.user.username,
       text: req.body.text,
-      created: new Date().toISOString(),
-      userId: req.session.user.id,
+      userId: new mongoose.Types.ObjectId(req.session.user.id),
       archived: false
     };
 
-    threads[threadIndex].comments.push(newComment);
-    await writeForum(threads);
+    thread.comments.push(newComment);
+    await thread.save();
 
-    res.json({ comment: newComment });
+    const addedComment = thread.comments[thread.comments.length - 1];
+
+    res.json({
+      comment: {
+        ...addedComment.toObject(),
+        id: addedComment._id.toString(),
+        created: addedComment.createdAt
+      }
+    });
   } catch (err) {
     console.error('Error adding comment:', err);
     res.status(500).json({ error: 'Error adding comment' });
   }
 });
 
-// Delete comment from thread (AJAX)
 app.post('/forum/threads/:id/comments/:commentId', requireLogin, async (req, res) => {
   try {
-    const threads = await readForum();
-    const threadIndex = threads.findIndex(t => t.id == req.params.id);
+    const thread = await Thread.findById(req.params.id);
 
-    if (threadIndex === -1) {
+    if (!thread) {
       return res.status(404).json({ error: 'Thread not found' });
     }
 
-    if (!threads[threadIndex].comments) {
+    const comment = thread.comments.id(req.params.commentId);
+
+    if (!comment) {
       return res.status(404).json({ error: 'Comment not found' });
     }
 
-    const commentIndex = threads[threadIndex].comments.findIndex(c => c.id == req.params.commentId);
-    if (commentIndex === -1) {
-      return res.status(404).json({ error: 'Comment not found' });
-    }
-
-    // Check if user is comment author
-    const comment = threads[threadIndex].comments[commentIndex];
-    if (comment.userId !== req.session.user.id) {
+    // Allow admin to delete any comment, or user to delete their own
+    const isAdmin = req.session.user.role === 'admin';
+    const isOwner = comment.userId && comment.userId.toString() === req.session.user.id;
+    
+    if (!isAdmin && !isOwner) {
       return res.status(403).json({ error: 'You can only delete your own comments' });
     }
 
-    threads[threadIndex].comments.splice(commentIndex, 1);
-    await writeForum(threads);
+    comment.deleteOne();
+    await thread.save();
 
     res.json({ success: true });
   } catch (err) {
@@ -1475,23 +1102,24 @@ app.post('/forum/threads/:id/comments/:commentId', requireLogin, async (req, res
   }
 });
 
-// Delete thread (AJAX)
 app.post('/forum/threads/:id/delete', requireLogin, async (req, res) => {
   try {
-    let threads = await readForum();
-    const threadIndex = threads.findIndex(t => t.id == req.params.id);
+    const thread = await Thread.findById(req.params.id);
 
-    if (threadIndex === -1) {
+    if (!thread) {
       return res.status(404).json({ error: 'Thread not found' });
     }
 
-    // Check if user is thread author
-    if (threads[threadIndex].userId !== req.session.user.id) {
+    // Allow admin to delete any thread, or user to delete their own
+    const isAdmin = req.session.user.role === 'admin';
+    const isOwner = thread.userId && thread.userId.toString() === req.session.user.id;
+    
+    if (!isAdmin && !isOwner) {
       return res.status(403).json({ error: 'You can only delete your own threads' });
     }
 
-    threads.splice(threadIndex, 1);
-    await writeForum(threads);
+    await Thread.findByIdAndDelete(req.params.id);
+
     res.json({ success: true });
   } catch (err) {
     console.error('Error deleting thread:', err);
@@ -1499,240 +1127,487 @@ app.post('/forum/threads/:id/delete', requireLogin, async (req, res) => {
   }
 });
 
-// --- SHOP (Home) ---
+// Admin forum routes
+app.post('/admin/forum/:id/archive', requireAdmin, async (req, res) => {
+  try {
+    const thread = await Thread.findById(req.params.id);
+
+    if (!thread) {
+      return res.status(404).json({ error: 'Thread not found' });
+    }
+
+    thread.archived = !thread.archived;
+    thread.archivedAt = thread.archived ? new Date() : null;
+    thread.archivedBy = thread.archived ? req.session.user.id : null;
+
+    await thread.save();
+
+    res.json({
+      success: true,
+      archived: thread.archived,
+      message: thread.archived ? 'Thread archived successfully' : 'Thread unarchived successfully'
+    });
+  } catch (err) {
+    console.error('Archive thread error:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+app.post('/admin/forum/:threadId/posts/:postId/archive', requireAdmin, async (req, res) => {
+  try {
+    const thread = await Thread.findById(req.params.threadId);
+
+    if (!thread) {
+      return res.status(404).json({ error: 'Thread not found' });
+    }
+
+    const comment = thread.comments.id(req.params.postId);
+
+    if (!comment) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    comment.archived = !comment.archived;
+    comment.archivedAt = comment.archived ? new Date() : null;
+    comment.archivedBy = comment.archived ? req.session.user.id : null;
+
+    await thread.save();
+
+    res.json({
+      success: true,
+      archived: comment.archived,
+      message: comment.archived ? 'Post archived successfully' : 'Post unarchived successfully'
+    });
+  } catch (err) {
+    console.error('Archive post error:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+app.post('/admin/forum/:id/delete', requireAdmin, async (req, res) => {
+  try {
+    const result = await Thread.findByIdAndDelete(req.params.id);
+
+    if (!result) {
+      return res.status(404).json({ error: 'Thread not found' });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete thread error:', err);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
+// ====== SHOP ROUTES ======
 app.get('/', (req, res) => res.redirect('/shop'));
 
-app.get('/shop', (req, res) => {
-    let filteredProducts = [...products]; // Create a copy of products to modify
+app.get('/shop', async (req, res) => {
+  try {
+    let query = {};
+    let sort = {};
 
-    // 1. Filter by Color
+    // Filter by color
     if (req.query.color) {
-        filteredProducts = filteredProducts.filter(p => p.color === req.query.color);
+      query.color = req.query.color;
     }
 
-    // 2. Filter by Size
+    // Filter by size
     if (req.query.size) {
-        const selectedSize = parseInt(req.query.size);
-        // Checks if the product's size array includes the number
-        filteredProducts = filteredProducts.filter(p => p.sizes.includes(selectedSize));
+      query.sizes = parseInt(req.query.size);
     }
 
-    // 3. Handle Sorting (Low-High, High-Low, A-Z)
-    if (req.query.sort) {
-        if (req.query.sort === 'price_low') {
-            filteredProducts.sort((a, b) => a.price - b.price);
-        } else if (req.query.sort === 'price_high') {
-            filteredProducts.sort((a, b) => b.price - a.price);
-        } else if (req.query.sort === 'name_asc') {
-            filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
-        }
-    }
-
-    // 4. Handle Price Filter (Slider)
+    // Filter by max price
     if (req.query.maxPrice) {
-        const maxPrice = parseInt(req.query.maxPrice);
-        filteredProducts = filteredProducts.filter(p => p.price <= maxPrice);
+      query['pricing.price'] = { $lte: parseInt(req.query.maxPrice) };
     }
 
-    // 5. Render with the filtered list
-    res.render('shop', { 
-        products: filteredProducts,
-        query: req.query // Pass the query back so the frontend remembers the settings
+    // Sorting
+    if (req.query.sort === 'price_low') {
+      sort = { 'pricing.price': 1 };
+    } else if (req.query.sort === 'price_high') {
+      sort = { 'pricing.price': -1 };
+    } else if (req.query.sort === 'name_asc') {
+      sort = { name: 1 };
+    }
+
+    const products = await Product.find(query).sort(sort).lean();
+
+    // Transform for frontend compatibility
+    const transformedProducts = products.map(p => ({
+      id: p._id.toString(),
+      name: p.name,
+      price: p.pricing?.price || 0,
+      image: p.images?.[0] || '/img/placeholder.png',
+      stock: 'In Stock',
+      color: p.color || 'black',
+      sizes: p.sizes || [39, 40, 41, 42]
+    }));
+
+    res.render('shop', {
+      products: transformedProducts,
+      query: req.query
     });
+  } catch (err) {
+    console.error('Error loading shop:', err);
+    res.render('shop', { products: [], query: req.query });
+  }
 });
 
-// --- CART PAGE ---
-app.get('/cart', requireLogin, (req, res) => {
-    const userId = req.session.user.id; 
-    const userCart = cartItems.filter(item => item.userId === userId);
+// ====== CART ROUTES ======
+app.get('/cart', requireLogin, async (req, res) => {
+  try {
+    let cart = await Cart.findOne({ user: req.session.user.id });
 
-    let subtotal = 0;
-    userCart.forEach(item => {
-        subtotal += (item.product.price * item.quantity);
+    if (!cart) {
+      cart = { items: [], pricing: { subtotal: 0, tax: 0, total: 0 } };
+    }
+
+    const cartItems = cart.items.map(item => ({
+      id: item._id.toString(),
+      product: {
+        name: item.name,
+        price: item.price,
+        image: item.image
+      },
+      quantity: item.quantity,
+      size: item.size,
+      color: item.color
+    }));
+
+    res.render('cart', {
+      cartItems,
+      subtotal: cart.pricing.subtotal.toFixed(2),
+      tax: cart.pricing.tax.toFixed(2),
+      total: cart.pricing.total.toFixed(2)
     });
-
-    const tax = subtotal * 0.10;
-    const finalTotal = subtotal + tax;
-
-    res.render('cart', { 
-        cartItems: userCart, 
-        subtotal: subtotal.toFixed(2),
-        tax: tax.toFixed(2),
-        total: finalTotal.toFixed(2) 
+  } catch (err) {
+    console.error('Error loading cart:', err);
+    res.render('cart', {
+      cartItems: [],
+      subtotal: '0.00',
+      tax: '0.00',
+      total: '0.00'
     });
+  }
 });
 
-// --- CHECKOUT PAGE ---
-app.get('/checkout', requireLogin, (req, res) => {
-    const userId = req.session.user.id;
-    const userCart = cartItems.filter(item => item.userId === userId);
+app.get('/checkout', requireLogin, async (req, res) => {
+  try {
+    let cart = await Cart.findOne({ user: req.session.user.id });
 
-    let subtotal = 0;
-    userCart.forEach(item => {
-        subtotal += (item.product.price * item.quantity);
-    });
-    
-    const tax = subtotal * 0.10;
-    const finalTotal = subtotal + tax;
+    if (!cart) {
+      cart = { items: [], pricing: { subtotal: 0, tax: 0, total: 0 } };
+    }
 
-    res.render('checkout', { 
-        cartItems: userCart, 
-        subtotal: subtotal.toFixed(2), 
-        tax: tax.toFixed(2), 
-        total: finalTotal.toFixed(2) 
+    const cartItems = cart.items.map(item => ({
+      id: item._id.toString(),
+      product: {
+        name: item.name,
+        price: item.price,
+        image: item.image
+      },
+      quantity: item.quantity,
+      size: item.size,
+      color: item.color
+    }));
+
+    res.render('checkout', {
+      cartItems,
+      subtotal: cart.pricing.subtotal.toFixed(2),
+      tax: cart.pricing.tax.toFixed(2),
+      total: cart.pricing.total.toFixed(2)
     });
+  } catch (err) {
+    console.error('Error loading checkout:', err);
+    res.render('checkout', {
+      cartItems: [],
+      subtotal: '0.00',
+      tax: '0.00',
+      total: '0.00'
+    });
+  }
 });
 
-// --- ADD TO CART ---
-app.post('/add-to-cart', requireLogin, (req, res) => {
-    // 1. Capture all the data from the HTML form
-    const productId = parseInt(req.body.productId);
-    const quantity = parseInt(req.body.quantity) || 1; // Default to 1 if empty
+app.post('/add-to-cart', requireLogin, async (req, res) => {
+  try {
+    const productId = req.body.productId;
+    const quantity = parseInt(req.body.quantity) || 1;
     const color = req.body.color || 'Default';
-    const size = req.body.size || 'Default';
+    const size = parseInt(req.body.size) || 40;
 
     if (quantity < 1) {
-        return res.status(400).json({ success: false, message: "Quantity must be at least 1" });
+      return res.status(400).json({ success: false, message: "Quantity must be at least 1" });
     }
 
-    // 2. Find the product details from your hardcoded 'products' array
-    const productToAdd = products.find(p => p.id === productId);
+    const product = await Product.findById(productId);
 
-    if (productToAdd) {
-        // 3. Add to the temporary "cartItems" array
-        // We push a new object with the specific size/color selected
-        cartItems.push({
-            id: nextCartId++,           // unique ID for this cart row
-            userId: req.session.user.id, // user's session ID
-            product: productToAdd,       // save the full product info
-            quantity: quantity,          // save the specific quantity
-            color: req.body.color || productToAdd.color || 'Default', 
-            size: size
-        });
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
 
-        console.log("Current Cart:", cartItems); // Optional: Check your terminal to see it working
+    let cart = await Cart.findOne({ user: req.session.user.id });
 
-        // 4. Send JSON "Success" signal to trigger the SweetAlert popup
-        res.json({ success: true, message: "Item added to cart!" });
+    if (!cart) {
+      cart = new Cart({
+        user: req.session.user.id,
+        items: [],
+        pricing: { subtotal: 0, tax: 0, total: 0 }
+      });
+    }
+
+    // Check if item already exists in cart
+    const existingItemIndex = cart.items.findIndex(
+      item => item.product.toString() === productId && item.size === size && item.color === color
+    );
+
+    if (existingItemIndex > -1) {
+      cart.items[existingItemIndex].quantity += quantity;
     } else {
-        // 5. Send JSON "Error" signal if product id is wrong
-        res.status(404).json({ success: false, message: "Product not found" });
+      cart.items.push({
+        product: productId,
+        name: product.name,
+        image: product.images?.[0] || '/img/placeholder.png',
+        price: product.pricing?.price || 0,
+        quantity,
+        size,
+        color
+      });
     }
+
+    // Recalculate pricing
+    const subtotal = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const tax = subtotal * 0.10;
+    cart.pricing = {
+      subtotal,
+      tax,
+      total: subtotal + tax
+    };
+
+    await cart.save();
+
+    res.json({ success: true, message: "Item added to cart!" });
+  } catch (err) {
+    console.error('Error adding to cart:', err);
+    res.status(500).json({ success: false, message: "Error adding to cart" });
+  }
 });
 
-// --- REMOVE FROM CART ---
-app.post('/remove-from-cart', requireLogin, (req, res) => {
-    const cartIdToDelete = parseInt(req.body.cartId);
-    cartItems = cartItems.filter(item => item.id !== cartIdToDelete);
-    res.redirect('/cart'); 
+app.post('/remove-from-cart', requireLogin, async (req, res) => {
+  try {
+    const cartItemId = req.body.cartId;
+
+    const cart = await Cart.findOne({ user: req.session.user.id });
+
+    if (cart) {
+      cart.items = cart.items.filter(item => item._id.toString() !== cartItemId);
+
+      // Recalculate pricing
+      const subtotal = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const tax = subtotal * 0.10;
+      cart.pricing = {
+        subtotal,
+        tax,
+        total: subtotal + tax
+      };
+
+      await cart.save();
+    }
+
+    res.redirect('/cart');
+  } catch (err) {
+    console.error('Error removing from cart:', err);
+    res.redirect('/cart');
+  }
 });
 
-// --- PLACE ORDER ---
-app.post('/place-order', requireLogin, (req, res) => {
-    const customerName = req.body.fullname || "Customer";
-    cartItems = []; // Clear Cart
+app.post('/place-order', requireLogin, async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ user: req.session.user.id });
+
+    if (cart && cart.items.length > 0) {
+      // Create order
+      const order = new Order({
+        user: req.session.user.id,
+        items: cart.items,
+        pricing: cart.pricing,
+        shipping: {
+          firstName: req.body.firstName || '',
+          lastName: req.body.lastName || '',
+          email: req.body.email || '',
+          phone: req.body.phone || '',
+          address: req.body.address || '',
+          city: req.body.city || '',
+          state: req.body.state || '',
+          zipCode: req.body.zip || ''
+        },
+        payment: {
+          status: 'Paid',
+          method: 'Credit Card'
+        }
+      });
+
+      await order.save();
+
+      // Clear cart
+      cart.items = [];
+      cart.pricing = { subtotal: 0, tax: 0, total: 0 };
+      await cart.save();
+    }
+
+    const customerName = req.body.fullname || req.body.firstName || "Customer";
     res.render('order', { name: customerName });
+  } catch (err) {
+    console.error('Error placing order:', err);
+    res.render('order', { name: "Customer" });
+  }
 });
 
-// --- SITE MAP PAGE ---
+// ====== SITEMAP ======
 app.get('/sitemap', (req, res) => {
-    res.render('sitemap');
+  res.render('sitemap');
 });
 
 // ====== API ROUTES ======
-console.log('[server] Loaded from:', __filename);
 console.log('[server] Registering /api/reviews routes (GET/POST/PUT/DELETE)');
-// 1) Dynamic retrieval of all review data
+
 app.get('/api/reviews', async (req, res) => {
-  const reviews = await readReviews();
-  res.json(reviews);
+  try {
+    const reviews = await Review.find().lean();
+    const transformed = reviews.map(r => ({
+      ...r,
+      id: r._id.toString(),
+      date: r.createdAt || r.date,
+      userId: r.userId?.toString()
+    }));
+    res.json(transformed);
+  } catch (err) {
+    console.error('Error fetching reviews:', err);
+    res.json([]);
+  }
 });
 
 app.get('/api/reviews/:id', async (req, res) => {
-  const id = Number(req.params.id);
-  if (!Number.isFinite(id)) return res.status(400).json({ error: 'Invalid review id.' });
-  const reviews = await readReviews();
-  const review = reviews.find(r => Number(r.id) === id);
-  if (!review) return res.status(404).json({ error: 'Review not found.' });
-  res.json(review);
+  try {
+    const review = await Review.findById(req.params.id).lean();
+    if (!review) return res.status(404).json({ error: 'Review not found.' });
+    res.json({
+      ...review,
+      id: review._id.toString(),
+      userId: review.userId?.toString()
+    });
+  } catch (err) {
+    res.status(400).json({ error: 'Invalid review id.' });
+  }
 });
 
-// 2) Dynamic creation of data (requires login)
 app.post('/api/reviews', requireLoginApi, async (req, res) => {
   const { ok, errors, normalized } = validateReviewPayload(req.body, { partial: false });
   if (!ok) return res.status(400).json({ errors });
-  const reviews = await readReviews();
-  const maxId = reviews.reduce((m, r) => Math.max(m, Number(r.id) || 0), 0);
-  const created = {
-    id: maxId + 1,
-    ...normalized,
-    userId: req.session.user.id
-  };
-  const next = [created, ...reviews];
-  await writeReviews(next);
-  res.status(201).json(created);
+
+  try {
+    // For now, use a placeholder product ID since we're not linking to actual products
+    const review = new Review({
+      productId: new mongoose.Types.ObjectId(), // Placeholder
+      userId: new mongoose.Types.ObjectId(req.session.user.id),
+      rating: normalized.rating,
+      title: normalized.title,
+      body: normalized.content,
+      size: normalized.size,
+      images: normalized.thumbnail ? [normalized.thumbnail] : []
+    });
+
+    await review.save();
+
+    res.status(201).json({
+      id: review._id.toString(),
+      ...normalized,
+      userId: req.session.user.id
+    });
+  } catch (err) {
+    console.error('Error creating review:', err);
+    res.status(500).json({ error: 'Error creating review' });
+  }
 });
 
-// 3) Dynamic editing/updating (requires login)
 app.put('/api/reviews/:id', requireLoginApi, async (req, res) => {
-  const id = Number(req.params.id);
-  if (!Number.isFinite(id)) return res.status(400).json({ error: 'Invalid review id.' });
   const { ok, errors, normalized } = validateReviewPayload(req.body, { partial: true });
   if (!ok) return res.status(400).json({ errors });
-  const reviews = await readReviews();
-  const idx = reviews.findIndex(r => Number(r.id) === id);
-  if (idx === -1) return res.status(404).json({ error: 'Review not found.' });
 
-  const existing = reviews[idx];
-  const isAdmin = req.session.user?.role === 'admin';
-  if (!isAdmin) {
-    if (existing.userId == null) return res.status(403).json({ error: 'Not allowed to edit this review.' });
-    if (Number(existing.userId) !== Number(req.session.user.id)) return res.status(403).json({ error: 'Not allowed to edit this review.' });
+  try {
+    const review = await Review.findById(req.params.id);
+    if (!review) return res.status(404).json({ error: 'Review not found.' });
+
+    const isAdmin = req.session.user?.role === 'admin';
+    if (!isAdmin && review.userId?.toString() !== req.session.user.id) {
+      return res.status(403).json({ error: 'Not allowed to edit this review.' });
+    }
+
+    if (normalized.title) review.title = normalized.title;
+    if (normalized.content) review.body = normalized.content;
+    if (normalized.rating) review.rating = normalized.rating;
+    if (normalized.size) review.size = normalized.size;
+    if (normalized.thumbnail) review.images = [normalized.thumbnail];
+
+    await review.save();
+
+    res.json({
+      id: review._id.toString(),
+      ...normalized,
+      userId: review.userId?.toString()
+    });
+  } catch (err) {
+    console.error('Error updating review:', err);
+    res.status(500).json({ error: 'Error updating review' });
   }
-
-  const updated = { ...reviews[idx] };
-  Object.entries(normalized).forEach(([key, value]) => {
-    if (value !== undefined && value !== '') updated[key] = value;
-  });
-  const next = [...reviews];
-  next[idx] = updated;
-  await writeReviews(next);
-  res.json(updated);
 });
 
-// 4) Dynamic deletion (requires login)
 app.delete('/api/reviews/:id', requireLoginApi, async (req, res) => {
-  const id = Number(req.params.id);
-  if (!Number.isFinite(id)) return res.status(400).json({ error: 'Invalid review id.' });
-  const reviews = await readReviews();
+  try {
+    const review = await Review.findById(req.params.id);
+    if (!review) return res.status(404).json({ error: 'Review not found.' });
 
-  const existing = reviews.find(r => Number(r.id) === id);
-  if (!existing) return res.status(404).json({ error: 'Review not found.' });
+    const isAdmin = req.session.user?.role === 'admin';
+    if (!isAdmin && review.userId?.toString() !== req.session.user.id) {
+      return res.status(403).json({ error: 'Not allowed to delete this review.' });
+    }
 
-  const isAdmin = req.session.user?.role === 'admin';
-  if (!isAdmin) {
-    if (existing.userId == null) return res.status(403).json({ error: 'Not allowed to delete this review.' });
-    if (Number(existing.userId) !== Number(req.session.user.id)) return res.status(403).json({ error: 'Not allowed to delete this review.' });
+    await Review.findByIdAndDelete(req.params.id);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error deleting review:', err);
+    res.status(500).json({ error: 'Error deleting review' });
   }
-
-  const next = reviews.filter(r => Number(r.id) !== id);
-  await writeReviews(next);
-  res.json({ success: true });
 });
 
-// forum API routes
+// Forum API
 app.get('/api/forum', async (req, res) => {
-  const threads = await readForum();
-  res.json(threads);
+  try {
+    const threads = await Thread.find().lean();
+    const transformed = threads.map(t => ({
+      ...t,
+      id: t._id.toString(),
+      created: t.createdAt
+    }));
+    res.json(transformed);
+  } catch (err) {
+    res.json([]);
+  }
 });
 
 app.get('/api/forum/:id', async (req, res) => {
-  const id = Number(req.params.id);
-  if (!Number.isFinite(id)) return res.status(400).json({ error: 'Invalid thread id.' });
-  const threads = await readForum();
-  const thread = threads.find(t => Number(t.id) === id);
-  if (!thread) return res.status(404).json({ error: 'Thread not found.' });
-  res.json(thread);
+  try {
+    const thread = await Thread.findById(req.params.id).lean();
+    if (!thread) return res.status(404).json({ error: 'Thread not found.' });
+    res.json({
+      ...thread,
+      id: thread._id.toString(),
+      created: thread.createdAt
+    });
+  } catch (err) {
+    res.status(400).json({ error: 'Invalid thread id.' });
+  }
 });
 
 // ====== ERROR HANDLER ======
@@ -1743,5 +1618,5 @@ app.use((err, req, res, next) => {
 
 // ====== START SERVER ======
 app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+  console.log(`🚀 Server is running at http://localhost:${PORT}`);
 });
