@@ -28,7 +28,7 @@
     </button>
     <div id="navMenu" class="collapse navbar-collapse">
       <ul class="navbar-nav me-auto ms-4 gap-3">
-        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/shop">Home</a></li>
         <li class="nav-item"><a class="nav-link active" href="/shop">Shop</a></li>
         <li class="nav-item"><a class="nav-link" href="/blogs">Blogs</a></li>
         <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
@@ -37,8 +37,29 @@
       <form class="d-flex me-3">
         <input class="form-control" type="search" placeholder="Search products">
       </form>
-      <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
-      <a href="/register"><i class="fa-regular fa-user fs-5"></i></a>
+      
+      <a href="/cart" class="me-3 text-dark">
+        <i class="fa-solid fa-bag-shopping fs-5"></i>
+      </a>
+
+      <div class="dropdown">
+        <a href="#" class="text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fa-regular fa-user fs-5"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <% if (!user) { %>
+            <li><a class="dropdown-item" href="/login">Login</a></li>
+            <li><a class="dropdown-item" href="/register">Register</a></li>
+          <% } else { %>
+            <li><a class="dropdown-item" href="/account">My Account</a></li>
+            <% if (user.role === 'admin') { %>
+            <li><a class="dropdown-item" href="/admin">Admin Dashboard</a></li>
+            <% } %>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+          <% } %>
+        </ul>
+      </div>
     </div>
   </div>
 </nav>
@@ -121,7 +142,7 @@
     </ul>
     <div class="tab-content" id="productTabContent">
       <div class="tab-pane fade" id="details" role="tabpanel">
-        <p>The Nike Air Force 1 High By You gives you the freedom to make a classic unmistakably yours. It keeps the iconic high-top silhouette, tough leather build, and that famous Air cushioning—but lets you customize everything from colors to materials to the strap details. It’s the same legendary AF1 attitude, just with your signature stitched into every step.</p>
+        <p>The Nike Air Force 1 High By You gives you the freedom to make a classic unmistakably yours. It keeps the iconic high-top silhouette, tough leather build, and that famous Air cushioning—but lets you customize everything from colors to materials to the strap details. It's the same legendary AF1 attitude, just with your signature stitched into every step.</p>
       </div>
       <div class="tab-pane fade show active" id="reviews" role="tabpanel">
         <!-- REVIEW SECTION-->
