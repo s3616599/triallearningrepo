@@ -7,6 +7,7 @@ const express = require('express');
 const fs = require('fs/promises');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const REVIEWS_PATH = path.join(__dirname, '../data/reviews.json');
@@ -28,6 +29,168 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user;
   next();
 });
+
+// ====== EMAIL CONFIGURATION ======
+// Create reusable transporter object using SMTP transport
+const createEmailTransporter = () => {
+  // Check if email configuration exists
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.warn('⚠️  Email configuration not found. Password reset emails will not be sent.');
+    console.warn('   Please configure EMAIL_USER and EMAIL_PASS in your .env file.');
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT) || 587,
+    secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    }
+  });
+};
+
+// Initialize email transporter
+let emailTransporter = createEmailTransporter();
+
+// Function to send password reset email
+async function sendPasswordResetEmail(userEmail, userName, resetToken) {
+  if (!emailTransporter) {
+    console.log('📧 Email transporter not configured. Reset token:', resetToken);
+    return { success: false, error: 'Email service not configured' };
+  }
+
+  const appUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+  const resetLink = `${appUrl}/reset_password?token=${resetToken}`;
+
+  const mailOptions = {
+    from: `"Ecommerce Store" <${process.env.EMAIL_USER}>`,
+    to: userEmail,
+    subject: 'Password Reset Request - Ecommerce Store',
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Password Reset</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 40px 0; text-align: center; background-color: #f4f4f4;">
+              <table role="presentation" style="width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <!-- Header -->
+                <tr>
+                  <td style="padding: 40px 40px 20px; text-align: center; background-color: #212529;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px;">🛒 Ecommerce Store</h1>
+                  </td>
+                </tr>
+                
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 40px;">
+                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px;">Password Reset Request</h2>
+                    <p style="margin: 0 0 15px; color: #666666; font-size: 16px; line-height: 1.6;">
+                      Hello <strong>${userName || 'there'}</strong>,
+                    </p>
+                    <p style="margin: 0 0 25px; color: #666666; font-size: 16px; line-height: 1.6;">
+                      We received a request to reset your password for your Ecommerce Store account. Click the button below to create a new password:
+                    </p>
+                    
+                    <!-- Button -->
+                    <table role="presentation" style="margin: 30px auto;">
+                      <tr>
+                        <td style="border-radius: 4px; background-color: #212529;">
+                          <a href="${resetLink}" target="_blank" style="display: inline-block; padding: 16px 36px; font-size: 16px; color: #ffffff; text-decoration: none; font-weight: bold;">
+                            Reset My Password
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                    
+                    <p style="margin: 25px 0 15px; color: #666666; font-size: 14px; line-height: 1.6;">
+                      Or copy and paste this link into your browser:
+                    </p>
+                    <p style="margin: 0 0 25px; padding: 15px; background-color: #f8f9fa; border-radius: 4px; word-break: break-all;">
+                      <a href="${resetLink}" style="color: #007bff; text-decoration: none; font-size: 14px;">${resetLink}</a>
+                    </p>
+                    
+                    <p style="margin: 0 0 15px; color: #666666; font-size: 14px; line-height: 1.6;">
+                      <strong>This link will expire in 1 hour.</strong>
+                    </p>
+                    <p style="margin: 0; color: #999999; font-size: 14px; line-height: 1.6;">
+                      If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
+                    </p>
+                  </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                  <td style="padding: 30px 40px; text-align: center; background-color: #f8f9fa; border-top: 1px solid #eeeeee;">
+                    <p style="margin: 0 0 10px; color: #999999; font-size: 14px;">
+                      This is an automated message from Ecommerce Store.
+                    </p>
+                    <p style="margin: 0; color: #999999; font-size: 12px;">
+                      © 2025 Ecommerce Store. All rights reserved.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `,
+    text: `
+      Password Reset Request
+      
+      Hello ${userName || 'there'},
+      
+      We received a request to reset your password for your Ecommerce Store account.
+      
+      Click the link below to reset your password:
+      ${resetLink}
+      
+      This link will expire in 1 hour.
+      
+      If you didn't request a password reset, you can safely ignore this email.
+      
+      - Ecommerce Store Team
+    `
+  };
+
+  try {
+    const info = await emailTransporter.sendMail(mailOptions);
+    console.log('✅ Password reset email sent:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('❌ Error sending password reset email:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Function to verify email configuration
+async function verifyEmailConfiguration() {
+  if (!emailTransporter) {
+    return false;
+  }
+
+  try {
+    await emailTransporter.verify();
+    console.log('✅ Email server is ready to send messages');
+    return true;
+  } catch (error) {
+    console.error('❌ Email configuration error:', error.message);
+    return false;
+  }
+}
+
+// Verify email configuration on startup
+verifyEmailConfiguration();
+
 // IN-MEMORY CART (Temporary Database)
 let cartItems = []; 
 let nextCartId = 1;
@@ -113,7 +276,9 @@ async function comparePassword(password, hash) {
 }
 
 function generateResetToken() {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  // Generate a more secure random token
+  const crypto = require('crypto');
+  return crypto.randomBytes(32).toString('hex');
 }
 
 function normalizeRating(value) {
@@ -486,57 +651,102 @@ app.get('/logout', (req, res) => {
 
 // Forgot Password - Show form
 app.get('/forgot_password', (req, res) => {
-  res.render('forgot_password');
+  res.render('forgot_password', { errors: null, message: null });
 });
 
-// Forgot Password - Send reset email/token
+// Forgot Password - Send reset email
 app.post('/forgot_password', async (req, res) => {
   try {
     const { email } = req.body;
-    const errors = [];
 
-    if (!email) {
-      errors.push('Email is required');
-    }
-
-    if (errors.length > 0) {
-      return res.render('forgot_password', { errors });
-    }
-
-    const users = await readUsers();
-    const user = users.find(u => u.email === email);
-
-    if (!user) {
-      // Don't reveal if email exists for security
+    // Validate email
+    if (!email || !email.trim()) {
       return res.render('forgot_password', { 
-        message: 'If an account exists with that email, a reset link has been sent.'
+        errors: ['Email address is required'], 
+        message: null 
       });
     }
 
-    // Generate reset token
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      return res.render('forgot_password', { 
+        errors: ['Please enter a valid email address'], 
+        message: null 
+      });
+    }
+
+    const users = await readUsers();
+    const user = users.find(u => u.email === email.trim());
+
+    // For security, always show success message even if user not found
+    // This prevents email enumeration attacks
+    if (!user) {
+      return res.render('forgot_password', {
+        errors: null,
+        message: 'If an account exists with that email address, you will receive a password reset link shortly.'
+      });
+    }
+
+    // Check if user is locked
+    if (user.locked) {
+      return res.render('forgot_password', {
+        errors: ['This account has been locked. Please contact support for assistance.'],
+        message: null
+      });
+    }
+
+    // Generate secure reset token
     const resetToken = generateResetToken();
-    const resetTokenExpiry = Date.now() + 3600000; // 1 hour
+    const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
 
     // Update user with reset token
     user.resetToken = resetToken;
     user.resetTokenExpiry = resetTokenExpiry;
     await writeUsers(users);
 
-    // In production, send email here. For now, just show success message.
-    // The token is stored in the database and would be sent via email
-    res.render('forgot_password', {
-      message: 'If an account exists with that email, a password reset link has been sent. Please check your email.'
-    });
+    // Send password reset email
+    const emailResult = await sendPasswordResetEmail(
+      user.email,
+      user.fullname || user.username,
+      resetToken
+    );
+
+    if (emailResult.success) {
+      return res.render('forgot_password', {
+        errors: null,
+        message: 'A password reset link has been sent to your email address. Please check your inbox (and spam folder) and follow the instructions.'
+      });
+    } else {
+      // Email failed to send - but don't expose this to prevent enumeration
+      console.error('Failed to send reset email:', emailResult.error);
+      
+      // Check if email service is not configured
+      if (emailResult.error === 'Email service not configured') {
+        return res.render('forgot_password', {
+          errors: ['Email service is not configured. Please contact the administrator or use this token manually: ' + resetToken],
+          message: null
+        });
+      }
+      
+      return res.render('forgot_password', {
+        errors: ['Unable to send reset email. Please try again later or contact support.'],
+        message: null
+      });
+    }
   } catch (err) {
     console.error('Forgot password error:', err);
-    res.status(500).render('forgot_password', { errors: ['An error occurred'] });
+    res.status(500).render('forgot_password', { 
+      errors: ['An unexpected error occurred. Please try again later.'],
+      message: null
+    });
   }
 });
 
 // Reset Password - Show form
 app.get('/reset_password', (req, res) => {
   const { token } = req.query;
-  res.render('reset_password', { token: token || '' });
+  res.render('reset_password', { token: token || '', errors: null, message: null });
 });
 
 // Reset Password - Update password
@@ -545,36 +755,67 @@ app.post('/reset_password', async (req, res) => {
     const { token, password, confirmPassword } = req.body;
     const errors = [];
 
-    if (!token) errors.push('Reset token is required');
-    if (!password) errors.push('Password is required');
-    if (password && password.length < 6) errors.push('Password must be at least 6 characters');
-    if (password !== confirmPassword) errors.push('Passwords do not match');
+    if (!token || !token.trim()) {
+      errors.push('Reset token is required');
+    }
+    if (!password) {
+      errors.push('Password is required');
+    }
+    if (password && password.length < 6) {
+      errors.push('Password must be at least 6 characters');
+    }
+    if (password !== confirmPassword) {
+      errors.push('Passwords do not match');
+    }
 
     if (errors.length > 0) {
-      return res.render('reset_password', { errors, token });
+      return res.render('reset_password', { errors, token, message: null });
     }
 
     // Find user with valid token
     const users = await readUsers();
-    const user = users.find(u => u.resetToken === token && u.resetTokenExpiry > Date.now());
+    const user = users.find(u => 
+      u.resetToken === token.trim() && 
+      u.resetTokenExpiry && 
+      u.resetTokenExpiry > Date.now()
+    );
 
     if (!user) {
-      return res.render('reset_password', { errors: ['Invalid or expired reset token'], token });
+      return res.render('reset_password', { 
+        errors: ['Invalid or expired reset token. Please request a new password reset.'], 
+        token,
+        message: null
+      });
     }
 
-    // Update password
+    // Check if user is locked
+    if (user.locked) {
+      return res.render('reset_password', {
+        errors: ['This account has been locked. Please contact support for assistance.'],
+        token,
+        message: null
+      });
+    }
+
+    // Update password and clear reset token
     user.password = await hashPassword(password);
     user.resetToken = null;
     user.resetTokenExpiry = null;
     await writeUsers(users);
 
     res.render('reset_password', { 
-      message: 'Password has been reset successfully. Please login with your new password.',
+      errors: null,
+      token: '',
+      message: 'Your password has been reset successfully! You can now login with your new password.',
       redirectUrl: '/login'
     });
   } catch (err) {
     console.error('Reset password error:', err);
-    res.status(500).render('reset_password', { errors: ['An error occurred'], token: req.body.token });
+    res.status(500).render('reset_password', { 
+      errors: ['An unexpected error occurred. Please try again.'], 
+      token: req.body.token || '',
+      message: null
+    });
   }
 });
 
@@ -1325,28 +1566,6 @@ app.get('/checkout', requireLogin, (req, res) => {
 });
 
 // --- ADD TO CART ---
-/* app.post('/add-to-cart', (req, res) => {
-    const productId = parseInt(req.body.productId);
-    // This works now because 'products' is an Array, not a string path
-    const productToAdd = products.find(p => p.id === productId);
-
-    if (productToAdd) {
-        cartItems.push({
-            id: nextCartId++,
-            userId: 1, 
-            product: productToAdd,
-            quantity: 1
-        });
-        res.json({ success: true, message: "Item added to cart!" });
-    } else {
-        res.status(404).json({ success: false, message: "Product not found" });
-    }
-}); */
-// Global arrays (Make sure these exist at the top of your file)
-// const products = [ ... your product list ... ];
-// let cartItems = []; 
-// let nextCartId = 1;
-
 app.post('/add-to-cart', requireLogin, (req, res) => {
     // 1. Capture all the data from the HTML form
     const productId = parseInt(req.body.productId);

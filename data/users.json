@@ -37,5 +37,19 @@
     "createdAt": "2026-01-07T11:41:03.101Z",
     "resetToken": null,
     "resetTokenExpiry": null
+  },
+  {
+    "id": 4,
+    "username": "irfanabd",
+    "email": "irfanabdulla0@gmail.com",
+    "password": "$2b$10$nVFPFOw8t0Z73d5frwpHcu6GL4wYTyMCEFmzKq4FMBjeB9xmsonPO",
+    "fullname": "Irfan Abdulla",
+    "description": "",
+    "profilePicture": "https://via.placeholder.com/150",
+    "role": "user",
+    "locked": false,
+    "createdAt": "2026-01-10T03:03:13.515Z",
+    "resetToken": null,
+    "resetTokenExpiry": null
   }
 ]
