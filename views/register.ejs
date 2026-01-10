@@ -17,7 +17,39 @@
 
     <title>Sign Up</title>
 
-    
+    <style>
+      /* Custom validation styles */
+      .form-control.is-invalid {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+      }
+      .invalid-feedback {
+        display: none;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+      }
+      .is-invalid ~ .invalid-feedback {
+        display: block;
+      }
+      .password-strength {
+        height: 5px;
+        border-radius: 3px;
+        margin-top: 5px;
+        transition: all 0.3s ease;
+      }
+      .strength-weak { background: linear-gradient(to right, #dc3545 33%, #e9ecef 33%); }
+      .strength-medium { background: linear-gradient(to right, #ffc107 66%, #e9ecef 66%); }
+      .strength-strong { background: #198754; }
+      .char-counter {
+        font-size: 0.8rem;
+        transition: color 0.2s ease;
+      }
+    </style>
 </head>
 <body>
 
@@ -49,7 +81,7 @@
             </form>
 
             <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
-            <% if (user) { %>
+            <% if (typeof user !== 'undefined' && user) { %>
               <a href="/profile"><i class="fa-regular fa-user fs-5"></i></a>
             <% } else { %>
               <a href="/login"><i class="fa-regular fa-user fs-5"></i></a>
@@ -65,7 +97,7 @@
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
   <div class="card shadow-sm p-4" style="width: 450px;">
     <h3 class="text-center mb-4">Sign up</h3>
-    <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+    <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <% errors.forEach(error => { %>
           <div><%= error %></div>
@@ -73,33 +105,50 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
     <% } %>
-    <form method="POST" action="/register">
+    <form id="registerForm" method="POST" action="/register" novalidate>
       <div class="mb-3">
-        <label for="fullname" class="form-label">Full Name</label>
-        <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter your full name" value="<%= (typeof formData !== 'undefined' && formData.fullname) ? formData.fullname : '' %>" required>
+        <label for="fullname" class="form-label">Full Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter your full name" value="<%= (typeof formData !== 'undefined' && formData && formData.fullname) ? formData.fullname : '' %>" required>
+        <div class="invalid-feedback"></div>
       </div>
       <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" value="<%= (typeof formData !== 'undefined' && formData.username) ? formData.username : '' %>" required>
+        <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" value="<%= (typeof formData !== 'undefined' && formData && formData.username) ? formData.username : '' %>" required>
+        <div class="invalid-feedback"></div>
       </div>
       <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" value="<%= (typeof formData !== 'undefined' && formData.email) ? formData.email : '' %>" required>
+        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" value="<%= (typeof formData !== 'undefined' && formData && formData.email) ? formData.email : '' %>" required>
+        <div class="invalid-feedback"></div>
       </div>
       <div class="mb-3">
         <label for="description" class="form-label">Short Description</label>
-        <textarea class="form-control" id="description" name="description" rows="2" placeholder="Tell us about yourself (optional)"><%= (typeof formData !== 'undefined' && formData.description) ? formData.description : '' %></textarea>
-        <small class="text-muted">Max 200 characters</small>
+        <textarea class="form-control" id="description" name="description" rows="2" placeholder="Tell us about yourself (optional)"><%= (typeof formData !== 'undefined' && formData && formData.description) ? formData.description : '' %></textarea>
+        <small class="char-counter text-muted">0/200 characters</small>
+        <div class="invalid-feedback"></div>
       </div>
       <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password (min 6 characters)" required>
+        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+        <div class="input-group">
+          <input type="password" class="form-control" id="password" name="password" placeholder="Enter password (min 6 characters)" required>
+          <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+        <div class="password-strength" id="passwordStrength"></div>
+        <div class="invalid-feedback"></div>
       </div>
       <div class="mb-3">
-        <label for="confirmPassword" class="form-label">Confirm Password</label>
-        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
+        <label for="confirmPassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+        <div class="input-group">
+          <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
+          <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+        <div class="invalid-feedback"></div>
       </div>
-      <button type="submit" class="btn btn-dark w-100 mb-3">Create account</button>
+      <button type="submit" class="btn btn-dark w-100 mb-3" id="submitBtn">Create account</button>
       <div class="text-center">
         <a href="/login">Already have an account? Login</a>
       </div>
@@ -183,5 +232,264 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  // --- Registration Form Live Validation ---
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('registerForm');
+    if (!form) return;
+
+    const fullnameInput = document.getElementById('fullname');
+    const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
+    const descriptionInput = document.getElementById('description');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const passwordStrengthBar = document.getElementById('passwordStrength');
+    const charCounter = document.querySelector('.char-counter');
+
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      this.querySelector('i').classList.toggle('fa-eye');
+      this.querySelector('i').classList.toggle('fa-eye-slash');
+    });
+
+    document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+      const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      confirmPasswordInput.setAttribute('type', type);
+      this.querySelector('i').classList.toggle('fa-eye');
+      this.querySelector('i').classList.toggle('fa-eye-slash');
+    });
+
+    // Helper: show error state
+    function showError(input, message) {
+      input.classList.add('is-invalid');
+      const container = input.closest('.mb-3');
+      const err = container.querySelector('.invalid-feedback');
+      if (err) err.textContent = message;
+    }
+
+    // Helper: clear error state
+    function clearError(input) {
+      input.classList.remove('is-invalid');
+      const container = input.closest('.mb-3');
+      const err = container.querySelector('.invalid-feedback');
+      if (err) err.textContent = '';
+    }
+
+    // Validation: Full Name
+    function validateFullname() {
+      const value = fullnameInput.value.trim();
+      
+      if (!value) {
+        showError(fullnameInput, 'Full name is required.');
+        return false;
+      }
+      if (value.length < 2) {
+        showError(fullnameInput, 'Full name must be at least 2 characters.');
+        return false;
+      }
+      if (!/^[a-zA-Z\s'-]+$/.test(value)) {
+        showError(fullnameInput, 'Full name can only contain letters, spaces, hyphens, and apostrophes.');
+        return false;
+      }
+      if (value.length > 50) {
+        showError(fullnameInput, 'Full name must be less than 50 characters.');
+        return false;
+      }
+      
+      clearError(fullnameInput);
+      return true;
+    }
+
+    // Validation: Username
+    function validateUsername() {
+      const value = usernameInput.value.trim();
+      
+      if (!value) {
+        showError(usernameInput, 'Username is required.');
+        return false;
+      }
+      if (value.length < 3) {
+        showError(usernameInput, 'Username must be at least 3 characters.');
+        return false;
+      }
+      if (value.length > 20) {
+        showError(usernameInput, 'Username must be less than 20 characters.');
+        return false;
+      }
+      if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(value)) {
+        showError(usernameInput, 'Username must start with a letter and can only contain letters, numbers, and underscores.');
+        return false;
+      }
+      
+      clearError(usernameInput);
+      return true;
+    }
+
+    // Validation: Email
+    function validateEmail() {
+      const value = emailInput.value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      
+      if (!value) {
+        showError(emailInput, 'Email address is required.');
+        return false;
+      }
+      if (!emailRegex.test(value)) {
+        showError(emailInput, 'Please enter a valid email address (e.g., user@example.com).');
+        return false;
+      }
+      
+      clearError(emailInput);
+      return true;
+    }
+
+    // Validation: Description (optional)
+    function validateDescription() {
+      const value = descriptionInput.value;
+      const length = value.length;
+      
+      // Update character counter
+      charCounter.textContent = length + '/200 characters';
+      
+      if (length > 180) {
+        charCounter.classList.remove('text-muted', 'text-warning');
+        charCounter.classList.add('text-danger');
+      } else if (length > 150) {
+        charCounter.classList.remove('text-muted', 'text-danger');
+        charCounter.classList.add('text-warning');
+      } else {
+        charCounter.classList.remove('text-warning', 'text-danger');
+        charCounter.classList.add('text-muted');
+      }
+      
+      if (length > 200) {
+        showError(descriptionInput, 'Description must be less than 200 characters.');
+        return false;
+      }
+      
+      clearError(descriptionInput);
+      return true;
+    }
+
+    // Password strength checker
+    function checkPasswordStrength(password) {
+      let strength = 0;
+      
+      if (password.length >= 6) strength++;
+      if (password.length >= 8) strength++;
+      if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+      if (/[0-9]/.test(password)) strength++;
+      if (/[^a-zA-Z0-9]/.test(password)) strength++;
+      
+      return strength;
+    }
+
+    // Validation: Password
+    function validatePassword() {
+      const value = passwordInput.value;
+      
+      // Update strength bar
+      passwordStrengthBar.className = 'password-strength';
+      
+      if (!value) {
+        showError(passwordInput, 'Password is required.');
+        passwordStrengthBar.className = 'password-strength';
+        return false;
+      }
+      
+      if (value.length < 6) {
+        showError(passwordInput, 'Password must be at least 6 characters.');
+        passwordStrengthBar.classList.add('strength-weak');
+        return false;
+      }
+      
+      const strength = checkPasswordStrength(value);
+      
+      if (strength <= 2) {
+        passwordStrengthBar.classList.add('strength-weak');
+      } else if (strength <= 3) {
+        passwordStrengthBar.classList.add('strength-medium');
+      } else {
+        passwordStrengthBar.classList.add('strength-strong');
+      }
+      
+      clearError(passwordInput);
+      
+      // Re-validate confirm password if it has a value
+      if (confirmPasswordInput.value) {
+        validateConfirmPassword();
+      }
+      
+      return true;
+    }
+
+    // Validation: Confirm Password
+    function validateConfirmPassword() {
+      const value = confirmPasswordInput.value;
+      const passwordValue = passwordInput.value;
+      
+      if (!value) {
+        showError(confirmPasswordInput, 'Please confirm your password.');
+        return false;
+      }
+      if (value !== passwordValue) {
+        showError(confirmPasswordInput, 'Passwords do not match.');
+        return false;
+      }
+      
+      clearError(confirmPasswordInput);
+      return true;
+    }
+
+    // Add event listeners for live validation
+    fullnameInput.addEventListener('input', validateFullname);
+    fullnameInput.addEventListener('blur', validateFullname);
+
+    usernameInput.addEventListener('input', validateUsername);
+    usernameInput.addEventListener('blur', validateUsername);
+
+    emailInput.addEventListener('input', validateEmail);
+    emailInput.addEventListener('blur', validateEmail);
+
+    descriptionInput.addEventListener('input', validateDescription);
+
+    passwordInput.addEventListener('input', validatePassword);
+    passwordInput.addEventListener('blur', validatePassword);
+
+    confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+    confirmPasswordInput.addEventListener('blur', validateConfirmPassword);
+
+    // Form submission validation
+    form.addEventListener('submit', function (e) {
+      const isFullnameValid = validateFullname();
+      const isUsernameValid = validateUsername();
+      const isEmailValid = validateEmail();
+      const isDescriptionValid = validateDescription();
+      const isPasswordValid = validatePassword();
+      const isConfirmPasswordValid = validateConfirmPassword();
+
+      if (!isFullnameValid || !isUsernameValid || !isEmailValid || 
+          !isDescriptionValid || !isPasswordValid || !isConfirmPasswordValid) {
+        e.preventDefault();
+        
+        // Scroll to first error
+        const firstError = form.querySelector('.is-invalid');
+        if (firstError) {
+          firstError.focus();
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    });
+
+    // Initialize character counter on page load
+    if (descriptionInput.value) {
+      validateDescription();
+    }
+  });
+</script>
 </body>
 </html>
