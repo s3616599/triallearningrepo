@@ -1104,21 +1104,39 @@ app.post('/forum/threads/:id/comments/:commentId', requireLogin, async (req, res
 
 app.post('/forum/threads/:id/delete', requireLogin, async (req, res) => {
   try {
+    console.log('Delete request for thread:', req.params.id);
+    console.log('Session user:', req.session.user);
+    
     const thread = await Thread.findById(req.params.id);
 
     if (!thread) {
+      console.log('Thread not found');
       return res.status(404).json({ error: 'Thread not found' });
     }
 
-    // Allow admin to delete any thread, or user to delete their own
+    console.log('Thread userId:', thread.userId);
+    console.log('Thread author:', thread.author);
+
+    // Allow admin to delete any thread
     const isAdmin = req.session.user.role === 'admin';
-    const isOwner = thread.userId && thread.userId.toString() === req.session.user.id;
     
-    if (!isAdmin && !isOwner) {
+    // Check ownership - compare as strings
+    const threadUserId = thread.userId ? thread.userId.toString() : null;
+    const sessionUserId = req.session.user.id;
+    const isOwner = threadUserId === sessionUserId;
+    
+    // Also allow if author name matches (fallback for old data)
+    const authorMatches = thread.author === req.session.user.fullname || 
+                          thread.author === req.session.user.username;
+    
+    console.log('isAdmin:', isAdmin, 'isOwner:', isOwner, 'authorMatches:', authorMatches);
+    
+    if (!isAdmin && !isOwner && !authorMatches) {
       return res.status(403).json({ error: 'You can only delete your own threads' });
     }
 
     await Thread.findByIdAndDelete(req.params.id);
+    console.log('Thread deleted successfully');
 
     res.json({ success: true });
   } catch (err) {
