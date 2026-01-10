@@ -18,7 +18,7 @@
   <title>Product Review List</title>
 </head>
 <body>
-  <div class="prl-wrapper">
+  <div class="prl-wrapper" data-user-id="<%= user ? user.id : '' %>" data-user-role="<%= user ? user.role : '' %>">
     <!-- HEADER (NAVBAR) -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
   <div class="container">
@@ -408,6 +408,12 @@
   <script id="reviewsData" type="application/json"><%- JSON.stringify(reviews || []) %></script>
 
   <script>
+  // Current user (for review edit/delete permissions)
+  const wrapperEl = document.querySelector('.prl-wrapper');
+  const rawUserId = wrapperEl?.dataset?.userId;
+  window.currentUserId = rawUserId ? Number(rawUserId) : null;
+  window.currentUserIsAdmin = wrapperEl?.dataset?.userRole === 'admin';
+
   // --- Review Submission Handler ---
   document.addEventListener('DOMContentLoaded', function() {
     const reviewForm = document.getElementById('reviewSubmitForm');
@@ -521,38 +527,191 @@
     });
   }
 
+  function canManageReview(r) {
+    if (!window.currentUserId) return false;
+    if (window.currentUserIsAdmin) return true;
+    if (r.userId == null) return false;
+    return Number(r.userId) === Number(window.currentUserId);
+  }
+
   function showReviewDetail(id) {
     const r = (window.reviews || []).find(rv => rv.id === id);
     if (!r) return;
     const detail = document.getElementById('reviewDetail');
-    detail.innerHTML = `
-      <div class="card mb-4">
-        <div class="row g-0">
-          ${r.thumbnail ? `
-            <div class="col-md-4">
-              <img src="${r.thumbnail}" class="img-fluid rounded-start" alt="Review Thumbnail">
-            </div>
-          ` : ''}
-          <div class="col-md-8">
-            <div class="card-body">
-              <div class="mb-2">${renderStars(r.rating)}</div>
-              <h5 class="card-title">${r.title}</h5>
-              <h6 class="fw-bold mb-1">${r.name}</h6>
-              <p class="text-muted small mb-1">${new Date(r.date).toLocaleDateString()}</p>
-              ${r.size ? `<p class="mb-1 text-muted small">Size: <span class="fw-semibold">${r.size}</span></p>` : ''}
-              <p class="card-text">${r.content}</p>
-              <button class="btn btn-outline-secondary mt-2" id="backToList">Back to List</button>
+    const canManage = canManageReview(r);
+
+    function renderDetailView(review, { editing = false } = {}) {
+      if (!editing) {
+        return `
+          <div class="card mb-4">
+            <div class="row g-0">
+              ${review.thumbnail ? `
+                <div class="col-md-4">
+                  <img src="${review.thumbnail}" class="img-fluid rounded-start" alt="Review Thumbnail">
+                </div>
+              ` : ''}
+              <div class="col-md-8">
+                <div class="card-body">
+                  <div class="mb-2">${renderStars(review.rating)}</div>
+                  <h5 class="card-title">${review.title}</h5>
+                  <h6 class="fw-bold mb-1">${review.name}</h6>
+                  <p class="text-muted small mb-1">${new Date(review.date).toLocaleDateString()}</p>
+                  ${review.size ? `<p class="mb-1 text-muted small">Size: <span class="fw-semibold">${review.size}</span></p>` : ''}
+                  <p class="card-text">${review.content}</p>
+                  <div class="d-flex gap-2 mt-3">
+                    <button class="btn btn-outline-secondary" id="backToList">Back to List</button>
+                    ${canManage ? `<button class="btn btn-outline-dark" id="editReview">Edit</button><button class="btn btn-outline-danger" id="deleteReview">Delete</button>` : ''}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+        `;
+      }
+
+      const ratingOptions = [5,4,3,2,1].map(n => `<option value="${n}" ${Number(review.rating) === n ? 'selected' : ''}>${n} Stars</option>`).join('');
+      const sizeOptions = ['39','40','41','42'].map(s => `<option value="${s}" ${String(review.size) === s ? 'selected' : ''}>${s}</option>`).join('');
+
+      return `
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="mb-3">Edit Review</h5>
+            <form id="editReviewForm" class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Review Title</label>
+                <input type="text" class="form-control" name="title" value="${review.title || ''}">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" name="content" rows="3">${review.content || ''}</textarea>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Star Rating</label>
+                <select class="form-select" name="rating" required>
+                  <option value="" disabled hidden>Select rating</option>
+                  ${ratingOptions}
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Size</label>
+                <select class="form-select" name="size" required>
+                  <option value="" disabled hidden>Select size</option>
+                  ${sizeOptions}
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Date Added</label>
+                <input type="date" class="form-control" name="date" value="${review.date || ''}">
+              </div>
+              <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-dark">Save</button>
+                <button type="button" class="btn btn-outline-secondary" id="cancelEdit">Cancel</button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
-    `;
-    document.getElementById('reviewList').classList.add('d-none');
-    detail.classList.remove('d-none');
-    document.getElementById('backToList').onclick = function() {
+      `;
+    }
+
+    function backToList() {
       detail.classList.add('d-none');
       document.getElementById('reviewList').classList.remove('d-none');
-    };
+    }
+
+    function wireDetailHandlers(reviewId) {
+      document.getElementById('backToList').onclick = backToList;
+
+      const editBtn = document.getElementById('editReview');
+      if (editBtn) {
+        editBtn.onclick = function() {
+          const latest = (window.reviews || []).find(rv => rv.id === reviewId);
+          if (!latest) return;
+          detail.innerHTML = renderDetailView(latest, { editing: true });
+
+          document.getElementById('cancelEdit').onclick = function() {
+            showReviewDetail(reviewId);
+          };
+
+          document.getElementById('editReviewForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const payload = Object.fromEntries(formData.entries());
+            payload.rating = payload.rating ? parseInt(payload.rating, 10) : payload.rating;
+            if (!payload.size) {
+              alert('Please pick a size');
+              return;
+            }
+            try {
+              const res = await fetch(`/api/reviews/${reviewId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (res.status === 401) {
+                window.location.href = '/login';
+                return;
+              }
+              if (res.status === 403) {
+                alert('You can only edit your own reviews.');
+                return;
+              }
+              if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                alert('Error: ' + (err.errors ? err.errors.join('\n') : err.error || 'Unknown error'));
+                return;
+              }
+              await loadAndRenderReviews();
+              showReviewDetail(reviewId);
+            } catch (err) {
+              alert('Error updating review.');
+            }
+          };
+        };
+      }
+
+      const delBtn = document.getElementById('deleteReview');
+      if (delBtn) {
+        delBtn.onclick = async function() {
+          const ok = confirm('Delete this review?');
+          if (!ok) return;
+          try {
+            const res = await fetch(`/api/reviews/${reviewId}`, { method: 'DELETE' });
+            if (res.status === 401) {
+              window.location.href = '/login';
+              return;
+            }
+            if (res.status === 403) {
+              alert('You can only delete your own reviews.');
+              return;
+            }
+            if (!res.ok) {
+              const raw = await res.text().catch(() => '');
+              let message = 'Unable to delete.';
+              try {
+                const parsed = raw ? JSON.parse(raw) : null;
+                if (parsed?.error) message = parsed.error;
+              } catch (_) {
+                // ignore
+              }
+              if (message === 'Unable to delete.' && raw) {
+                message = raw;
+              }
+              alert(`Error (${res.status}): ${message}`);
+              return;
+            }
+            await loadAndRenderReviews();
+            backToList();
+          } catch (err) {
+            alert('Error deleting review.');
+          }
+        };
+      }
+    }
+
+    detail.innerHTML = renderDetailView(r, { editing: false });
+    document.getElementById('reviewList').classList.add('d-none');
+    detail.classList.remove('d-none');
+    wireDetailHandlers(id);
   }
 
   // --- Sort, Filter, Search ---

@@ -15,6 +15,13 @@ const BLOGS_PATH = path.join(__dirname, '../data/blogs.json');
 const USERS_PATH = path.join(__dirname, '../data/users.json');
 const FORUM_PATH = path.join(__dirname, '../data/forum.json');
 
+// mongoose and MongoDB setup
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb+srv://s3616599_db_user:sxkBZC4PTrDkjSUI@clusterwebg7.boellnf.mongodb.net/EcommerceStore?appName=ClusterWebG7')
+.then(() => console.log('Connected to MongoDB Atlas'))
+.catch((error) => console.log(error.message));
+
 // LOAD PRODUCTS
 const products = require('../data/products.json');
 
@@ -224,10 +231,7 @@ async function writeBlogs(blogs) {
 }
 
 async function writeReviews(nextReviews) {
-  const dir = path.dirname(REVIEWS_PATH);
-  const tmpPath = path.join(dir, `reviews.tmp.${Date.now()}.json`);
-  await fs.writeFile(tmpPath, JSON.stringify(nextReviews, null, 2), 'utf8');
-  await fs.rename(tmpPath, REVIEWS_PATH);
+  await fs.writeFile(REVIEWS_PATH, JSON.stringify(nextReviews, null, 2), 'utf8');
 }
 
 // Forum module functions
@@ -1636,6 +1640,8 @@ app.get('/sitemap', (req, res) => {
 });
 
 // ====== API ROUTES ======
+console.log('[server] Loaded from:', __filename);
+console.log('[server] Registering /api/reviews routes (GET/POST/PUT/DELETE)');
 // 1) Dynamic retrieval of all review data
 app.get('/api/reviews', async (req, res) => {
   const reviews = await readReviews();
@@ -1659,7 +1665,8 @@ app.post('/api/reviews', requireLoginApi, async (req, res) => {
   const maxId = reviews.reduce((m, r) => Math.max(m, Number(r.id) || 0), 0);
   const created = {
     id: maxId + 1,
-    ...normalized
+    ...normalized,
+    userId: req.session.user.id
   };
   const next = [created, ...reviews];
   await writeReviews(next);
@@ -1675,6 +1682,14 @@ app.put('/api/reviews/:id', requireLoginApi, async (req, res) => {
   const reviews = await readReviews();
   const idx = reviews.findIndex(r => Number(r.id) === id);
   if (idx === -1) return res.status(404).json({ error: 'Review not found.' });
+
+  const existing = reviews[idx];
+  const isAdmin = req.session.user?.role === 'admin';
+  if (!isAdmin) {
+    if (existing.userId == null) return res.status(403).json({ error: 'Not allowed to edit this review.' });
+    if (Number(existing.userId) !== Number(req.session.user.id)) return res.status(403).json({ error: 'Not allowed to edit this review.' });
+  }
+
   const updated = { ...reviews[idx] };
   Object.entries(normalized).forEach(([key, value]) => {
     if (value !== undefined && value !== '') updated[key] = value;
@@ -1690,8 +1705,17 @@ app.delete('/api/reviews/:id', requireLoginApi, async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) return res.status(400).json({ error: 'Invalid review id.' });
   const reviews = await readReviews();
+
+  const existing = reviews.find(r => Number(r.id) === id);
+  if (!existing) return res.status(404).json({ error: 'Review not found.' });
+
+  const isAdmin = req.session.user?.role === 'admin';
+  if (!isAdmin) {
+    if (existing.userId == null) return res.status(403).json({ error: 'Not allowed to delete this review.' });
+    if (Number(existing.userId) !== Number(req.session.user.id)) return res.status(403).json({ error: 'Not allowed to delete this review.' });
+  }
+
   const next = reviews.filter(r => Number(r.id) !== id);
-  if (next.length === reviews.length) return res.status(404).json({ error: 'Review not found.' });
   await writeReviews(next);
   res.json({ success: true });
 });
