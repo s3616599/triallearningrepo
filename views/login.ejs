@@ -1,30 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- BOOTSTRAP -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- CSS -->
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
     <link rel="stylesheet" href="/css/globals.css" />
     <link rel="stylesheet" href="/css/styleguide.css" />
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style.css" />
 
-    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  </head>
 
-    <title>Login</title>
-
-    
-</head>
-<body>
+  <body>
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/">Ecommerce</a>
+        <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
 
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
@@ -32,133 +24,120 @@
 
         <div id="navMenu" class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto ms-4 gap-3">
-                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/shop" >Shop</a>
-                </li>
-
+                <li class="nav-item"><a class="nav-link" href="/shop">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
                 <li class="nav-item"><a class="nav-link" href="/blogs">Blogs</a></li>
                 <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
                 <li class="nav-item"><a class="nav-link" href="/sitemap">Site Map</a></li>
             </ul>
 
-            <!-- Search -->
             <form class="d-flex me-3">
                 <input class="form-control" type="search" placeholder="Search products">
             </form>
 
-            <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
-            <a href="/login"><i class="fa-regular fa-user fs-5"></i></a>
+            <a href="/cart" class="me-3 text-dark">
+              <i class="fa-solid fa-bag-shopping fs-5"></i>
+            </a>
 
+            <div class="dropdown">
+              <a href="#" class="text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-regular fa-user fs-5"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <% if (!user) { %>
+                  <li><a class="dropdown-item" href="/login">Login</a></li>
+                  <li><a class="dropdown-item" href="/register">Register</a></li>
+                <% } else { %>
+                  <li><a class="dropdown-item" href="/account">My Account</a></li>
+                  <% if (user.role === 'admin') { %>
+                  <li><a class="dropdown-item" href="/admin">Admin Dashboard</a></li>
+                  <% } %>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+                <% } %>
+              </ul>
+            </div>
         </div>
     </div>
 </nav>
 
+<!-- LOGIN FORM -->
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h4 class="fw-bold text-center mb-4">Login</h4>
 
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="alert alert-danger"><%= error %></div>
+                    <% } %>
 
-<!-- Login Form -->
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-  <div class="card shadow-sm p-4" style="width: 400px;">
-    <h3 class="text-center mb-4">Login</h3>
-    <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <% errors.forEach(error => { %>
-          <div><%= error %></div>
-        <% }); %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    <% } %>
-    <form id="loginForm" method="POST" action="/login" novalidate>
-      <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" autocomplete="username">
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" autocomplete="current-password">
-      </div>
-      <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="remember">
-        <label class="form-check-label" for="remember">Remember me</label>
-      </div>
-      <button type="submit" class="btn btn-dark w-100 mb-3">Login</button>
-      <div class="text-center">
-        <a href="/register">Don't have an account? Sign up</a><br>
-        <a href="/forgot_password">Forgot password?</a>
-      </div>
-    </form>
-  </div>
+                    <form action="/login" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control" placeholder="Enter your username" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" name="remember" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark w-100">Login</button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted">Don't have an account? <a href="/register" class="text-dark">Register</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- FOOTER -->
-<footer class="bg-light pt-5 mt-5">
+<footer class="bg-light pt-5 border-top mt-auto">
   <div class="container">
-
     <div class="row">
-      <!-- Column 1: Logo + Social -->
       <div class="col-md-3 mb-4">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <div class="p-2 border rounded"><i class="fa-solid fa-store fs-3"></i></div>
-          <span class="fw-bold fs-5">Ecommerce</span>
-        </div>
-        <p class="text-muted small">DevCut is a YouTube channel for practical project-based learning.</p>
-        <div class="d-flex gap-2 mt-2">
-            <i class="fab fa-github fs-5"></i>
-            <i class="fab fa-instagram fs-5"></i>
-            <i class="fab fa-youtube fs-5"></i>
-        </div>
-      </div>
-        
-
-      <!-- Column 2: Shop -->
-      <div class="col-md-2 mb-4">
-        <h6 class="text-muted">SHOP</h6>
-        <ul class="list-unstyled mt-2">
-          <li><a href="#" class="text-decoration-none text-dark">My Account</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Checkout</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Cart</a></li>
+        <h5 class="fw-bold">Support</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">FAQ</li>
+          <li class="mb-2">Terms of use</li>
+          <li class="mb-2">Privacy Policy</li>
         </ul>
       </div>
-
-      <!-- Column 3: Company -->
-      <div class="col-md-2 mb-4">
-        <h6 class="text-muted">COMPANY</h6>
-        <ul class="list-unstyled mt-2">
-          <li><a href="#" class="text-decoration-none text-dark">About us</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Contact</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Careers</a></li>
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold">Company</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">About Us</li>
+          <li class="mb-2">Contact</li>
+          <li class="mb-2">Careers</li>
         </ul>
       </div>
-
-      <!-- Column 4: Support -->
-      <div class="col-md-2 mb-4">
-        <h6 class="text-muted">SUPPORT</h6>
-        <ul class="list-unstyled mt-2">
-          <li><a href="#" class="text-decoration-none text-dark">FAQ</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Terms of use</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold">Shop</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">My Account</li>
+          <li class="mb-2">Checkout</li>
+          <li class="mb-2">Cart</li>
         </ul>
       </div>
-
-      <!-- Column 5: Payments -->
-        <div class="col-md-3 mb-4">
-            <h6 class="text-muted">ACCEPTED PAYMENTS</h6>
-            <div class="d-flex gap-2 mt-2">
-                <i class="fa-brands fa-cc-visa fs-3"></i>
-                <i class="fa-brands fa-cc-mastercard fs-3"></i>
-                <i class="fa-brands fa-cc-amex fs-3"></i>
-                <i class="fa-brands fa-cc-paypal fs-3"></i>
-            </div>
-        </div>
-      
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold">Stay Updated</h5>
+        <form class="d-flex">
+          <input type="email" class="form-control form-control-sm" placeholder="Enter Email">
+          <button class="btn btn-dark btn-sm ms-2">Subscribe</button>
+        </form>
+      </div>
     </div>
-
-    
-
     <hr class="mt-4">
-
-    <!-- Copyright -->
     <div class="text-center pb-3 small text-muted">
       © 2023 DevCut. All rights reserved.
     </div>
@@ -166,88 +145,5 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-  // --- Login form validation (Bootstrap style) ---
-  document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('loginForm');
-    if (!form) return;
-
-    const identifierInput = form.querySelector('input[name="identifier"]');
-    const passwordInput = form.querySelector('input[name="password"]');
-
-    function getErrorElem(input) {
-      let err = input.parentElement.querySelector('.invalid-feedback');
-      if (!err) {
-        err = document.createElement('div');
-        err.className = 'invalid-feedback';
-        input.parentElement.appendChild(err);
-      }
-      return err;
-    }
-
-    function isValidEmailFormat(value) {
-      // Format-only check. Real verification must be server-side.
-      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
-    }
-
-    function validateIdentifier() {
-      const value = (identifierInput?.value || '').trim();
-      let valid = true;
-      let msg = '';
-
-      if (!value) {
-        valid = false;
-        msg = 'Username or email is required.';
-      } else if (value.includes('@') && !isValidEmailFormat(value)) {
-        valid = false;
-        msg = 'Please enter a valid email address format.';
-      }
-
-      const err = getErrorElem(identifierInput);
-      if (!valid) {
-        identifierInput.classList.add('is-invalid');
-        err.textContent = msg;
-      } else {
-        identifierInput.classList.remove('is-invalid');
-        err.textContent = '';
-      }
-      return valid;
-    }
-
-    function validatePassword() {
-      const value = (passwordInput?.value || '').trim();
-      let valid = true;
-      let msg = '';
-
-      if (!value) {
-        valid = false;
-        msg = 'Password is required.';
-      }
-
-      const err = getErrorElem(passwordInput);
-      if (!valid) {
-        passwordInput.classList.add('is-invalid');
-        err.textContent = msg;
-      } else {
-        passwordInput.classList.remove('is-invalid');
-        err.textContent = '';
-      }
-      return valid;
-    }
-
-    // Live validation
-    identifierInput?.addEventListener('input', validateIdentifier);
-    identifierInput?.addEventListener('blur', validateIdentifier);
-    passwordInput?.addEventListener('input', validatePassword);
-    passwordInput?.addEventListener('blur', validatePassword);
-
-    // On submit
-    form.addEventListener('submit', function (e) {
-      const ok = validateIdentifier() && validatePassword();
-      if (!ok) e.preventDefault();
-    });
-  });
-</script>
 </body>
 </html>

@@ -1,681 +1,211 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/css/globals.css" />
+    <link rel="stylesheet" href="/css/styleguide.css" />
+    <link rel="stylesheet" href="/css/style.css" />
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  </head>
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <body>
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/globals.css" />
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/css/styleguide.css" />
-
-  <title>Product Review List</title>
-</head>
-<body>
-  <div class="prl-wrapper">
-    <!-- HEADER (NAVBAR) -->
+<!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
-    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="navMenu" class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto ms-4 gap-3">
-        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-        <li class="nav-item"><a class="nav-link active" href="/shop">Shop</a></li>
-        <li class="nav-item"><a class="nav-link" href="/blogs">Blogs</a></li>
-        <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
-        <li class="nav-item"><a class="nav-link" href="/sitemap">Sitemap</a></li>
-      </ul>
-      <form class="d-flex me-3">
-        <input class="form-control" type="search" placeholder="Search products">
-      </form>
-      <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
-      <a href="/register"><i class="fa-regular fa-user fs-5"></i></a>
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
+
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="navMenu" class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto ms-4 gap-3">
+                <li class="nav-item"><a class="nav-link" href="/shop">Home</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/shop">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" href="/blogs">Blogs</a></li>
+                <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
+                <li class="nav-item"><a class="nav-link" href="/sitemap">Site Map</a></li>
+            </ul>
+
+            <form class="d-flex me-3">
+                <input class="form-control" type="search" placeholder="Search products">
+            </form>
+
+            <a href="/cart" class="me-3 text-dark">
+              <i class="fa-solid fa-bag-shopping fs-5"></i>
+            </a>
+
+            <div class="dropdown">
+              <a href="#" class="text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-regular fa-user fs-5"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <% if (!user) { %>
+                  <li><a class="dropdown-item" href="/login">Login</a></li>
+                  <li><a class="dropdown-item" href="/register">Register</a></li>
+                <% } else { %>
+                  <li><a class="dropdown-item" href="/account">My Account</a></li>
+                  <% if (user.role === 'admin') { %>
+                  <li><a class="dropdown-item" href="/admin">Admin Dashboard</a></li>
+                  <% } %>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+                <% } %>
+              </ul>
+            </div>
+        </div>
     </div>
-  </div>
 </nav>
 
-  <!-- BREADCRUMB -->
-  <nav class="bg-light py-2 border-bottom">
+<!-- BREADCRUMB -->
+<nav class="bg-light py-2 border-bottom">
     <div class="container">
-      <ol class="breadcrumb mb-0">
-        <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
-        <li class="breadcrumb-item active">Nike Air Force 1 High By You</li>
-      </ol>
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/shop">Ecommerce</a></li>
+            <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+            <li class="breadcrumb-item active"><%= product.name %></li>
+        </ol>
     </div>
-  </nav>
+</nav>
 
-  <!-- PRODUCT DETAIL SECTION -->
-  <section class="py-5">
-    <div class="container">
-      <div class="row g-5">
-        <!-- Product Images -->
-        <div class="col-md-5">
-          <div class="card">
-            <img src="/img/Nike_Air_Force_High.avif" class="card-img-top" alt="Product Image" style="height: 420px; object-fit: contain;">
-          </div>
+<!-- PRODUCT DETAIL -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <img src="<%= product.image %>" alt="<%= product.name %>" class="img-fluid rounded">
         </div>
-        <!-- Product Info -->
-        <div class="col-md-7">
-          <h2 class="fw-bold mb-3">Nike Air Force 1 High By You</h2>
-          <div class="mb-2">
-            <span class="text-warning">
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-regular fa-star"></i>
-            </span>
-            <span class="ms-2 text-muted">(451 reviews)</span>
-          </div>
-          <div class="mb-3">
-            <span class="fs-4 fw-bold text-danger">$199.99</span>
-            <span class="text-muted text-decoration-line-through ms-2">$269.99</span>
-            <span class="badge bg-success ms-2">25% OFF</span>
-          </div>
-          <!-- <form class="row g-3 mb-4">
-            <div class="col-6">
-              <label class="form-label">Color</label>
-              <select class="form-select">
-                <option>Grey</option>
-                <option>Blue</option>
-                <option>Black</option>
-              </select>
-            </div>
-            <div class="col-6">
-              <label class="form-label">Size</label>
-              <select class="form-select">
-                <option>39</option>
-                <option>40</option>
-                <option>41</option>
-                <option>42</option>
-              </select>
-            </div>
-            <div class="col-6">
-              <label class="form-label">Quantity</label>
-              <input type="number" class="form-control" value="1" min="1">
-            </div>
-            <div class="col-12">
-              <button type="button" class="btn btn-dark w-100">
-                <i class="fa-solid fa-cart-plus me-2"></i>Add to Cart
-              </button>
-            </div> 
-          </form> -->
-          <form class="row g-3 mb-4" action="/add-to-cart" method="POST">
-  
-  <input type="hidden" name="productId" value="1"> 
-
-  <div class="col-6">
-    <label class="form-label">Color</label>
-    <select class="form-select" name="color"> <option>Grey</option>
-      <option>Blue</option>
-      <option>Black</option>
-    </select>
-  </div>
-  <div class="col-6">
-    <label class="form-label">Size</label>
-    <select class="form-select" name="size"> <option>39</option>
-      <option>40</option>
-      <option>41</option>
-      <option>42</option>
-    </select>
-  </div>
-  <div class="col-6">
-    <label class="form-label">Quantity</label>
-    <input type="number" class="form-control" name="quantity" value="1" min="1"> </div>
-  <div class="col-12">
-    <button type="submit" class="btn btn-dark w-100">
-      <i class="fa-solid fa-cart-plus me-2"></i>Add to Cart
-    </button>
-  </div> 
-</form>
-        </div>
-      </div>
-    </div>
-  </section>
-
-<!-- PRODUCT TABS -->
-<section class="border-top py-4">
-  <div class="container">
-    <ul class="nav nav-tabs mb-3" id="productTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab">Product Details</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Rating & Reviews</button>
-      </li>
-    </ul>
-    <div class="tab-content" id="productTabContent">
-      <div class="tab-pane fade" id="details" role="tabpanel">
-        <p>The Nike Air Force 1 High By You gives you the freedom to make a classic unmistakably yours. It keeps the iconic high-top silhouette, tough leather build, and that famous Air cushioning—but lets you customize everything from colors to materials to the strap details. It’s the same legendary AF1 attitude, just with your signature stitched into every step.</p>
-      </div>
-      <div class="tab-pane fade show active" id="reviews" role="tabpanel">
-        <!-- REVIEW SECTION-->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 class="mb-0">All Reviews <span class="text-muted">(451)</span></h4>
-          <div>
-            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm" aria-expanded="false" aria-controls="reviewForm">
-              Write a Review
-            </button>
-          </div>
-        </div>
-
-        <!-- Write a Review Form (collapsible) -->
-        <div class="collapse mb-4" id="reviewForm">
-          <div class="card card-body">
-            <form>
-              <div class="mb-3">
-                <label class="form-label">Review Title</label>
-                <input type="text" class="form-control" name="title" placeholder="Enter review title">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Description</label>
-                <textarea class="form-control" name="description" rows="3" placeholder="Write your review"></textarea>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Star Rating</label>
-                <select class="form-select" name="rating" required>
-                  <option value="" selected disabled hidden>Select rating</option>
-                  <option>5 Stars</option>
-                  <option>4 Stars</option>
-                  <option>3 Stars</option>
-                  <option>2 Stars</option>
-                  <option>1 Star</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Your Name</label>
-                <input type="text" class="form-control" name="username" placeholder="Enter your name">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Date Added</label>
-                <input type="date" class="form-control" name="date" style="color: #888;">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Image (optional)</label>
-                <input type="file" class="form-control" name="image">
-              </div>
-              <button type="submit" class="btn btn-dark">Submit Review</button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Review Controls -->
-        <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
-          <input id="reviewSearch" class="form-control w-auto" style="min-width:200px" type="text" placeholder="Search reviews...">
-          <select id="reviewSort" class="form-select w-auto">
-            <option value="date-desc">Newest</option>
-            <option value="date-asc">Oldest</option>
-            <option value="rating-desc">Highest Rating</option>
-            <option value="rating-asc">Lowest Rating</option>
-          </select>
-          <select id="reviewFilter" class="form-select w-auto">
-            <option value="all">All Ratings</option>
-            <option value="5">5 Stars</option>
-            <option value="4">4 Stars</option>
-            <option value="3">3 Stars</option>
-            <option value="2">2 Stars</option>
-            <option value="1">1 Star</option>
-          </select>
-        </div>
-        <!-- Review List/Detail Container -->
-        <div id="reviewList" class="row g-4"></div>
-        <div id="reviewDetail" class="d-none"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-  <!-- RELATED PRODUCTS -->
-<section class="py-5 bg-light">
-  <div class="container">
-    <h4 class="mb-4">You Might Also Like</h4>
-    <div class="row g-4">
-      <div class="col-6 col-md-3">
-        <div class="card h-100">
-          <img src="/img/Nike_Air_Max_1_Black.avif" class="card-img-top" alt="Related Product">
-          <div class="card-body">
-            <h6 class="card-title">Nike Air Max 1 Black</h6>
-            <div class="mb-2">
-              <span class="text-warning">
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-regular fa-star"></i>
-              </span>
-              <span class="ms-1 text-muted small">(123)</span>
-            </div>
-            <div>
-              <span class="fw-bold">$199.99</span>
-              <span class="text-muted text-decoration-line-through ms-2">$269.99</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="card h-100">
-          <img src="/img/Nike_Dunk_High_By_You.avif" class="card-img-top" alt="Related Product">
-          <div class="card-body">
-            <h6 class="card-title">Nike Dunk High By You</h6>
-            <div class="mb-2">
-              <span class="text-warning">
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-              </span>
-              <span class="ms-1 text-muted small">(316)</span>
-            </div>
-            <div>
-              <span class="fw-bold">$219.99</span>
-              <span class="text-muted text-decoration-line-through ms-2">$299.99</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Add more product cards as needed, all inside this single row -->
-    </div>
-  </div>
-</section>
-  <!-- FOOTER -->
-  <footer class="bg-light pt-5 mt-5">
-    <div class="container">
-      <div class="row">
-        <!-- Column 1: Logo + Social -->
-        <div class="col-md-3 mb-4">
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <div class="p-2 border rounded"><i class="fa-solid fa-store fs-3"></i></div>
-            <span class="fw-bold fs-5">Ecommerce</span>
-          </div>
-          <p class="text-muted small">DevCut is a YouTube channel for practical project-based learning.</p>
-          <div class="d-flex gap-2 mt-2">
-            <i class="fab fa-github fs-5"></i>
-            <i class="fab fa-instagram fs-5"></i>
-            <i class="fab fa-youtube fs-5"></i>
-          </div>
-        </div>
-        <!-- Column 2: Shop -->
-        <div class="col-md-2 mb-4">
-          <h6 class="text-muted">SHOP</h6>
-          <ul class="list-unstyled mt-2">
-            <li><a href="#" class="text-decoration-none text-dark">My Account</a></li>
-            <li><a href="#" class="text-decoration-none text-dark">Checkout</a></li>
-            <li><a href="#" class="text-decoration-none text-dark">Cart</a></li>
-          </ul>
-        </div>
-        <!-- Column 3: Company -->
-        <div class="col-md-2 mb-4">
-          <h6 class="text-muted">COMPANY</h6>
-          <ul class="list-unstyled mt-2">
-            <li><a href="#" class="text-decoration-none text-dark">About us</a></li>
-            <li><a href="#" class="text-decoration-none text-dark">Contact</a></li>
-            <li><a href="#" class="text-decoration-none text-dark">Careers</a></li>
-          </ul>
-        </div>
-        <!-- Column 4: Support -->
-        <div class="col-md-2 mb-4">
-          <h6 class="text-muted">SUPPORT</h6>
-          <ul class="list-unstyled mt-2">
-            <li><a href="#" class="text-decoration-none text-dark">FAQ</a></li>
-            <li><a href="#" class="text-decoration-none text-dark">Terms of use</a></li>
-            <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
-          </ul>
-        </div>
-        <!-- Column 5: Payments -->
-        <div class="col-md-3 mb-4">
-          <h6 class="text-muted">ACCEPTED PAYMENTS</h6>
-          <div class="d-flex gap-2 mt-2">
-            <i class="fa-brands fa-cc-visa fs-3"></i>
-            <i class="fa-brands fa-cc-mastercard fs-3"></i>
-            <i class="fa-brands fa-cc-amex fs-3"></i>
-            <i class="fa-brands fa-cc-paypal fs-3"></i>
-          </div>
-        </div>
-      </div>
-      <hr class="mt-4">
-      <div class="text-center pb-3 small text-muted">
-        © 2025 Ecommerce. All rights reserved.
-      </div>
-    </div>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-  // --- Web Storage API for Review Form Persistence ---
-  document.addEventListener('DOMContentLoaded', function() {
-    const reviewForm = document.querySelector('#reviewForm form');
-    if (!reviewForm) return;
-
-    const STORAGE_KEY = 'reviewFormDraft';
-
-    // Save form data to localStorage
-    function saveFormData() {
-      const data = {};
-      Array.from(reviewForm.elements).forEach(el => {
-        if (el.name || el.type === 'file') {
-          if (el.type === 'file') return; // Don't store files
-          data[el.name || el.previousElementSibling?.textContent.trim()] = el.value;
-        }
-      });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-
-    // Load form data from localStorage
-    function loadFormData() {
-      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      Array.from(reviewForm.elements).forEach(el => {
-        if (el.name || el.type === 'file') {
-          if (el.type === 'file') return;
-          const key = el.name || el.previousElementSibling?.textContent.trim();
-          if (data[key]) el.value = data[key];
-        }
-      });
-    }
-
-    // Clear form data from localStorage on submit
-    reviewForm.addEventListener('submit', function() {
-      localStorage.removeItem(STORAGE_KEY);
-    });
-
-    // Save on input/change
-    Array.from(reviewForm.elements).forEach(el => {
-      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
-        el.addEventListener('input', saveFormData);
-        el.addEventListener('change', saveFormData);
-      }
-    });
-
-    // Load on page load
-    loadFormData();
-  });
-  </script>
-
-  <script id="reviewsData" type="application/json"><%- JSON.stringify(reviews || []) %></script>
-
-  <script>
-  // --- Review Data (from server) ---
-  const reviews = JSON.parse(document.getElementById('reviewsData')?.textContent || '[]');
-
-  // --- Render Functions ---
-  function renderStars(rating) {
-    let html = '';
-    for (let i = 1; i <= 5; i++) {
-      if (i <= rating) {
-        html += `<i class="fa-solid fa-star text-warning"></i>`;
-      } else {
-        html += `<i class="fa-regular fa-star text-warning"></i>`;
-      }
-    }
-    return html;
-  }
-
-  function renderReviewList(list) {
-    const container = document.getElementById('reviewList');
-    container.innerHTML = '';
-    if (!list.length) {
-      container.innerHTML = '<div class="col-12 text-center text-muted">No reviews found.</div>';
-      return;
-    }
-    list.forEach(r => {
-      container.innerHTML += `
-        <div class="col-md-6 col-lg-4">
-          <div class="card h-100 review-preview" data-id="${r.id}" style="cursor:pointer;">
-            <img src="${r.thumbnail}" class="card-img-top" alt="Review Thumbnail" style="height:180px;object-fit:cover;">
-            <div class="card-body">
-              <div class="mb-2">${renderStars(r.rating)}</div>
-              <h6 class="fw-bold mb-1">${r.name} ${r.verified ? '<span class="badge bg-success ms-2">Verified</span>' : ''}</h6>
-              <p class="text-muted small mb-1">${new Date(r.date).toLocaleDateString()}</p>
-              <h6 class="fw-bold mb-1">${r.title}</h6>
-              <p class="mb-0">${r.summary}</p>
-              <p class="mb-0 text-muted small">Color: <span class="fw-semibold">${r.color}</span> | Size: <span class="fw-semibold">${r.size}</span></p>
-            </div>
-          </div>
-        </div>
-      `;
-    });
-    // Add click event for detail view
-    container.querySelectorAll('.review-preview').forEach(card => {
-      card.addEventListener('click', function() {
-        const id = +this.getAttribute('data-id');
-        showReviewDetail(id);
-      });
-    });
-  }
-
-  function showReviewDetail(id) {
-    const r = reviews.find(rv => rv.id === id);
-    if (!r) return;
-    const detail = document.getElementById('reviewDetail');
-    detail.innerHTML = `
-      <div class="card mb-4">
-        <div class="row g-0">
-          <div class="col-md-4">
-            <img src="${r.thumbnail}" class="img-fluid rounded-start" alt="Review Thumbnail">
-          </div>
-          <div class="col-md-8">
-            <div class="card-body">
-              <div class="mb-2">${renderStars(r.rating)}</div>
-              <h5 class="card-title">${r.title}</h5>
-              <h6 class="fw-bold mb-1">${r.name} ${r.verified ? '<span class="badge bg-success ms-2">Verified</span>' : ''}</h6>
-              <p class="text-muted small mb-1">${new Date(r.date).toLocaleDateString()}</p>
-              <p class="mb-1 text-muted small">Color: <span class="fw-semibold">${r.color}</span> | Size: <span class="fw-semibold">${r.size}</span></p>
-              <p class="card-text">${r.content}</p>
-              <button class="btn btn-outline-secondary mt-2" id="backToList">Back to List</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    document.getElementById('reviewList').classList.add('d-none');
-    detail.classList.remove('d-none');
-    document.getElementById('backToList').onclick = function() {
-      detail.classList.add('d-none');
-      document.getElementById('reviewList').classList.remove('d-none');
-    };
-  }
-
-  // --- Sort, Filter, Search ---
-  function getFilteredSortedReviews() {
-    let list = [...reviews];
-    // Filter
-    const filterVal = document.getElementById('reviewFilter').value;
-    if (filterVal !== 'all') {
-      list = list.filter(r => r.rating === +filterVal);
-    }
-    // Search
-    const searchVal = document.getElementById('reviewSearch').value.trim().toLowerCase();
-    if (searchVal) {
-      list = list.filter(r =>
-        r.title.toLowerCase().includes(searchVal) ||
-        r.summary.toLowerCase().includes(searchVal) ||
-        r.content.toLowerCase().includes(searchVal) ||
-        r.name.toLowerCase().includes(searchVal)
-      );
-    }
-    // Sort
-    const sortVal = document.getElementById('reviewSort').value;
-    if (sortVal === 'date-desc') list.sort((a,b) => b.date.localeCompare(a.date));
-    if (sortVal === 'date-asc') list.sort((a,b) => a.date.localeCompare(b.date));
-    if (sortVal === 'rating-desc') list.sort((a,b) => b.rating - a.rating);
-    if (sortVal === 'rating-asc') list.sort((a,b) => a.rating - b.rating);
-    return list;
-  }
-
-  function updateReviewList() {
-    renderReviewList(getFilteredSortedReviews());
-    document.getElementById('reviewDetail').classList.add('d-none');
-    document.getElementById('reviewList').classList.remove('d-none');
-  }
-
-  // --- Event Listeners ---
-  document.addEventListener('DOMContentLoaded', function() {
-    // Initial render
-    updateReviewList();
-    // Controls
-    document.getElementById('reviewSort').addEventListener('change', updateReviewList);
-    document.getElementById('reviewFilter').addEventListener('change', updateReviewList);
-    document.getElementById('reviewSearch').addEventListener('input', updateReviewList);
-  });
-  </script>
-
-  <script>
-  // Comprehensive validation for the review form
-  document.addEventListener('DOMContentLoaded', function() {
-    // Find the review form (inside the collapse)
-    const reviewForm = document.querySelector('#reviewForm form');
-    if (!reviewForm) return;
-
-    // Helper: create or get error message element
-    function getErrorElem(input) {
-      let err = input.parentElement.querySelector('.invalid-feedback');
-      if (!err) {
-        err = document.createElement('div');
-        err.className = 'invalid-feedback';
-        input.parentElement.appendChild(err);
-      }
-      return err;
-    }
-
-    // Validation rules
-    function validateField(input) {
-      const name = input.previousElementSibling ? input.previousElementSibling.textContent.trim().toLowerCase() : '';
-      const value = input.value.trim();
-      let valid = true, msg = '';
-      if (input.type === 'text' && name === 'review title') {
-        if (!value) { valid = false; msg = 'Title is required.'; }
-        else if (value.length < 5) { valid = false; msg = 'Title must be at least 5 characters.'; }
-      }
-      if (input.tagName === 'TEXTAREA') {
-        if (!value) { valid = false; msg = 'Description is required.'; }
-        else if (value.length < 10) { valid = false; msg = 'Description must be at least 10 characters.'; }
-      }
-      if (input.tagName === 'SELECT' && name === 'star rating') {
-        if (!value) { valid = false; msg = 'Please select a rating.'; }
-      }
-      if (input.type === 'text' && name === 'your name') {
-        if (!value) { valid = false; msg = 'Name is required.'; }
-        else if (!/^[a-zA-Z\s']+$/.test(value)) { valid = false; msg = 'Name must be letters only.'; }
-      }
-      if (input.type === 'date') {
-        if (!value) { valid = false; msg = 'Date is required.'; }
-        else {
-          const today = new Date();
-          const inputDate = new Date(value);
-          if (inputDate > today) { valid = false; msg = 'Date cannot be in the future.'; }
-        }
-      }
-      if (input.type === 'file') {
-        if (input.files.length > 0) {
-          const file = input.files[0];
-          if (!file.type.startsWith('image/')) {
-            valid = false; msg = 'Only image files are allowed.';
-          }
-        }
-      }
-      // Show/hide error
-      const err = getErrorElem(input);
-      if (!valid) {
-        input.classList.add('is-invalid');
-        err.textContent = msg;
-      } else {
-        input.classList.remove('is-invalid');
-        err.textContent = '';
-      }
-      return valid;
-    }
-
-    // Validate all fields on submit
-    reviewForm.addEventListener('submit', function(e) {
-      let allValid = true;
-      Array.from(reviewForm.elements).forEach(el => {
-        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
-          if (!validateField(el)) allValid = false;
-        }
-      });
-      if (!allValid) {
-        e.preventDefault();
-      } else {
-        alert('Review submitted successfully!');
-        // Here you would handle the review data (e.g., save, display, etc.)
-        e.preventDefault(); // Remove this if you want real submission
-      }
-    });
-
-    // Live validation on input/change/blur
-    Array.from(reviewForm.elements).forEach(el => {
-      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
-        el.addEventListener('input', () => validateField(el));
-        el.addEventListener('change', () => validateField(el));
-        el.addEventListener('blur', () => validateField(el));
-      }
-    });
-  });
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-    // 1. Find every "Add to Cart" form on the page
-    const allForms = document.querySelectorAll('form[action="/add-to-cart"]');
-
-    // 2. Loop through them and add a "Listener"
-    allForms.forEach(form => {
-        form.addEventListener('submit', async function(event) {
+        <div class="col-md-6">
+            <h2 class="fw-bold"><%= product.name %></h2>
+            <p class="text-muted"><%= product.category %></p>
             
-            // STOP the page from reloading
-            event.preventDefault();
+            <div class="mb-3">
+                <span class="h4 fw-bold">$<%= product.price %></span>
+                <span class="badge rounded-pill border fw-normal text-dark ms-2"><%= product.stock %></span>
+            </div>
 
-            // Gather the data (Product ID) from the form
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
+            <p class="text-secondary"><%= product.description || 'High-quality product perfect for your needs.' %></p>
 
-            try {
-                // Send the data to the server silently (AJAX)
-                const response = await fetch('/add-to-cart', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams(data)
+            <form action="/add-to-cart" method="POST" class="mt-4" data-sizes="<%= (product.sizes || [39,40,41,42,43]).join(',') %>">
+                <input type="hidden" name="productId" value="<%= product.id %>">
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Size</label>
+                        <select name="size" class="form-select">
+                            <% (product.sizes || [39,40,41,42,43]).forEach(function(size) { %>
+                                <option value="<%= size %>"><%= size %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Quantity</label>
+                        <input type="number" name="quantity" class="form-control" value="1" min="1">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-dark btn-lg w-100">Add to Cart</button>
+            </form>
+
+            <div class="mt-4 pt-4 border-top">
+                <div class="d-flex gap-4 text-muted small">
+                    <span><i class="fa-solid fa-truck me-2"></i>Free Shipping</span>
+                    <span><i class="fa-solid fa-rotate-left me-2"></i>30 Day Returns</span>
+                    <span><i class="fa-solid fa-shield me-2"></i>Secure Payment</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-light pt-5 border-top">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold">Support</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">FAQ</li>
+          <li class="mb-2">Terms of use</li>
+          <li class="mb-2">Privacy Policy</li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold">Company</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">About Us</li>
+          <li class="mb-2">Contact</li>
+          <li class="mb-2">Careers</li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold">Shop</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">My Account</li>
+          <li class="mb-2">Checkout</li>
+          <li class="mb-2">Cart</li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold">Stay Updated</h5>
+        <form class="d-flex">
+          <input type="email" class="form-control form-control-sm" placeholder="Enter Email">
+          <button class="btn btn-dark btn-sm ms-2">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <hr class="mt-4">
+    <div class="text-center pb-3 small text-muted">
+      © 2023 DevCut. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const form = document.querySelector('form[action="/add-to-cart"]');
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('/add-to-cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    title: 'Added to Cart!',
+                    text: `Added Size ${data.size} (Qty: ${data.quantity})`,
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonColor: '#212529',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Go to Cart',
+                    cancelButtonText: 'Continue Shopping'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/cart';
+                    }
                 });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    // SHOW THE POPUP!
-                    Swal.fire({
-                        title: 'Added to Cart!',
-                        text: 'What would you like to do next?',
-                        icon: 'success',
-                        showCancelButton: true,
-                        confirmButtonColor: '#212529', // Black button
-                        cancelButtonColor: '#d33',     // Red button
-                        confirmButtonText: 'Go to Cart',
-                        cancelButtonText: 'Continue Shopping'
-                    }).then((result) => {
-                        // If they click "Go to Cart", take them there
-                        if (result.isConfirmed) {
-                            window.location.href = '/cart';
-                        }
-                    });
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                Swal.fire('Error', 'Something went wrong!', 'error');
+            } else {
+                Swal.fire('Error', result.message, 'error');
             }
-        });
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Something went wrong!', 'error');
+        }
     });
 </script>
-  </div> <!-- End prl-wrapper -->
 </body>
 </html>

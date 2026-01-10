@@ -1,62 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- BOOTSTRAP -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- CSS -->
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
     <link rel="stylesheet" href="/css/globals.css" />
     <link rel="stylesheet" href="/css/styleguide.css" />
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style.css" />
 
-    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  </head>
 
-    <title>Sign Up</title>
-
-    <style>
-      /* Custom validation styles */
-      .form-control.is-invalid {
-        border-color: #dc3545;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right calc(0.375em + 0.1875rem) center;
-        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-      }
-      .invalid-feedback {
-        display: none;
-        width: 100%;
-        margin-top: 0.25rem;
-        font-size: 0.875em;
-        color: #dc3545;
-      }
-      .is-invalid ~ .invalid-feedback {
-        display: block;
-      }
-      .password-strength {
-        height: 5px;
-        border-radius: 3px;
-        margin-top: 5px;
-        transition: all 0.3s ease;
-      }
-      .strength-weak { background: linear-gradient(to right, #dc3545 33%, #e9ecef 33%); }
-      .strength-medium { background: linear-gradient(to right, #ffc107 66%, #e9ecef 66%); }
-      .strength-strong { background: #198754; }
-      .char-counter {
-        font-size: 0.8rem;
-        transition: color 0.2s ease;
-      }
-    </style>
-</head>
-<body>
+  <body>
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/">Ecommerce</a>
+        <a class="navbar-brand fw-bold" href="#">Ecommerce</a>
 
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
@@ -64,432 +24,136 @@
 
         <div id="navMenu" class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto ms-4 gap-3">
-                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-
-                <li class="nav-item ">
-                    <a class="nav-link" href="/shop">Shop</a>
-                </li>
-
+                <li class="nav-item"><a class="nav-link" href="/shop">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
                 <li class="nav-item"><a class="nav-link" href="/blogs">Blogs</a></li>
                 <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
                 <li class="nav-item"><a class="nav-link" href="/sitemap">Site Map</a></li>
             </ul>
 
-            <!-- Search -->
             <form class="d-flex me-3">
                 <input class="form-control" type="search" placeholder="Search products">
             </form>
 
-            <a href="/cart" class="me-3"><i class="fa-solid fa-bag-shopping fs-5"></i></a>
-            <% if (typeof user !== 'undefined' && user) { %>
-              <a href="/profile"><i class="fa-regular fa-user fs-5"></i></a>
-            <% } else { %>
-              <a href="/login"><i class="fa-regular fa-user fs-5"></i></a>
-            <% } %>
+            <a href="/cart" class="me-3 text-dark">
+              <i class="fa-solid fa-bag-shopping fs-5"></i>
+            </a>
 
+            <div class="dropdown">
+              <a href="#" class="text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-regular fa-user fs-5"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <% if (!user) { %>
+                  <li><a class="dropdown-item" href="/login">Login</a></li>
+                  <li><a class="dropdown-item" href="/register">Register</a></li>
+                <% } else { %>
+                  <li><a class="dropdown-item" href="/account">My Account</a></li>
+                  <% if (user.role === 'admin') { %>
+                  <li><a class="dropdown-item" href="/admin">Admin Dashboard</a></li>
+                  <% } %>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+                <% } %>
+              </ul>
+            </div>
         </div>
     </div>
 </nav>
 
+<!-- REGISTER FORM -->
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h4 class="fw-bold text-center mb-4">Create Account</h4>
 
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="alert alert-danger"><%= error %></div>
+                    <% } %>
 
-<!-- Register Form -->
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-  <div class="card shadow-sm p-4" style="width: 450px;">
-    <h3 class="text-center mb-4">Sign up</h3>
-    <% if (typeof errors !== 'undefined' && errors && errors.length > 0) { %>
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <% errors.forEach(error => { %>
-          <div><%= error %></div>
-        <% }); %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    <% } %>
-    <form id="registerForm" method="POST" action="/register" novalidate>
-      <div class="mb-3">
-        <label for="fullname" class="form-label">Full Name <span class="text-danger">*</span></label>
-        <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter your full name" value="<%= (typeof formData !== 'undefined' && formData && formData.fullname) ? formData.fullname : '' %>" required>
-        <div class="invalid-feedback"></div>
-      </div>
-      <div class="mb-3">
-        <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
-        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" value="<%= (typeof formData !== 'undefined' && formData && formData.username) ? formData.username : '' %>" required>
-        <div class="invalid-feedback"></div>
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" value="<%= (typeof formData !== 'undefined' && formData && formData.email) ? formData.email : '' %>" required>
-        <div class="invalid-feedback"></div>
-      </div>
-      <div class="mb-3">
-        <label for="description" class="form-label">Short Description</label>
-        <textarea class="form-control" id="description" name="description" rows="2" placeholder="Tell us about yourself (optional)"><%= (typeof formData !== 'undefined' && formData && formData.description) ? formData.description : '' %></textarea>
-        <small class="char-counter text-muted">0/200 characters</small>
-        <div class="invalid-feedback"></div>
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-        <div class="input-group">
-          <input type="password" class="form-control" id="password" name="password" placeholder="Enter password (min 6 characters)" required>
-          <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-            <i class="fa-regular fa-eye"></i>
-          </button>
-        </div>
-        <div class="password-strength" id="passwordStrength"></div>
-        <div class="invalid-feedback"></div>
-      </div>
-      <div class="mb-3">
-        <label for="confirmPassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
-        <div class="input-group">
-          <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
-          <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
-            <i class="fa-regular fa-eye"></i>
-          </button>
-        </div>
-        <div class="invalid-feedback"></div>
-      </div>
-      <button type="submit" class="btn btn-dark w-100 mb-3" id="submitBtn">Create account</button>
-      <div class="text-center">
-        <a href="/login">Already have an account? Login</a>
-      </div>
-    </form>
-  </div>
-</div>
+                    <form action="/register" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
+                        </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">Email address</label>
+                            <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                        </div>
 
-<!-- FOOTER -->
-<footer class="bg-light pt-5 mt-5">
-  <div class="container">
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" placeholder="Create a password" required minlength="6">
+                        </div>
 
-    <div class="row">
-      <!-- Column 1: Logo + Social -->
-      <div class="col-md-3 mb-4">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <div class="p-2 border rounded"><i class="fa-solid fa-store fs-3"></i></div>
-          <span class="fw-bold fs-5">Ecommerce</span>
-        </div>
-        <p class="text-muted small">DevCut is a YouTube channel for practical project-based learning.</p>
-        <div class="d-flex gap-2 mt-2">
-            <i class="fab fa-github fs-5"></i>
-            <i class="fab fa-instagram fs-5"></i>
-            <i class="fab fa-youtube fs-5"></i>
-        </div>
-      </div>
-        
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" name="confirmPassword" class="form-control" placeholder="Confirm your password" required minlength="6">
+                        </div>
 
-      <!-- Column 2: Shop -->
-      <div class="col-md-2 mb-4">
-        <h6 class="text-muted">SHOP</h6>
-        <ul class="list-unstyled mt-2">
-          <li><a href="/profile" class="text-decoration-none text-dark">My Account</a></li>
-          <li><a href="/checkout" class="text-decoration-none text-dark">Checkout</a></li>
-          <li><a href="/cart" class="text-decoration-none text-dark">Cart</a></li>
-        </ul>
-      </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" name="terms" class="form-check-input" id="terms" required>
+                            <label class="form-check-label" for="terms">I agree to the <a href="/terms" class="text-dark">Terms of Service</a></label>
+                        </div>
 
-      <!-- Column 3: Company -->
-      <div class="col-md-2 mb-4">
-        <h6 class="text-muted">COMPANY</h6>
-        <ul class="list-unstyled mt-2">
-          <li><a href="#" class="text-decoration-none text-dark">About us</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Contact</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Careers</a></li>
-        </ul>
-      </div>
+                        <button type="submit" class="btn btn-dark w-100">Register</button>
+                    </form>
 
-      <!-- Column 4: Support -->
-      <div class="col-md-2 mb-4">
-        <h6 class="text-muted">SUPPORT</h6>
-        <ul class="list-unstyled mt-2">
-          <li><a href="#" class="text-decoration-none text-dark">FAQ</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Terms of use</a></li>
-          <li><a href="#" class="text-decoration-none text-dark">Privacy Policy</a></li>
-        </ul>
-      </div>
-
-      <!-- Column 5: Payments -->
-        <div class="col-md-3 mb-4">
-            <h6 class="text-muted">ACCEPTED PAYMENTS</h6>
-            <div class="d-flex gap-2 mt-2">
-                <i class="fa-brands fa-cc-visa fs-3"></i>
-                <i class="fa-brands fa-cc-mastercard fs-3"></i>
-                <i class="fa-brands fa-cc-amex fs-3"></i>
-                <i class="fa-brands fa-cc-paypal fs-3"></i>
+                    <div class="text-center mt-4">
+                        <p class="text-muted">Already have an account? <a href="/login" class="text-dark">Login</a></p>
+                    </div>
+                </div>
             </div>
         </div>
-      
     </div>
+</div>
 
-    
-
+<!-- FOOTER -->
+<footer class="bg-light pt-5 border-top mt-auto">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold">Support</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">FAQ</li>
+          <li class="mb-2">Terms of use</li>
+          <li class="mb-2">Privacy Policy</li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold">Company</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">About Us</li>
+          <li class="mb-2">Contact</li>
+          <li class="mb-2">Careers</li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold">Shop</h5>
+        <ul class="list-unstyled small text-muted">
+          <li class="mb-2">My Account</li>
+          <li class="mb-2">Checkout</li>
+          <li class="mb-2">Cart</li>
+        </ul>
+      </div>
+      <div class="col-md-3 mb-4">
+        <h5 class="fw-bold">Stay Updated</h5>
+        <form class="d-flex">
+          <input type="email" class="form-control form-control-sm" placeholder="Enter Email">
+          <button class="btn btn-dark btn-sm ms-2">Subscribe</button>
+        </form>
+      </div>
+    </div>
     <hr class="mt-4">
-
-    <!-- Copyright -->
     <div class="text-center pb-3 small text-muted">
-      © 2025 DevCut. All rights reserved.
+      © 2023 DevCut. All rights reserved.
     </div>
   </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-  // --- Registration Form Live Validation ---
-  document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('registerForm');
-    if (!form) return;
-
-    const fullnameInput = document.getElementById('fullname');
-    const usernameInput = document.getElementById('username');
-    const emailInput = document.getElementById('email');
-    const descriptionInput = document.getElementById('description');
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
-    const passwordStrengthBar = document.getElementById('passwordStrength');
-    const charCounter = document.querySelector('.char-counter');
-
-    // Toggle password visibility
-    document.getElementById('togglePassword').addEventListener('click', function() {
-      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-      passwordInput.setAttribute('type', type);
-      this.querySelector('i').classList.toggle('fa-eye');
-      this.querySelector('i').classList.toggle('fa-eye-slash');
-    });
-
-    document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
-      const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-      confirmPasswordInput.setAttribute('type', type);
-      this.querySelector('i').classList.toggle('fa-eye');
-      this.querySelector('i').classList.toggle('fa-eye-slash');
-    });
-
-    // Helper: show error state
-    function showError(input, message) {
-      input.classList.add('is-invalid');
-      const container = input.closest('.mb-3');
-      const err = container.querySelector('.invalid-feedback');
-      if (err) err.textContent = message;
-    }
-
-    // Helper: clear error state
-    function clearError(input) {
-      input.classList.remove('is-invalid');
-      const container = input.closest('.mb-3');
-      const err = container.querySelector('.invalid-feedback');
-      if (err) err.textContent = '';
-    }
-
-    // Validation: Full Name
-    function validateFullname() {
-      const value = fullnameInput.value.trim();
-      
-      if (!value) {
-        showError(fullnameInput, 'Full name is required.');
-        return false;
-      }
-      if (value.length < 2) {
-        showError(fullnameInput, 'Full name must be at least 2 characters.');
-        return false;
-      }
-      if (!/^[a-zA-Z\s'-]+$/.test(value)) {
-        showError(fullnameInput, 'Full name can only contain letters, spaces, hyphens, and apostrophes.');
-        return false;
-      }
-      if (value.length > 50) {
-        showError(fullnameInput, 'Full name must be less than 50 characters.');
-        return false;
-      }
-      
-      clearError(fullnameInput);
-      return true;
-    }
-
-    // Validation: Username
-    function validateUsername() {
-      const value = usernameInput.value.trim();
-      
-      if (!value) {
-        showError(usernameInput, 'Username is required.');
-        return false;
-      }
-      if (value.length < 3) {
-        showError(usernameInput, 'Username must be at least 3 characters.');
-        return false;
-      }
-      if (value.length > 20) {
-        showError(usernameInput, 'Username must be less than 20 characters.');
-        return false;
-      }
-      if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(value)) {
-        showError(usernameInput, 'Username must start with a letter and can only contain letters, numbers, and underscores.');
-        return false;
-      }
-      
-      clearError(usernameInput);
-      return true;
-    }
-
-    // Validation: Email
-    function validateEmail() {
-      const value = emailInput.value.trim();
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-      
-      if (!value) {
-        showError(emailInput, 'Email address is required.');
-        return false;
-      }
-      if (!emailRegex.test(value)) {
-        showError(emailInput, 'Please enter a valid email address (e.g., user@example.com).');
-        return false;
-      }
-      
-      clearError(emailInput);
-      return true;
-    }
-
-    // Validation: Description (optional)
-    function validateDescription() {
-      const value = descriptionInput.value;
-      const length = value.length;
-      
-      // Update character counter
-      charCounter.textContent = length + '/200 characters';
-      
-      if (length > 180) {
-        charCounter.classList.remove('text-muted', 'text-warning');
-        charCounter.classList.add('text-danger');
-      } else if (length > 150) {
-        charCounter.classList.remove('text-muted', 'text-danger');
-        charCounter.classList.add('text-warning');
-      } else {
-        charCounter.classList.remove('text-warning', 'text-danger');
-        charCounter.classList.add('text-muted');
-      }
-      
-      if (length > 200) {
-        showError(descriptionInput, 'Description must be less than 200 characters.');
-        return false;
-      }
-      
-      clearError(descriptionInput);
-      return true;
-    }
-
-    // Password strength checker
-    function checkPasswordStrength(password) {
-      let strength = 0;
-      
-      if (password.length >= 6) strength++;
-      if (password.length >= 8) strength++;
-      if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-      if (/[0-9]/.test(password)) strength++;
-      if (/[^a-zA-Z0-9]/.test(password)) strength++;
-      
-      return strength;
-    }
-
-    // Validation: Password
-    function validatePassword() {
-      const value = passwordInput.value;
-      
-      // Update strength bar
-      passwordStrengthBar.className = 'password-strength';
-      
-      if (!value) {
-        showError(passwordInput, 'Password is required.');
-        passwordStrengthBar.className = 'password-strength';
-        return false;
-      }
-      
-      if (value.length < 6) {
-        showError(passwordInput, 'Password must be at least 6 characters.');
-        passwordStrengthBar.classList.add('strength-weak');
-        return false;
-      }
-      
-      const strength = checkPasswordStrength(value);
-      
-      if (strength <= 2) {
-        passwordStrengthBar.classList.add('strength-weak');
-      } else if (strength <= 3) {
-        passwordStrengthBar.classList.add('strength-medium');
-      } else {
-        passwordStrengthBar.classList.add('strength-strong');
-      }
-      
-      clearError(passwordInput);
-      
-      // Re-validate confirm password if it has a value
-      if (confirmPasswordInput.value) {
-        validateConfirmPassword();
-      }
-      
-      return true;
-    }
-
-    // Validation: Confirm Password
-    function validateConfirmPassword() {
-      const value = confirmPasswordInput.value;
-      const passwordValue = passwordInput.value;
-      
-      if (!value) {
-        showError(confirmPasswordInput, 'Please confirm your password.');
-        return false;
-      }
-      if (value !== passwordValue) {
-        showError(confirmPasswordInput, 'Passwords do not match.');
-        return false;
-      }
-      
-      clearError(confirmPasswordInput);
-      return true;
-    }
-
-    // Add event listeners for live validation
-    fullnameInput.addEventListener('input', validateFullname);
-    fullnameInput.addEventListener('blur', validateFullname);
-
-    usernameInput.addEventListener('input', validateUsername);
-    usernameInput.addEventListener('blur', validateUsername);
-
-    emailInput.addEventListener('input', validateEmail);
-    emailInput.addEventListener('blur', validateEmail);
-
-    descriptionInput.addEventListener('input', validateDescription);
-
-    passwordInput.addEventListener('input', validatePassword);
-    passwordInput.addEventListener('blur', validatePassword);
-
-    confirmPasswordInput.addEventListener('input', validateConfirmPassword);
-    confirmPasswordInput.addEventListener('blur', validateConfirmPassword);
-
-    // Form submission validation
-    form.addEventListener('submit', function (e) {
-      const isFullnameValid = validateFullname();
-      const isUsernameValid = validateUsername();
-      const isEmailValid = validateEmail();
-      const isDescriptionValid = validateDescription();
-      const isPasswordValid = validatePassword();
-      const isConfirmPasswordValid = validateConfirmPassword();
-
-      if (!isFullnameValid || !isUsernameValid || !isEmailValid || 
-          !isDescriptionValid || !isPasswordValid || !isConfirmPasswordValid) {
-        e.preventDefault();
-        
-        // Scroll to first error
-        const firstError = form.querySelector('.is-invalid');
-        if (firstError) {
-          firstError.focus();
-          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }
-    });
-
-    // Initialize character counter on page load
-    if (descriptionInput.value) {
-      validateDescription();
-    }
-  });
-</script>
 </body>
 </html>
