@@ -296,6 +296,8 @@ function validateReviewPayload(body, { partial = false } = {}) {
   const name = typeof body.name === 'string' ? body.name.trim() : (typeof body.username === 'string' ? body.username.trim() : '');
   const date = typeof body.date === 'string' ? body.date.trim() : '';
   const rating = normalizeRating(body.rating);
+  const size = typeof body.size === 'string' ? body.size.trim() : '';
+  const thumbnail = typeof body.thumbnail === 'string' ? body.thumbnail.trim() : '';
   const mergedContent = content || description;
   if (!partial || 'title' in body) {
     if (!title) errors.push('Title is required.');
@@ -328,6 +330,10 @@ function validateReviewPayload(body, { partial = false } = {}) {
       }
     }
   }
+  if (!partial || 'size' in body) {
+    if (!size) errors.push('Please pick a size');
+  }
+
   const normalized = {
     title,
     content: mergedContent,
@@ -335,11 +341,12 @@ function validateReviewPayload(body, { partial = false } = {}) {
     name,
     date,
     rating: Number.isFinite(rating) ? rating : undefined,
-    verified: Boolean(body.verified),
-    thumbnail: typeof body.thumbnail === 'string' ? body.thumbnail.trim() : '',
-    color: typeof body.color === 'string' ? body.color.trim() : '',
-    size: typeof body.size === 'string' ? body.size.trim() : ''
+    size
   };
+
+  // Optional image path/url. If omitted, no thumbnail property is stored.
+  if (thumbnail) normalized.thumbnail = thumbnail;
+
   return { ok: errors.length === 0, errors, normalized };
 }
 
@@ -348,6 +355,13 @@ function requireLogin(req, res, next) {
   if (!req.session.user) {
     req.session.returnTo = req.originalUrl;
     return res.redirect('/login');
+  }
+  next();
+}
+
+function requireLoginApi(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Authentication required.' });
   }
   next();
 }
@@ -1588,8 +1602,8 @@ app.post('/add-to-cart', requireLogin, (req, res) => {
             userId: req.session.user.id, // user's session ID
             product: productToAdd,       // save the full product info
             quantity: quantity,          // save the specific quantity
-            color: color,                // save the selected color
-            size: size                   // save the selected size
+            color: req.body.color || productToAdd.color || 'Default', 
+            size: size
         });
 
         console.log("Current Cart:", cartItems); // Optional: Check your terminal to see it working
@@ -1638,16 +1652,14 @@ app.get('/api/reviews/:id', async (req, res) => {
 });
 
 // 2) Dynamic creation of data (requires login)
-app.post('/api/reviews', requireLogin, async (req, res) => {
+app.post('/api/reviews', requireLoginApi, async (req, res) => {
   const { ok, errors, normalized } = validateReviewPayload(req.body, { partial: false });
   if (!ok) return res.status(400).json({ errors });
   const reviews = await readReviews();
   const maxId = reviews.reduce((m, r) => Math.max(m, Number(r.id) || 0), 0);
   const created = {
     id: maxId + 1,
-    ...normalized,
-    verified: false,
-    thumbnail: normalized.thumbnail || 'img/Nike_Air_Force_High.avif'
+    ...normalized
   };
   const next = [created, ...reviews];
   await writeReviews(next);
@@ -1655,7 +1667,7 @@ app.post('/api/reviews', requireLogin, async (req, res) => {
 });
 
 // 3) Dynamic editing/updating (requires login)
-app.put('/api/reviews/:id', requireLogin, async (req, res) => {
+app.put('/api/reviews/:id', requireLoginApi, async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) return res.status(400).json({ error: 'Invalid review id.' });
   const { ok, errors, normalized } = validateReviewPayload(req.body, { partial: true });
@@ -1671,6 +1683,17 @@ app.put('/api/reviews/:id', requireLogin, async (req, res) => {
   next[idx] = updated;
   await writeReviews(next);
   res.json(updated);
+});
+
+// 4) Dynamic deletion (requires login)
+app.delete('/api/reviews/:id', requireLoginApi, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) return res.status(400).json({ error: 'Invalid review id.' });
+  const reviews = await readReviews();
+  const next = reviews.filter(r => Number(r.id) !== id);
+  if (next.length === reviews.length) return res.status(404).json({ error: 'Review not found.' });
+  await writeReviews(next);
+  res.json({ success: true });
 });
 
 // forum API routes

@@ -1,5 +1,15 @@
 [
   {
+    "id": 4,
+    "title": "New shoes",
+    "content": "These pairs feels great to the touch",
+    "summary": "These pairs feels great to the touch",
+    "name": "Amee",
+    "date": "2026-01-10",
+    "rating": 3,
+    "size": "41"
+  },
+  {
     "id": 1,
     "title": "Great Everyday Shoe",
     "summary": "Great product! Really comfortable and fits well.",
@@ -7,9 +17,7 @@
     "name": "John Doe",
     "date": "2022-06-07",
     "rating": 4,
-    "verified": true,
     "thumbnail": "img/Review-1.jpg",
-    "color": "White",
     "size": "41"
   },
   {
@@ -20,9 +28,7 @@
     "name": "Jane Doe",
     "date": "2022-06-05",
     "rating": 5,
-    "verified": true,
     "thumbnail": "img/Review-2.jpg",
-    "color": "Mint Green",
     "size": "40"
   },
   {
@@ -33,9 +39,7 @@
     "name": "Jean D'Arc",
     "date": "2023-01-19",
     "rating": 4,
-    "verified": true,
     "thumbnail": "img/Review-3.jpg",
-    "color": "Orange - Black Satin",
     "size": "42"
   }
 ]

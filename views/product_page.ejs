@@ -82,18 +82,11 @@
             <span class="text-muted text-decoration-line-through ms-2">$269.99</span>
             <span class="badge bg-success ms-2">25% OFF</span>
           </div>
-          <!-- <form class="row g-3 mb-4">
-            <div class="col-6">
-              <label class="form-label">Color</label>
-              <select class="form-select">
-                <option>Grey</option>
-                <option>Blue</option>
-                <option>Black</option>
-              </select>
-            </div>
+          <form class="row g-3 mb-4" action="/add-to-cart" method="POST">
+            <input type="hidden" name="productId" value="1"> 
             <div class="col-6">
               <label class="form-label">Size</label>
-              <select class="form-select">
+              <select class="form-select" name="size">
                 <option>39</option>
                 <option>40</option>
                 <option>41</option>
@@ -102,42 +95,14 @@
             </div>
             <div class="col-6">
               <label class="form-label">Quantity</label>
-              <input type="number" class="form-control" value="1" min="1">
+              <input type="number" class="form-control" name="quantity" value="1" min="1">
             </div>
             <div class="col-12">
-              <button type="button" class="btn btn-dark w-100">
+              <button type="submit" class="btn btn-dark w-100">
                 <i class="fa-solid fa-cart-plus me-2"></i>Add to Cart
               </button>
-            </div> 
-          </form> -->
-          <form class="row g-3 mb-4" action="/add-to-cart" method="POST">
-  
-  <input type="hidden" name="productId" value="1"> 
-
-  <div class="col-6">
-    <label class="form-label">Color</label>
-    <select class="form-select" name="color"> <option>Grey</option>
-      <option>Blue</option>
-      <option>Black</option>
-    </select>
-  </div>
-  <div class="col-6">
-    <label class="form-label">Size</label>
-    <select class="form-select" name="size"> <option>39</option>
-      <option>40</option>
-      <option>41</option>
-      <option>42</option>
-    </select>
-  </div>
-  <div class="col-6">
-    <label class="form-label">Quantity</label>
-    <input type="number" class="form-control" name="quantity" value="1" min="1"> </div>
-  <div class="col-12">
-    <button type="submit" class="btn btn-dark w-100">
-      <i class="fa-solid fa-cart-plus me-2"></i>Add to Cart
-    </button>
-  </div> 
-</form>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -163,16 +128,21 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4 class="mb-0">All Reviews <span class="text-muted">(451)</span></h4>
           <div>
-            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm" aria-expanded="false" aria-controls="reviewForm">
-              Write a Review
-            </button>
+            <% if (user) { %>
+              <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm" aria-expanded="false" aria-controls="reviewForm">
+                Write a Review
+              </button>
+            <% } else { %>
+              <a class="btn btn-outline-primary btn-sm" href="/login">Log in to write a review</a>
+            <% } %>
           </div>
         </div>
 
         <!-- Write a Review Form (collapsible) -->
         <div class="collapse mb-4" id="reviewForm">
           <div class="card card-body">
-            <form>
+            <% if (user) { %>
+            <form id="reviewSubmitForm">
               <div class="mb-3">
                 <label class="form-label">Review Title</label>
                 <input type="text" class="form-control" name="title" placeholder="Enter review title">
@@ -185,16 +155,26 @@
                 <label class="form-label">Star Rating</label>
                 <select class="form-select" name="rating" required>
                   <option value="" selected disabled hidden>Select rating</option>
-                  <option>5 Stars</option>
-                  <option>4 Stars</option>
-                  <option>3 Stars</option>
-                  <option>2 Stars</option>
-                  <option>1 Star</option>
+                  <option value="5">5 Stars</option>
+                  <option value="4">4 Stars</option>
+                  <option value="3">3 Stars</option>
+                  <option value="2">2 Stars</option>
+                  <option value="1">1 Star</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Size</label>
+                <select class="form-select" name="size" required>
+                  <option value="" selected disabled hidden>Select size</option>
+                  <option value="39">39</option>
+                  <option value="40">40</option>
+                  <option value="41">41</option>
+                  <option value="42">42</option>
                 </select>
               </div>
               <div class="mb-3">
                 <label class="form-label">Your Name</label>
-                <input type="text" class="form-control" name="username" placeholder="Enter your name">
+                <input type="text" class="form-control" name="name" placeholder="Enter your name">
               </div>
               <div class="mb-3">
                 <label class="form-label">Date Added</label>
@@ -206,6 +186,9 @@
               </div>
               <button type="submit" class="btn btn-dark">Submit Review</button>
             </form>
+            <% } else { %>
+              <div class="text-muted">Please <a href="/login">log in</a> to write a review.</div>
+            <% } %>
           </div>
         </div>
 
@@ -404,8 +387,72 @@
   <script id="reviewsData" type="application/json"><%- JSON.stringify(reviews || []) %></script>
 
   <script>
+  // --- Review Submission Handler ---
+  document.addEventListener('DOMContentLoaded', function() {
+    const reviewForm = document.getElementById('reviewSubmitForm');
+    if (!reviewForm) return;
+    reviewForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      if (typeof window.validateReviewForm === 'function') {
+        const ok = window.validateReviewForm();
+        if (!ok) return;
+      }
+
+      const formData = new FormData(reviewForm);
+      const data = Object.fromEntries(formData.entries());
+      // Normalize rating to number
+      if (data.rating) data.rating = parseInt(data.rating, 10);
+      // Remove image for now (not supported in backend)
+      delete data.image;
+
+      try {
+        const res = await fetch('/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (res.status === 401) {
+          window.location.href = '/login';
+          return;
+        }
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          alert('Error: ' + (err.errors ? err.errors.join('\n') : err.error || 'Unknown error'));
+          return;
+        }
+
+        // Success: reload reviews from backend
+        await loadAndRenderReviews();
+        reviewForm.reset();
+        alert('Review submitted successfully!');
+        // Optionally collapse the form
+        const collapse = document.getElementById('reviewForm');
+        if (collapse && typeof bootstrap !== 'undefined') {
+          const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapse);
+          bsCollapse.hide();
+        }
+      } catch (err) {
+        alert('Error submitting review.');
+      }
+    });
+  });
+
+  // --- Load and Render Reviews from API ---
+  async function loadAndRenderReviews() {
+    try {
+      const res = await fetch('/api/reviews');
+      const reviews = await res.json();
+      window.reviews = reviews;
+      updateReviewList();
+    } catch (err) {
+      // fallback: do nothing
+    }
+  }
   // --- Review Data (from server) ---
-  const reviews = JSON.parse(document.getElementById('reviewsData')?.textContent || '[]');
+  window.reviews = JSON.parse(document.getElementById('reviewsData')?.textContent || '[]');
 
   // --- Render Functions ---
   function renderStars(rating) {
@@ -431,14 +478,14 @@
       container.innerHTML += `
         <div class="col-md-6 col-lg-4">
           <div class="card h-100 review-preview" data-id="${r.id}" style="cursor:pointer;">
-            <img src="${r.thumbnail}" class="card-img-top" alt="Review Thumbnail" style="height:180px;object-fit:cover;">
+            ${r.thumbnail ? `<img src="${r.thumbnail}" class="card-img-top" alt="Review Thumbnail" style="height:180px;object-fit:cover;">` : ''}
             <div class="card-body">
               <div class="mb-2">${renderStars(r.rating)}</div>
-              <h6 class="fw-bold mb-1">${r.name} ${r.verified ? '<span class="badge bg-success ms-2">Verified</span>' : ''}</h6>
+              <h6 class="fw-bold mb-1">${r.name}</h6>
               <p class="text-muted small mb-1">${new Date(r.date).toLocaleDateString()}</p>
               <h6 class="fw-bold mb-1">${r.title}</h6>
               <p class="mb-0">${r.summary}</p>
-              <p class="mb-0 text-muted small">Color: <span class="fw-semibold">${r.color}</span> | Size: <span class="fw-semibold">${r.size}</span></p>
+              ${r.size ? `<p class="mb-0 text-muted small">Size: <span class="fw-semibold">${r.size}</span></p>` : ''}
             </div>
           </div>
         </div>
@@ -454,22 +501,24 @@
   }
 
   function showReviewDetail(id) {
-    const r = reviews.find(rv => rv.id === id);
+    const r = (window.reviews || []).find(rv => rv.id === id);
     if (!r) return;
     const detail = document.getElementById('reviewDetail');
     detail.innerHTML = `
       <div class="card mb-4">
         <div class="row g-0">
-          <div class="col-md-4">
-            <img src="${r.thumbnail}" class="img-fluid rounded-start" alt="Review Thumbnail">
-          </div>
+          ${r.thumbnail ? `
+            <div class="col-md-4">
+              <img src="${r.thumbnail}" class="img-fluid rounded-start" alt="Review Thumbnail">
+            </div>
+          ` : ''}
           <div class="col-md-8">
             <div class="card-body">
               <div class="mb-2">${renderStars(r.rating)}</div>
               <h5 class="card-title">${r.title}</h5>
-              <h6 class="fw-bold mb-1">${r.name} ${r.verified ? '<span class="badge bg-success ms-2">Verified</span>' : ''}</h6>
+              <h6 class="fw-bold mb-1">${r.name}</h6>
               <p class="text-muted small mb-1">${new Date(r.date).toLocaleDateString()}</p>
-              <p class="mb-1 text-muted small">Color: <span class="fw-semibold">${r.color}</span> | Size: <span class="fw-semibold">${r.size}</span></p>
+              ${r.size ? `<p class="mb-1 text-muted small">Size: <span class="fw-semibold">${r.size}</span></p>` : ''}
               <p class="card-text">${r.content}</p>
               <button class="btn btn-outline-secondary mt-2" id="backToList">Back to List</button>
             </div>
@@ -487,7 +536,7 @@
 
   // --- Sort, Filter, Search ---
   function getFilteredSortedReviews() {
-    let list = [...reviews];
+    let list = [...(window.reviews || [])];
     // Filter
     const filterVal = document.getElementById('reviewFilter').value;
     if (filterVal !== 'all') {
@@ -526,14 +575,15 @@
     document.getElementById('reviewSort').addEventListener('change', updateReviewList);
     document.getElementById('reviewFilter').addEventListener('change', updateReviewList);
     document.getElementById('reviewSearch').addEventListener('input', updateReviewList);
+    // After page load, always fetch latest reviews from backend
+    loadAndRenderReviews();
   });
   </script>
 
   <script>
   // Comprehensive validation for the review form
   document.addEventListener('DOMContentLoaded', function() {
-    // Find the review form (inside the collapse)
-    const reviewForm = document.querySelector('#reviewForm form');
+    const reviewForm = document.getElementById('reviewSubmitForm');
     if (!reviewForm) return;
 
     // Helper: create or get error message element
@@ -562,6 +612,9 @@
       }
       if (input.tagName === 'SELECT' && name === 'star rating') {
         if (!value) { valid = false; msg = 'Please select a rating.'; }
+      }
+      if (input.tagName === 'SELECT' && name === 'size') {
+        if (!value) { valid = false; msg = 'Please pick a size'; }
       }
       if (input.type === 'text' && name === 'your name') {
         if (!value) { valid = false; msg = 'Name is required.'; }
@@ -595,22 +648,16 @@
       return valid;
     }
 
-    // Validate all fields on submit
-    reviewForm.addEventListener('submit', function(e) {
+    // Expose full-form validation for the submit handler
+    window.validateReviewForm = function() {
       let allValid = true;
       Array.from(reviewForm.elements).forEach(el => {
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
           if (!validateField(el)) allValid = false;
         }
       });
-      if (!allValid) {
-        e.preventDefault();
-      } else {
-        alert('Review submitted successfully!');
-        // Here you would handle the review data (e.g., save, display, etc.)
-        e.preventDefault(); // Remove this if you want real submission
-      }
-    });
+      return allValid;
+    };
 
     // Live validation on input/change/blur
     Array.from(reviewForm.elements).forEach(el => {

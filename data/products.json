@@ -5,8 +5,8 @@
         "price": 199.99, 
         "image": "/img/Nike_Air_Force_High.avif", 
         "stock": "In Stock",
-        "color": "green",  
-        "sizes": [39, 40, 42]
+        "color": "black",  
+        "sizes": [39, 40, 41, 42]
     },
     { 
         "id": 2, 

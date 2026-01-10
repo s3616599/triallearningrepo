@@ -105,20 +105,24 @@
    <% if (item.color) { %>
     <div class="d-flex align-items-center gap-1 small text-muted">
         
-        <% if (item.color === 'green') { %>
-            <span class="d-inline-block border rounded-circle" 
-                  style="width: 12px; height: 12px; background-color: #4CAF50;"></span>
+        <% if (item.color === 'black') { %>
+    <span class="d-inline-block border rounded-circle" 
+          style="width: 12px; height: 12px; background-color: #212529;"></span>
 
-        <% } else if (item.color === 'blue') { %>
-            <span class="d-inline-block border rounded-circle" 
-                  style="width: 12px; height: 12px; background-color: #0d6efd;"></span>
+<% } else if (item.color === 'gray') { %>
+    <span class="d-inline-block border rounded-circle" 
+          style="width: 12px; height: 12px; background-color: #808080;"></span>
 
-        <% } else { %>
-            <span class="d-inline-block border rounded-circle" 
-                  style="width: 12px; height: 12px; background-color: #808080;"></span>
-        <% } %>
+<% } else if (item.color === 'blue') { %>
+    <span class="d-inline-block border rounded-circle" 
+          style="width: 12px; height: 12px; background-color: #0d6efd;"></span>
 
-        <span class="text-capitalize"><%= item.color %></span>
+<% } else { %>
+    <span class="d-inline-block border rounded-circle" 
+          style="width: 12px; height: 12px; background-color: #ccc;"></span>
+<% } %>
+
+<span class="text-capitalize small ms-1"><%= item.color %></span>
     </div>
 <% } %>
 
