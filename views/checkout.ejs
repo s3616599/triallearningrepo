@@ -78,7 +78,7 @@
 
     <div class="row">
         <div class="col-lg-8">
-            <form action="/checkout" method="POST">
+            <form action="/place-order" method="POST">
                 <!-- Shipping Information -->
                 <div class="card mb-4">
                     <div class="card-header fw-bold">Shipping Information</div>
@@ -147,6 +147,9 @@
                     </div>
                 </div>
 
+                <!-- Hidden field for fullname (used by place-order route) -->
+                <input type="hidden" name="fullname" value="<%= user ? user.fullname : '' %>">
+
                 <button type="submit" class="btn btn-dark btn-lg w-100">Place Order</button>
             </form>
         </div>
@@ -155,19 +158,25 @@
             <div class="card">
                 <div class="card-header fw-bold">Order Summary</div>
                 <div class="card-body">
-                    <% if (cart && cart.length > 0) { %>
-                        <% let subtotal = 0; %>
-                        <% cart.forEach(function(item) { %>
-                            <% subtotal += item.price * item.quantity; %>
+                    <% if (cartItems && cartItems.length > 0) { %>
+                        <% cartItems.forEach(function(item) { %>
                             <div class="d-flex justify-content-between mb-2">
-                                <span><%= item.name %> x <%= item.quantity %></span>
-                                <span>$<%= (item.price * item.quantity).toFixed(2) %></span>
+                                <span><%= item.product.name %> x <%= item.quantity %></span>
+                                <span>$<%= (item.product.price * item.quantity).toFixed(2) %></span>
+                            </div>
+                            <div class="small text-muted mb-2">
+                                <% if (item.size) { %>Size: <%= item.size %><% } %>
+                                <% if (item.color) { %> | Color: <%= item.color %><% } %>
                             </div>
                         <% }); %>
                         <hr>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Subtotal</span>
-                            <span>$<%= subtotal.toFixed(2) %></span>
+                            <span>$<%= subtotal %></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tax (10%)</span>
+                            <span>$<%= tax %></span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Shipping</span>
@@ -176,10 +185,11 @@
                         <hr>
                         <div class="d-flex justify-content-between fw-bold">
                             <span>Total</span>
-                            <span>$<%= subtotal.toFixed(2) %></span>
+                            <span>$<%= total %></span>
                         </div>
                     <% } else { %>
                         <p class="text-muted">Your cart is empty</p>
+                        <a href="/shop" class="btn btn-outline-dark w-100">Continue Shopping</a>
                     <% } %>
                 </div>
             </div>
