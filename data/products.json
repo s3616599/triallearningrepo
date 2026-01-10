@@ -11,7 +11,7 @@
     { 
         "id": 2, 
         "name": "Nike Air Max 1", 
-        "price": 50.00, 
+        "price": 199.99, 
         "image": "/img/Nike_Air_Max_1_Black.avif", 
         "stock": "In Stock",
         "color": "gray",
@@ -20,7 +20,7 @@
     { 
         "id": 3, 
         "name": "Nike Dunk High", 
-        "price": 80.00, 
+        "price": 219.99, 
         "image": "/img/Nike_Dunk_High_By_You.avif", 
         "stock": "In Stock",
         "color": "blue",
