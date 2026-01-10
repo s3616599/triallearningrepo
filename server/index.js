@@ -507,7 +507,7 @@ app.post('/blogs/delete/:id', requireLogin, async (req, res) => {
 
 // Register page
 app.get('/register', (req, res) => {
-  res.render('register');
+  res.render('register', { user: req.session.user });
 });
 
 // Register POST - Create new user

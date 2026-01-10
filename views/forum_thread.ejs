@@ -196,16 +196,6 @@
                         <span>Created</span>
                         <span><%= new Date(thread.created).toLocaleDateString() %></span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Replies</span>
-                        <span class="badge bg-primary"><%= thread.comments ? thread.comments.length : 0 %></span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Status</span>
-                        <span class="badge <%= thread.archived ? 'bg-secondary' : 'bg-success' %>">
-                            <%= thread.archived ? 'Archived' : 'Active' %>
-                        </span>
-                    </li>
                 </ul>
             </div>
 
