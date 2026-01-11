@@ -334,17 +334,69 @@ app.get('/test', (req, res) => {
   res.render('test');
 });
 
-app.get('/product', async (req, res) => {
+async function renderProductPage(req, res) {
   try {
-    const reviews = await Review.find().lean();
-    // Transform MongoDB fields to frontend expected fields
+    const requestedId = req.params.id || req.query.id;
+
+    let productDoc = null;
+    if (requestedId && mongoose.Types.ObjectId.isValid(requestedId)) {
+      productDoc = await Product.findById(requestedId).lean();
+    }
+    if (!productDoc) {
+      productDoc = await Product.findOne({}).lean();
+    }
+    if (!productDoc) {
+      return res.status(404).render('error', {
+        message: 'Product Not Found',
+        error: 'No products exist in the database.'
+      });
+    }
+
+    const productId = productDoc._id.toString();
+    const reviews = await Review.find({ productId: productDoc._id }).sort({ createdAt: -1 }).lean();
     const transformedReviews = reviews.map(transformReviewForFrontend);
-    res.render('product_page', { reviews: transformedReviews });
+
+    const reviewCount = reviews.length;
+    const avgRating = reviewCount
+      ? Math.round((reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviewCount) * 10) / 10
+      : 0;
+
+    const related = await Product.find({ _id: { $ne: productDoc._id } }).limit(3).lean();
+    const relatedProducts = related.map(p => ({
+      id: p._id.toString(),
+      name: p.name,
+      price: p.pricing?.price || 0,
+      oldPrice: p.pricing?.oldPrice,
+      image: p.images?.[0] || '/img/placeholder.png'
+    }));
+
+    res.render('product_page', {
+      product: {
+        id: productId,
+        name: productDoc.name,
+        description: productDoc.description || '',
+        price: productDoc.pricing?.price || 0,
+        oldPrice: productDoc.pricing?.oldPrice,
+        images: productDoc.images || [],
+        sizes: productDoc.sizes || [39, 40, 41, 42]
+      },
+      reviews: transformedReviews,
+      avgRating,
+      reviewCount,
+      relatedProducts,
+      user: req.session.user
+    });
   } catch (err) {
-    console.error('Error fetching reviews:', err);
-    res.render('product_page', { reviews: [] });
+    console.error('Error rendering product page:', err);
+    return res.status(500).render('error', {
+      message: 'Server Error',
+      error: 'Unable to load product page.'
+    });
   }
-});
+}
+
+app.get('/product', renderProductPage);
+app.get('/product/:id', renderProductPage);
 
 // ====== REGISTER ROUTES ======
 app.get('/register', (req, res) => {
@@ -1504,7 +1556,12 @@ console.log('[server] Registering /api/reviews routes (GET/POST/PUT/DELETE)');
 
 app.get('/api/reviews', async (req, res) => {
   try {
-    const reviews = await Review.find().lean();
+    const query = {};
+    if (req.query.productId && mongoose.Types.ObjectId.isValid(req.query.productId)) {
+      query.productId = req.query.productId;
+    }
+
+    const reviews = await Review.find(query).lean();
     // Transform MongoDB fields to frontend expected fields
     const transformed = reviews.map(transformReviewForFrontend);
     res.json(transformed);
@@ -1529,9 +1586,18 @@ app.post('/api/reviews', requireLoginApi, async (req, res) => {
   if (!ok) return res.status(400).json({ errors });
 
   try {
-    // For now, use a placeholder product ID since we're not linking to actual products
+    const productId = req.body.productId;
+    if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ error: 'Invalid productId.' });
+    }
+
+    const exists = await Product.exists({ _id: productId });
+    if (!exists) {
+      return res.status(404).json({ error: 'Product not found.' });
+    }
+
     const review = new Review({
-      productId: new mongoose.Types.ObjectId(), // Placeholder
+      productId: productId,
       userId: new mongoose.Types.ObjectId(req.session.user.id),
       rating: normalized.rating,
       title: normalized.title,

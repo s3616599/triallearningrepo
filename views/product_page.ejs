@@ -16,9 +16,17 @@
   <link rel="stylesheet" href="/css/styleguide.css" />
 
   <title>Product Review List</title>
+
+  <style>
+    .avg-stars { display: inline-flex; gap: 0.15rem; vertical-align: middle; }
+    .avg-star { position: relative; display: inline-block; width: 1em; height: 1em; line-height: 1em; }
+    .avg-star > i { position: absolute; inset: 0; line-height: 1em; }
+    .avg-star-fill { position: absolute; inset: 0; overflow: hidden; width: 0%; }
+    .avg-star-fill i { position: absolute; inset: 0; line-height: 1em; }
+  </style>
 </head>
 <body>
-  <div class="prl-wrapper" data-user-id="<%= user ? user.id : '' %>" data-user-role="<%= user ? user.role : '' %>" data-user-name="<%= user ? (user.fullname || user.username || '') : '' %>">
+  <div class="prl-wrapper" data-product-id="<%= product ? product.id : '' %>" data-user-id="<%= user ? user.id : '' %>" data-user-role="<%= user ? user.role : '' %>" data-user-name="<%= user ? (user.fullname || user.username || '') : '' %>">
     <!-- HEADER (NAVBAR) -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
   <div class="container">
@@ -70,7 +78,7 @@
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
-        <li class="breadcrumb-item active">Nike Air Force 1 High By You</li>
+        <li class="breadcrumb-item active"><%= product ? product.name : 'Product' %></li>
       </ol>
     </div>
   </nav>
@@ -82,36 +90,44 @@
         <!-- Product Images -->
         <div class="col-md-5">
           <div class="card">
-            <img src="/img/Nike_Air_Force_High.avif" class="card-img-top" alt="Product Image" style="height: 420px; object-fit: contain;">
+            <img src="<%= (product && product.images && product.images[0]) ? product.images[0] : '/img/placeholder.png' %>" class="card-img-top" alt="Product Image" style="height: 420px; object-fit: contain;">
           </div>
         </div>
         <!-- Product Info -->
         <div class="col-md-7">
-          <h2 class="fw-bold mb-3">Nike Air Force 1 High By You</h2>
+          <h2 class="fw-bold mb-3"><%= product ? product.name : 'Product' %></h2>
           <div class="mb-2">
-            <span class="text-warning">
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-regular fa-star"></i>
+            <% const avg = (typeof avgRating === 'number') ? avgRating : 0; %>
+            <% const count = (typeof reviewCount === 'number') ? reviewCount : (Array.isArray(reviews) ? reviews.length : 0); %>
+            <span class="avg-stars" aria-label="<%= avg.toFixed(1) %> out of 5">
+              <% for (let i = 1; i <= 5; i++) { %>
+                <% const frac = Math.max(0, Math.min(1, avg - (i - 1))); %>
+                <% const fillPct = frac * 100; %>
+                <span class="avg-star">
+                  <i class="fa-regular fa-star text-warning"></i>
+                  <span class="avg-star-fill" data-fill="<%= fillPct %>">
+                    <i class="fa-solid fa-star text-warning"></i>
+                  </span>
+                </span>
+              <% } %>
             </span>
-            <span class="ms-2 text-muted">(451 reviews)</span>
+            <span class="ms-2 text-muted">(<%= count %> reviews)</span>
           </div>
           <div class="mb-3">
-            <span class="fs-4 fw-bold text-danger">$199.99</span>
-            <span class="text-muted text-decoration-line-through ms-2">$269.99</span>
-            <span class="badge bg-success ms-2">25% OFF</span>
+            <span class="fs-4 fw-bold text-danger">$<%= (product && typeof product.price === 'number') ? product.price.toFixed(2) : '0.00' %></span>
+            <% if (product && typeof product.oldPrice === 'number' && product.oldPrice > product.price) { %>
+              <span class="text-muted text-decoration-line-through ms-2">$<%= product.oldPrice.toFixed(2) %></span>
+              <span class="badge bg-success ms-2"><%= Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) %>% OFF</span>
+            <% } %>
           </div>
           <form class="row g-3 mb-4" action="/add-to-cart" method="POST">
-            <input type="hidden" name="productId" value="1"> 
+            <input type="hidden" name="productId" value="<%= product ? product.id : '' %>"> 
             <div class="col-6">
               <label class="form-label">Size</label>
               <select class="form-select" name="size">
-                <option>39</option>
-                <option>40</option>
-                <option>41</option>
-                <option>42</option>
+                <% (product && Array.isArray(product.sizes) ? product.sizes : [39,40,41,42]).forEach(function(s) { %>
+                  <option value="<%= s %>"><%= s %></option>
+                <% }) %>
               </select>
             </div>
             <div class="col-6">
@@ -142,12 +158,12 @@
     </ul>
     <div class="tab-content" id="productTabContent">
       <div class="tab-pane fade" id="details" role="tabpanel">
-        <p>The Nike Air Force 1 High By You gives you the freedom to make a classic unmistakably yours. It keeps the iconic high-top silhouette, tough leather build, and that famous Air cushioning—but lets you customize everything from colors to materials to the strap details. It's the same legendary AF1 attitude, just with your signature stitched into every step.</p>
+        <p><%= (product && product.description) ? product.description : 'Product details are coming soon.' %></p>
       </div>
       <div class="tab-pane fade show active" id="reviews" role="tabpanel">
         <!-- REVIEW SECTION-->
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 class="mb-0">All Reviews <span class="text-muted">(451)</span></h4>
+          <h4 class="mb-0">All Reviews <span class="text-muted">(<%= (typeof reviewCount === 'number') ? reviewCount : 0 %>)</span></h4>
           <div>
             <% if (user) { %>
               <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm" aria-expanded="false" aria-controls="reviewForm">
@@ -164,6 +180,7 @@
           <div class="card card-body">
             <% if (user) { %>
             <form id="reviewSubmitForm">
+              <input type="hidden" name="productId" value="<%= product ? product.id : '' %>">
               <div class="mb-3">
                 <label class="form-label">Review Title</label>
                 <input type="text" class="form-control" name="title" placeholder="Enter review title">
@@ -244,50 +261,24 @@
   <div class="container">
     <h4 class="mb-4">You Might Also Like</h4>
     <div class="row g-4">
-      <div class="col-6 col-md-3">
-        <div class="card h-100">
-          <img src="/img/Nike_Air_Max_1_Black.avif" class="card-img-top" alt="Related Product">
-          <div class="card-body">
-            <h6 class="card-title">Nike Air Max 1 Black</h6>
-            <div class="mb-2">
-              <span class="text-warning">
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-regular fa-star"></i>
-              </span>
-              <span class="ms-1 text-muted small">(123)</span>
+      <% (relatedProducts || []).forEach(function(rp) { %>
+        <div class="col-6 col-md-3">
+          <a class="text-decoration-none text-dark" href="/product?id=<%= rp.id %>">
+            <div class="card h-100">
+              <img src="<%= rp.image %>" class="card-img-top" alt="Related Product">
+              <div class="card-body">
+                <h6 class="card-title"><%= rp.name %></h6>
+                <div>
+                  <span class="fw-bold">$<%= Number(rp.price || 0).toFixed(2) %></span>
+                  <% if (typeof rp.oldPrice === 'number' && rp.oldPrice > rp.price) { %>
+                    <span class="text-muted text-decoration-line-through ms-2">$<%= rp.oldPrice.toFixed(2) %></span>
+                  <% } %>
+                </div>
+              </div>
             </div>
-            <div>
-              <span class="fw-bold">$199.99</span>
-              <span class="text-muted text-decoration-line-through ms-2">$269.99</span>
-            </div>
-          </div>
+          </a>
         </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="card h-100">
-          <img src="/img/Nike_Dunk_High_By_You.avif" class="card-img-top" alt="Related Product">
-          <div class="card-body">
-            <h6 class="card-title">Nike Dunk High By You</h6>
-            <div class="mb-2">
-              <span class="text-warning">
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-                <i class="fa-solid fa-star"></i>
-              </span>
-              <span class="ms-1 text-muted small">(316)</span>
-            </div>
-            <div>
-              <span class="fw-bold">$219.99</span>
-              <span class="text-muted text-decoration-line-through ms-2">$299.99</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <% }) %>
       <!-- Add more product cards as needed, all inside this single row -->
     </div>
   </div>
@@ -411,9 +402,16 @@
   // Current user (for review edit/delete permissions)
   const wrapperEl = document.querySelector('.prl-wrapper');
   const rawUserId = wrapperEl?.dataset?.userId;
+  const currentProductId = wrapperEl?.dataset?.productId || null;
   window.currentUserId = rawUserId || null;
   window.currentUserIsAdmin = wrapperEl?.dataset?.userRole === 'admin';
   window.currentUserName = wrapperEl?.dataset?.userName || null;
+
+  // Apply partial-fill widths for average stars
+  document.querySelectorAll('.avg-star-fill[data-fill]').forEach(el => {
+    const pct = Number(el.dataset.fill);
+    if (Number.isFinite(pct)) el.style.width = `${pct}%`;
+  });
 
   // --- Review Submission Handler ---
   document.addEventListener('DOMContentLoaded', function() {
@@ -471,7 +469,8 @@
   // --- Load and Render Reviews from API ---
   async function loadAndRenderReviews() {
     try {
-      const res = await fetch('/api/reviews');
+      const url = currentProductId ? `/api/reviews?productId=${encodeURIComponent(currentProductId)}` : '/api/reviews';
+      const res = await fetch(url);
       const reviews = await res.json();
       window.reviews = reviews;
       updateReviewList();
