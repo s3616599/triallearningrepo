@@ -522,7 +522,7 @@
     // Add click event for detail view
     container.querySelectorAll('.review-preview').forEach(card => {
       card.addEventListener('click', function() {
-        const id = +this.getAttribute('data-id');
+        const id = this.getAttribute('data-id');
         showReviewDetail(id);
       });
     });
