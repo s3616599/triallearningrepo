@@ -5,6 +5,13 @@ const ProductSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     description: { type: String, default: '' },
 
+    // Category is useful for filters too
+    category: { type: String, default: 'General' }, 
+
+    // --- ADDED THESE 3 FIELDS FOR YOUR FILTERS TO WORK ---
+    color: { type: String, default: 'black' },
+    sizes: { type: [Number], default: [39, 40, 41, 42] },
+
     pricing: {
       price: { type: Number, required: true, min: 0 },
       oldPrice: { type: Number, min: 0 }

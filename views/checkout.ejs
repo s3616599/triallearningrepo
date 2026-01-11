@@ -165,9 +165,9 @@
                                 <span>$<%= (item.product.price * item.quantity).toFixed(2) %></span>
                             </div>
                             <div class="small text-muted mb-2">
-                                <% if (item.size) { %>Size: <%= item.size %><% } %>
-                                <% if (item.color) { %> | Color: <%= item.color %><% } %>
-                            </div>
+    <% if (item.size) { %>Size: <strong><%= item.size %></strong><% } %>
+    <% if (item.color) { %> | Color: <span class="text-capitalize"><%= item.color %></span><% } %>
+</div>
                         <% }); %>
                         <hr>
                         <div class="d-flex justify-content-between mb-2">

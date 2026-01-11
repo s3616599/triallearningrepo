@@ -171,7 +171,8 @@
             </div>
             
             <form action="/add-to-cart" method="POST" class="mt-2" 
-      data-sizes="<%= (product.sizes || [39,40,41,42,43]).join(',') %>">
+      data-sizes="<%= (product.sizes || [39,40,41,42,43]).join(',') %>"
+      data-color="<%= product.color %>">
                 <input type="hidden" name="productId" value="<%= product.id %>">
                 <button type="submit" class="btn btn-sm btn-dark w-100">Add to Cart</button>
             </form>
@@ -366,10 +367,15 @@
             if (formValues) {
                 
                 // Prepare the data to send
-                const formData = new FormData(form);
-                formData.append('size', formValues.size);
-                formData.append('quantity', formValues.quantity);
-                const data = Object.fromEntries(formData.entries());
+                // Prepare the data to send
+const formData = new FormData(form);
+formData.append('size', formValues.size);
+formData.append('quantity', formValues.quantity);
+
+// --- NEW LINE: Get color from the form attribute we just added ---
+formData.append('color', form.getAttribute('data-color')); 
+
+const data = Object.fromEntries(formData.entries());
 
                 try {
                     // STEP 2: SEND TO SERVER

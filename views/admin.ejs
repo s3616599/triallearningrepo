@@ -95,7 +95,7 @@
             <td><%= u.fullname || '-' %></td>
             <td>
               <select class="form-select form-select-sm" style="width: auto;" 
-                      onchange="changeRole(<%= u.id %>, this.value)"
+                      onchange="changeRole('<%= u.id %>', this.value)"
                       <%= u.id === user.id ? 'disabled' : '' %>>
                 <option value="user" <%= u.role === 'user' ? 'selected' : '' %>>User</option>
                 <option value="admin" <%= u.role === 'admin' ? 'selected' : '' %>>Admin</option>
@@ -109,10 +109,10 @@
             <td>
               <% if (u.id !== user.id) { %>
               <button class="btn btn-sm <%= u.locked ? 'btn-success' : 'btn-warning' %>" 
-                      onclick="toggleLock(<%= u.id %>)" id="lock-btn-<%= u.id %>">
+                      onclick="toggleLock('<%= u.id %>')" id="lock-btn-<%= u.id %>">
                 <%= u.locked ? 'Unlock' : 'Lock' %>
               </button>
-              <button class="btn btn-sm btn-danger" onclick="deleteUser(<%= u.id %>)">Delete</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteUser('<%= u.id %>')">Delete</button>
               <% } else { %>
               <span class="text-muted">(You)</span>
               <% } %>
@@ -145,7 +145,7 @@
             <td><%= b.createdAt || '-' %></td>
             <td>
               <a href="/blogs/<%= b.id %>" class="btn btn-sm btn-secondary">View</a>
-              <button class="btn btn-sm btn-danger" onclick="deleteBlog(<%= b.id %>)">Delete</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteBlog('<%= b.id %>')">Delete</button>
             </td>
           </tr>
           <% }) %>
@@ -176,9 +176,9 @@
             <td><%= t.comments ? t.comments.length : 0 %></td>
             <td><span class="badge bg-success">Active</span></td>
             <td>
-              <button class="btn btn-sm btn-warning" onclick="archiveThread(<%= t.id %>)">Archive</button>
-              <button class="btn btn-sm btn-secondary" onclick="viewThreadPosts(<%= t.id %>)">Posts</button>
-              <button class="btn btn-sm btn-danger" onclick="deleteThread(<%= t.id %>)">Delete</button>
+              <button class="btn btn-sm btn-warning" onclick="archiveThread('<%= t.id %>')">Archive</button>
+              <button class="btn btn-sm btn-secondary" onclick="viewThreadPosts('<%= t.id %>')">Posts</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteThread('<%= t.id %>')">Delete</button>
             </td>
           </tr>
           <% }) %>
@@ -210,9 +210,9 @@
             <td><%= t.author || 'Unknown' %></td>
             <td><%= t.archivedAt ? new Date(t.archivedAt).toLocaleDateString() : '-' %></td>
             <td>
-              <button class="btn btn-sm btn-success" onclick="unarchiveThread(<%= t.id %>)">Restore</button>
-              <button class="btn btn-sm btn-secondary" onclick="viewThreadPosts(<%= t.id %>)">Posts</button>
-              <button class="btn btn-sm btn-danger" onclick="deleteThread(<%= t.id %>)">Delete</button>
+              <button class="btn btn-sm btn-success" onclick="unarchiveThread('<%= t.id %>')">Restore</button>
+              <button class="btn btn-sm btn-secondary" onclick="viewThreadPosts('<%= t.id %>')">Posts</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteThread('<%= t.id %>')">Delete</button>
             </td>
           </tr>
           <% }) %>
@@ -420,7 +420,7 @@
         html += `<td>${comment.text ? comment.text.substring(0, 50) : ''}...</td>`;
         html += `<td><span class="badge ${isArchived ? 'bg-secondary' : 'bg-success'}">${isArchived ? 'Archived' : 'Active'}</span></td>`;
         html += `<td>`;
-        html += `<button class="btn btn-sm ${isArchived ? 'btn-success' : 'btn-warning'}" onclick="archivePost(${threadId}, ${comment.id})">`;
+        html += `<button class="btn btn-sm ${isArchived ? 'btn-success' : 'btn-warning'}" onclick="archivePost('${threadId}', '${comment.id}')">`;
         html += `${isArchived ? 'Restore' : 'Archive'}`;
         html += `</button>`;
         html += `</td>`;

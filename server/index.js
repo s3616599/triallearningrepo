@@ -1412,23 +1412,30 @@ app.get('/checkout', requireLogin, async (req, res) => {
   }
 });
 
+
 app.post('/add-to-cart', requireLogin, async (req, res) => {
   try {
     const productId = req.body.productId;
     const quantity = parseInt(req.body.quantity) || 1;
-    const color = req.body.color || 'Default';
     const size = parseInt(req.body.size) || 40;
 
+    // 1. Validate Quantity
     if (quantity < 1) {
       return res.status(400).json({ success: false, message: "Quantity must be at least 1" });
     }
 
+    // 2. Find Product FIRST
     const product = await Product.findById(productId);
 
     if (!product) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
 
+    // 3. FIX: Now define the color. 
+    // If the user didn't pick one (req.body.color is empty), use the Product's default color.
+    const color = req.body.color || product.color || 'black';
+
+    // 4. Get User's Cart
     let cart = await Cart.findOne({ user: req.session.user.id });
 
     if (!cart) {
@@ -1439,7 +1446,7 @@ app.post('/add-to-cart', requireLogin, async (req, res) => {
       });
     }
 
-    // Check if item already exists in cart
+    // 5. Check if item exists (Merge duplicates)
     const existingItemIndex = cart.items.findIndex(
       item => item.product.toString() === productId && item.size === size && item.color === color
     );
@@ -1454,11 +1461,11 @@ app.post('/add-to-cart', requireLogin, async (req, res) => {
         price: product.pricing?.price || 0,
         quantity,
         size,
-        color
+        color // Now uses the correct color
       });
     }
 
-    // Recalculate pricing
+    // 6. Recalculate Totals
     const subtotal = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const tax = subtotal * 0.10;
     cart.pricing = {

@@ -127,9 +127,9 @@
 <% } %>
 
 </div>
-<div class="text-muted small">Price: $<%= item.product.price %></div>
+<div class="text-muted small">Price: $<%= Number(item.product.price).toFixed(2) %></div>
                                 </div>
-                                <div class="fw-bold">$<%= item.product.price %></div>
+                                <div class="fw-bold">$<%= Number(item.product.price).toFixed(2) %></div>
                             </div>
 
                             <div class="d-flex align-items-center gap-3">

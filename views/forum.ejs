@@ -41,6 +41,11 @@
           height: 80px;
         }
       }
+      .search-highlight {
+        background-color: #fff3cd;
+        padding: 0 2px;
+        border-radius: 2px;
+      }
     </style>
   </head>
 
@@ -115,11 +120,49 @@
         <% } %>
     </div>
 
+    <!-- SEARCH AND SORT BAR -->
+    <div class="row mb-4">
+        <div class="col-md-8 mb-2 mb-md-0">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="fa-solid fa-search text-muted"></i>
+                </span>
+                <input type="text" class="form-control border-start-0" id="threadSearch" 
+                       placeholder="Search threads by title, author, content, or tags...">
+                <button class="btn btn-outline-secondary" type="button" id="clearSearch" style="display: none;">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" id="threadSort">
+                <option value="newest">Date: Newest First</option>
+                <option value="oldest">Date: Oldest First</option>
+                <option value="title-asc">Title: A to Z</option>
+                <option value="title-desc">Title: Z to A</option>
+            </select>
+        </div>
+        <div class="col-12">
+            <div id="searchResults" class="text-muted small mt-2" style="display: none;"></div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
+            <!-- No Results Message -->
+            <div id="noSearchResults" class="alert alert-warning" style="display: none;">
+                <i class="fa-solid fa-search me-2"></i>
+                No threads found matching your search. Try different keywords.
+            </div>
+
             <% if (threads && threads.length > 0) { %>
                 <% threads.forEach(function(thread) { %>
-                <div class="card mb-3 thread-card">
+                <div class="card mb-3 thread-card" 
+                     data-title="<%= thread.title.toLowerCase() %>"
+                     data-author="<%= thread.author.toLowerCase() %>"
+                     data-excerpt="<%= thread.excerpt ? thread.excerpt.toLowerCase() : '' %>"
+                     data-tags="<%= thread.tags ? thread.tags.join(' ').toLowerCase() : '' %>"
+                     data-date="<%= new Date(thread.created).getTime() %>">
                     <div class="card-body">
                         <div class="d-flex gap-3">
                             <!-- Thread Image -->
@@ -136,19 +179,19 @@
                             <!-- Thread Content -->
                             <div class="flex-grow-1">
                                 <h5 class="card-title mb-1">
-                                    <a href="/forum/threads/<%= thread.id %>" class="text-decoration-none text-dark">
+                                    <a href="/forum/threads/<%= thread.id %>" class="text-decoration-none text-dark thread-title-link">
                                         <%= thread.title %>
                                     </a>
                                     <% if (thread.archived) { %>
                                     <span class="badge bg-secondary ms-2">Archived</span>
                                     <% } %>
                                 </h5>
-                                <p class="card-text text-muted small mb-2">
+                                <p class="card-text text-muted small mb-2 thread-author-text">
                                     <i class="fa-regular fa-user me-1"></i> <%= thread.author %> 
                                     <span class="mx-1">•</span>
                                     <i class="fa-regular fa-clock me-1"></i> <%= new Date(thread.created).toLocaleDateString() %>
                                 </p>
-                                <p class="card-text text-secondary small mb-2">
+                                <p class="card-text text-secondary small mb-2 thread-excerpt-text">
                                     <%= thread.excerpt %>
                                 </p>
                                 <div class="d-flex gap-3 align-items-center flex-wrap">
@@ -158,7 +201,7 @@
                                     </span>
                                     <% if (thread.tags && thread.tags.length > 0) { %>
                                         <% thread.tags.slice(0, 3).forEach(function(tag) { %>
-                                        <span class="badge bg-light text-dark border"><%= tag %></span>
+                                        <span class="badge bg-light text-dark border thread-tag"><%= tag %></span>
                                         <% }); %>
                                         <% if (thread.tags.length > 3) { %>
                                         <span class="badge bg-light text-muted border">+<%= thread.tags.length - 3 %></span>
@@ -171,7 +214,7 @@
                 </div>
                 <% }); %>
             <% } else { %>
-                <div class="alert alert-info">
+                <div class="alert alert-info" id="noThreadsMessage">
                     <i class="fa-solid fa-info-circle me-2"></i>
                     No forum posts yet. Be the first to start a discussion!
                 </div>
@@ -264,6 +307,102 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  // Thread Search and Sort Functionality
+  const searchInput = document.getElementById('threadSearch');
+  const clearSearchBtn = document.getElementById('clearSearch');
+  const searchResultsDiv = document.getElementById('searchResults');
+  const noSearchResultsDiv = document.getElementById('noSearchResults');
+  const sortSelect = document.getElementById('threadSort');
+  const threadCards = Array.from(document.querySelectorAll('.thread-card'));
+  const threadContainer = threadCards.length > 0 ? threadCards[0].parentElement : null;
+
+  // Sort threads
+  function sortThreads(sortBy) {
+    if (!threadContainer || threadCards.length === 0) return;
+
+    const sortedCards = [...threadCards].sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return parseInt(b.getAttribute('data-date')) - parseInt(a.getAttribute('data-date'));
+        case 'oldest':
+          return parseInt(a.getAttribute('data-date')) - parseInt(b.getAttribute('data-date'));
+        case 'title-asc':
+          return a.getAttribute('data-title').localeCompare(b.getAttribute('data-title'));
+        case 'title-desc':
+          return b.getAttribute('data-title').localeCompare(a.getAttribute('data-title'));
+        default:
+          return 0;
+      }
+    });
+
+    // Re-append in sorted order
+    sortedCards.forEach(card => threadContainer.appendChild(card));
+  }
+
+  // Filter threads based on search
+  function filterThreads() {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    
+    // Show/hide clear button
+    clearSearchBtn.style.display = searchTerm ? 'block' : 'none';
+    
+    if (!searchTerm) {
+      // Reset: show all threads
+      threadCards.forEach(card => {
+        card.style.display = 'block';
+      });
+      searchResultsDiv.style.display = 'none';
+      noSearchResultsDiv.style.display = 'none';
+      return;
+    }
+
+    let matchCount = 0;
+    const searchTerms = searchTerm.split(/\s+/);
+
+    threadCards.forEach(card => {
+      const title = card.getAttribute('data-title') || '';
+      const author = card.getAttribute('data-author') || '';
+      const excerpt = card.getAttribute('data-excerpt') || '';
+      const tags = card.getAttribute('data-tags') || '';
+      
+      const searchableText = `${title} ${author} ${excerpt} ${tags}`;
+      
+      // Check if all search terms match
+      const matches = searchTerms.every(term => searchableText.includes(term));
+      
+      if (matches) {
+        card.style.display = 'block';
+        matchCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Show search results count
+    searchResultsDiv.style.display = 'block';
+    searchResultsDiv.textContent = `Found ${matchCount} thread${matchCount !== 1 ? 's' : ''} matching "${searchInput.value}"`;
+    
+    // Show no results message if needed
+    noSearchResultsDiv.style.display = matchCount === 0 ? 'block' : 'none';
+  }
+
+  // Event listeners
+  searchInput.addEventListener('input', filterThreads);
+  
+  sortSelect.addEventListener('change', function() {
+    sortThreads(this.value);
+  });
+
+  // Clear search
+  clearSearchBtn.addEventListener('click', function() {
+    searchInput.value = '';
+    filterThreads();
+    searchInput.focus();
+  });
+
+  // Initial sort (newest first)
+  sortThreads('newest');
+
   // Handle new thread creation
   document.getElementById('submitThread').addEventListener('click', async function() {
     const title = document.getElementById('threadTitle').value;
