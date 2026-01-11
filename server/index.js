@@ -254,6 +254,23 @@ function validateReviewPayload(body, { partial = false } = {}) {
   return { ok: errors.length === 0, errors, normalized };
 }
 
+// ====== REVIEW TRANSFORMATION HELPER ======
+// Maps MongoDB schema fields to frontend expected fields
+function transformReviewForFrontend(r) {
+  return {
+    id: r._id.toString(),
+    title: r.title,
+    rating: r.rating,
+    size: r.size,
+    name: r.name || 'Anonymous',
+    date: r.createdAt || new Date(),
+    content: r.body,
+    summary: (r.body || '').slice(0, 140),
+    thumbnail: r.images?.[0] || '',
+    userId: r.userId?.toString()
+  };
+}
+
 // ====== AUTHENTICATION MIDDLEWARE ======
 function requireLogin(req, res, next) {
   if (!req.session.user) {
@@ -320,12 +337,8 @@ app.get('/test', (req, res) => {
 app.get('/product', async (req, res) => {
   try {
     const reviews = await Review.find().lean();
-    // Transform MongoDB _id to id for frontend compatibility
-    const transformedReviews = reviews.map(r => ({
-      ...r,
-      id: r._id.toString(),
-      userId: r.userId?.toString()
-    }));
+    // Transform MongoDB fields to frontend expected fields
+    const transformedReviews = reviews.map(transformReviewForFrontend);
     res.render('product_page', { reviews: transformedReviews });
   } catch (err) {
     console.error('Error fetching reviews:', err);
@@ -1492,12 +1505,8 @@ console.log('[server] Registering /api/reviews routes (GET/POST/PUT/DELETE)');
 app.get('/api/reviews', async (req, res) => {
   try {
     const reviews = await Review.find().lean();
-    const transformed = reviews.map(r => ({
-      ...r,
-      id: r._id.toString(),
-      date: r.createdAt || r.date,
-      userId: r.userId?.toString()
-    }));
+    // Transform MongoDB fields to frontend expected fields
+    const transformed = reviews.map(transformReviewForFrontend);
     res.json(transformed);
   } catch (err) {
     console.error('Error fetching reviews:', err);
@@ -1509,11 +1518,7 @@ app.get('/api/reviews/:id', async (req, res) => {
   try {
     const review = await Review.findById(req.params.id).lean();
     if (!review) return res.status(404).json({ error: 'Review not found.' });
-    res.json({
-      ...review,
-      id: review._id.toString(),
-      userId: review.userId?.toString()
-    });
+    res.json(transformReviewForFrontend(review));
   } catch (err) {
     res.status(400).json({ error: 'Invalid review id.' });
   }
@@ -1531,17 +1536,14 @@ app.post('/api/reviews', requireLoginApi, async (req, res) => {
       rating: normalized.rating,
       title: normalized.title,
       body: normalized.content,
+      name: normalized.name || req.session.user.fullname || req.session.user.username || 'Anonymous',
       size: normalized.size,
       images: normalized.thumbnail ? [normalized.thumbnail] : []
     });
 
     await review.save();
 
-    res.status(201).json({
-      id: review._id.toString(),
-      ...normalized,
-      userId: req.session.user.id
-    });
+    res.status(201).json(transformReviewForFrontend(review.toObject()));
   } catch (err) {
     console.error('Error creating review:', err);
     res.status(500).json({ error: 'Error creating review' });
@@ -1565,15 +1567,12 @@ app.put('/api/reviews/:id', requireLoginApi, async (req, res) => {
     if (normalized.content) review.body = normalized.content;
     if (normalized.rating) review.rating = normalized.rating;
     if (normalized.size) review.size = normalized.size;
+    if (normalized.name) review.name = normalized.name;
     if (normalized.thumbnail) review.images = [normalized.thumbnail];
 
     await review.save();
 
-    res.json({
-      id: review._id.toString(),
-      ...normalized,
-      userId: review.userId?.toString()
-    });
+    res.json(transformReviewForFrontend(review.toObject()));
   } catch (err) {
     console.error('Error updating review:', err);
     res.status(500).json({ error: 'Error updating review' });

@@ -18,7 +18,7 @@
   <title>Product Review List</title>
 </head>
 <body>
-  <div class="prl-wrapper" data-user-id="<%= user ? user.id : '' %>" data-user-role="<%= user ? user.role : '' %>">
+  <div class="prl-wrapper" data-user-id="<%= user ? user.id : '' %>" data-user-role="<%= user ? user.role : '' %>" data-user-name="<%= user ? (user.fullname || user.username || '') : '' %>">
     <!-- HEADER (NAVBAR) -->
 <nav class="navbar navbar-expand-lg bg-light border-bottom py-3">
   <div class="container">
@@ -411,8 +411,9 @@
   // Current user (for review edit/delete permissions)
   const wrapperEl = document.querySelector('.prl-wrapper');
   const rawUserId = wrapperEl?.dataset?.userId;
-  window.currentUserId = rawUserId ? Number(rawUserId) : null;
+  window.currentUserId = rawUserId || null;
   window.currentUserIsAdmin = wrapperEl?.dataset?.userRole === 'admin';
+  window.currentUserName = wrapperEl?.dataset?.userName || null;
 
   // --- Review Submission Handler ---
   document.addEventListener('DOMContentLoaded', function() {
@@ -528,10 +529,20 @@
   }
 
   function canManageReview(r) {
-    if (!window.currentUserId) return false;
+    // Admins can manage any review
     if (window.currentUserIsAdmin) return true;
-    if (r.userId == null) return false;
-    return Number(r.userId) === Number(window.currentUserId);
+    
+    // Check userId match
+    if (window.currentUserId && r.userId) {
+      if (String(r.userId) === String(window.currentUserId)) return true;
+    }
+    
+    // Fallback: check name match (for seed data without userId)
+    if (window.currentUserName && r.name) {
+      if (r.name === window.currentUserName) return true;
+    }
+    
+    return false;
   }
 
   function showReviewDetail(id) {
@@ -645,6 +656,7 @@
               const res = await fetch(`/api/reviews/${reviewId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(payload)
               });
               if (res.status === 401) {
@@ -675,7 +687,10 @@
           const ok = confirm('Delete this review?');
           if (!ok) return;
           try {
-            const res = await fetch(`/api/reviews/${reviewId}`, { method: 'DELETE' });
+            const res = await fetch(`/api/reviews/${reviewId}`, { 
+              method: 'DELETE',
+              credentials: 'include'
+            });
             if (res.status === 401) {
               window.location.href = '/login';
               return;
